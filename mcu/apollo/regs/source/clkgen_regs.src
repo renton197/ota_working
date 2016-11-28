@@ -1,0 +1,705 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     clk_gen_cg_regs.src                                                *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/06/2013                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   Clock Generator component of the CLKGEN block of the Ambiq MCU.           *
+#   It is expected to be parsed and deconstructed by a Python utility          *
+#   called RSON (Readable Serial Object Notation), and those data structures   *
+#   used to auto-generate things such as C register-access macros, include     *
+#   files, Verilog, documentation, etc.                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   CLKGEN
+block_rev           =   1
+block_brief         =   Clock Generator
+
+
+register
+    name            =   CALXT
+    offset          =   0
+    enable          =   None
+    reg_brief       =   XT Oscillator Control
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_shadow
+        name        =   CALXT
+        width       =   11
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XT Oscillator calibration value
+
+register
+    name            =   CALRC
+    reg_brief       =   RC Oscillator Control
+    offset          =   4
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   14
+        lsb         =   18
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_shadasyn
+        name        =   CALRC
+        width       =   18
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   LFRC Oscillator calibration value
+
+register
+    name            =   ACALCTR
+    reg_brief       =   Autocalibration Counter
+    offset          =   8
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   ACALCTR
+        width       =   24
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Autocalibration Counter result.
+
+register
+    name            =   OCTRL
+    reg_brief       =   Oscillator Control
+    offset          =   12
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ACAL
+        width       =   3
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Autocalibration control
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable Autocalibration
+        enum
+            name    =   1024SEC
+            value   =   0x2
+            desc    =   Autocalibrate every 1024 seconds
+        enum
+            name    =   512SEC
+            value   =   0x3
+            desc    =   Autocalibrate every 512 seconds
+        enum
+            name    =   XTFREQ
+            value   =   0x6
+            desc    =   Frequency measurement using XT
+        enum
+            name    =   EXTFREQ
+            value   =   0x7
+            desc    =   Frequency measurement using external clock
+    bf_shadow
+        name        =   OSEL
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Selects the RTC oscillator (1 => LFRC, 0 => XT)
+        enum
+            name    =   RTC_XT
+            value   =   0x0
+            desc    =   RTC uses the XT
+        enum
+            name    =   RTC_LFRC
+            value   =   0x1
+            desc    =   RTC uses the LFRC
+    bf_standard
+        name        =   FOS
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Oscillator switch on failure function
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the oscillator switch on failure function
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the oscillator switch on failure function
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   STOPRC
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Stop the LFRC Oscillator to the RTC
+        enum
+            name    =   EN
+            value   =   0x0
+            desc    =   Enable the LFRC Oscillator to drive the RTC
+        enum
+            name    =   STOP
+            value   =   0x1
+            desc    =   Stop the LFRC Oscillator when driving the RTC
+    bf_standard
+        name        =   STOPXT
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Stop the XT Oscillator to the RTC
+        enum
+            name    =   EN
+            value   =   0x0
+            desc    =   Enable the XT Oscillator to drive the RTC
+        enum
+            name    =   STOP
+            value   =   0x1
+            desc    =   Stop the XT Oscillator when driving the RTC
+
+register
+    name            =   CLKOUT
+    reg_brief       =   CLKOUT Frequency Select
+    offset          =   16
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   CKEN
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable the CLKOUT signal
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable CLKOUT
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable CLKOUT
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   CKSEL
+        width       =   6
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   CLKOUT signal select
+        enum
+            name    =   LFRC
+            value   =   0x0
+            desc    =   LFRC
+        enum
+            name    =   XT_DIV2
+            value   =   0x1
+            desc    =   XT / 2
+        enum
+            name    =   XT_DIV4
+            value   =   0x2
+            desc    =   XT / 4
+        enum
+            name    =   XT_DIV8
+            value   =   0x3
+            desc    =   XT / 8
+        enum
+            name    =   XT_DIV16
+            value   =   0x4
+            desc    =   XT / 16
+        enum
+            name    =   XT_DIV32
+            value   =   0x5
+            desc    =   XT / 32
+        enum
+            name    =   RTC_1Hz
+            value   =   0x10
+            desc    =   1 Hz as selected in RTC
+        enum
+            name    =   XT_DIV2M
+            value   =   0x16
+            desc    =   XT / 2^21
+        enum
+            name    =   XT
+            value   =   0x17
+            desc    =   XT
+        enum
+            name    =   CG_100Hz
+            value   =   0x18
+            desc    =   100 Hz as selected in CLKGEN
+        enum
+            name    =   HFRC
+            value   =   0x19
+            desc    =   HFRC
+        enum
+            name    =   HFRC_DIV2
+            value   =   0x1A
+            desc    =   HFRC / 2
+        enum
+            name    =   HFRC_DIV4
+            value   =   0x1B
+            desc    =   HFRC / 4
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x1C
+            desc    =   HFRC / 8
+        enum
+            name    =   HFRC_DIV32
+            value   =   0x1D
+            desc    =   HFRC / 32
+        enum
+            name    =   HFRC_DIV64
+            value   =   0x1E
+            desc    =   HFRC / 64
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x1F
+            desc    =   HFRC / 128
+        enum
+            name    =   HFRC_DIV256
+            value   =   0x20
+            desc    =   HFRC / 256
+        enum
+            name    =   FLASH_CLK
+            value   =   0x22
+            desc    =   Flash Clock
+        enum
+            name    =   LFRC_DIV2
+            value   =   0x23
+            desc    =   LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0x24
+            desc    =   LFRC / 32
+        enum
+            name    =   LFRC_DIV512
+            value   =   0x25
+            desc    =   LFRC / 512
+        enum
+            name    =   LFRC_DIV32K
+            value   =   0x26
+            desc    =   LFRC / 32768
+        enum
+            name    =   XT_DIV256
+            value   =   0x27
+            desc    =   XT / 256
+        enum
+            name    =   XT_DIV8K
+            value   =   0x28
+            desc    =   XT / 8192
+        enum
+            name    =   XT_DIV64K
+            value   =   0x29
+            desc    =   XT / 2^16
+        enum
+            name    =   ULFRC_DIV16
+            value   =   0x2A
+            desc    =   Uncal LFRC / 16
+        enum
+            name    =   ULFRC_DIV128
+            value   =   0x2B
+            desc    =   Uncal LFRC / 128
+        enum
+            name    =   ULFRC_1Hz
+            value   =   0x2C
+            desc    =   Uncal LFRC / 1024
+        enum
+            name    =   ULFRC_DIV4K
+            value   =   0x2D
+            desc    =   Uncal LFRC / 4096
+        enum
+            name    =   ULFRC_DIV1M
+            value   =   0x2E
+            desc    =   Uncal LFRC / 2^20
+        enum
+            name    =   HFRC_DIV64K
+            value   =   0x2F
+            desc    =   HFRC / 2^16
+        enum
+            name    =   HFRC_DIV16M
+            value   =   0x30
+            desc    =   HFRC / 2^24
+        enum
+            name    =   LFRC_DIV2M
+            value   =   0x31
+            desc    =   LFRC / 2^20
+        enum
+            name    =   HFRCNE
+            value   =   0x32
+            desc    =   HFRC (not autoenabled)
+        enum
+            name    =   HFRCNE_DIV8
+            value   =   0x33
+            desc    =   HFRC / 8 (not autoenabled)
+        enum
+            name    =   XTNE
+            value   =   0x35
+            desc    =   XT (not autoenabled)
+        enum
+            name    =   XTNE_DIV16
+            value   =   0x36
+            desc    =   XT / 16 (not autoenabled)
+        enum
+            name    =   LFRCNE_DIV32
+            value   =   0x37
+            desc    =   LFRC / 32 (not autoenabled)
+        enum
+            name    =   LFRCNE
+            value   =   0x39
+            desc    =   LFRC (not autoenabled) - Default for undefined values
+
+register
+    name            =   CCTRL
+    reg_brief       =   HFRC Clock Control
+    offset          =   24
+    enable          =   CLKKEY
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_clksel
+        name        =   MEMSEL
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Flash Clock divisor
+        enum
+            name    =   HFRC_DIV25
+            value   =   0x0
+            desc    =   Flash Clock is HFRC / 25
+        enum
+            name    =   HFRC_DIV45
+            value   =   0x1
+            desc    =   Flash Clock is HFRC / 45
+    bf_clksel
+        name        =   CORESEL
+        width       =   3
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x7
+        desc        =   Core Clock divisor
+        enum
+            name    =   HFRC
+            value   =   0x0
+            desc    =   Core Clock is HFRC
+        enum
+            name    =   HFRC_DIV2
+            value   =   0x1
+            desc    =   Core Clock is HFRC / 2
+        enum
+            name    =   HFRC_DIV3
+            value   =   0x2
+            desc    =   Core Clock is HFRC / 3
+        enum
+            name    =   HFRC_DIV4
+            value   =   0x3
+            desc    =   Core Clock is HFRC / 4
+        enum
+            name    =   HFRC_DIV5
+            value   =   0x4
+            desc    =   Core Clock is HFRC / 5
+        enum
+            name    =   HFRC_DIV6
+            value   =   0x5
+            desc    =   Core Clock is HFRC / 6
+        enum
+            name    =   HFRC_DIV7
+            value   =   0x6
+            desc    =   Core Clock is HFRC / 7
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x7
+            desc    =   Core Clock is HFRC / 8
+
+keyreg
+    name            =   CLKKEY
+    reg_brief       =   Key Register for Clock Control Register
+    offset          =   20
+    keyed           =   CCTRL
+    keyval          =   0x47
+    reg_desc        =   Lock state of the CCTRL configuration register. Write a value of 0x47 to unlock write access to CCTRL. Write any other value to lock access to CCTRL.  This register also indicates lock status when read. When in the unlccked state (i.e. 0x47 has been written), it reads as 1. When in the locked state, it reads as 0.
+
+register
+    name            =   STATUS
+    reg_brief       =   Clock Generator Status
+    offset          =   28
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   OSCF
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   XT Oscillator is enabled but not oscillating
+    bf_readonly
+        name        =   OMODE
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Current RTC oscillator (1 => LFRC, 0 => XT)
+
+register
+    name            =   HFADJ
+    reg_brief       =   HFRC Adjustment
+    offset          =   32
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   12
+        lsb         =   20
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   HFWARMUP
+        width       =   1
+        lsb         =   19
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XT warmup period for HFRC adjustment
+        enum
+            name    =   1SEC
+            value   =   0x0
+            desc    =   Autoadjust XT warmup period = 1-2 seconds
+        enum
+            name    =   2SEC
+            value   =   0x1
+            desc    =   Autoadjust XT warmup period = 2-4 seconds
+    bf_standard
+        name        =   HFXTADJ
+        width       =   11
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Target HFRC adjustment value.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_clksel
+        name        =   HFADJCK
+        width       =   3
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Repeat period for HFRC adjustment
+        enum
+            name    =   4SEC
+            value   =   0x0
+            desc    =   Autoadjust repeat period = 4 seconds
+        enum
+            name    =   16SEC
+            value   =   0x1
+            desc    =   Autoadjust repeat period = 16 seconds
+        enum
+            name    =   32SEC
+            value   =   0x2
+            desc    =   Autoadjust repeat period = 32 seconds
+        enum
+            name    =   64SEC
+            value   =   0x3
+            desc    =   Autoadjust repeat period = 64 seconds
+        enum
+            name    =   128SEC
+            value   =   0x4
+            desc    =   Autoadjust repeat period = 128 seconds
+        enum
+            name    =   256SEC
+            value   =   0x5
+            desc    =   Autoadjust repeat period = 256 seconds
+        enum
+            name    =   512SEC
+            value   =   0x6
+            desc    =   Autoadjust repeat period = 512 seconds
+        enum
+            name    =   1024SEC
+            value   =   0x7
+            desc    =   Autoadjust repeat period = 1024 seconds
+    bf_standard
+        name        =   HFADJEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   HFRC adjustment control
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the HFRC adjustment
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the HFRC adjustment
+
+register
+    name            =   HFVAL
+    reg_brief       =   HFADJ readback
+    offset          =   36
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   HFTUNERB
+        width       =   11
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Current HFTUNE value
+
+register
+    name            =   CLOCKEN
+    reg_brief       =   Clock Enable Status
+    offset          =   40
+    enable          =   None
+    bf_readonly
+        name        =   CLOCKEN
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Clock enable status
+
+register
+    name            =   UARTEN
+    reg_brief       =   UART Enable
+    offset          =   44
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   UARTEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   UART system clock control
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the UART system clock
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the UART system clock
+
+intregs
+    name            =   INTRPT
+    friendly        =   INT
+    offset          =   256
+    clearall        =   0x0
+    numints         =   4
+    reg_brief       =   CLKGEN Interrupt Register
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_int
+        name        =   ALM
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   RTC Alarm interrupt
+    bf_int
+        name        =   OF
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XT Oscillator Fail interrupt
+    bf_int
+        name        =   ACC
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Autocalibration Complete interrupt
+    bf_int
+        name        =   ACF
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Autocalibration Fail interrupt
+

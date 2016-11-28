@@ -1,0 +1,214 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013 Ambiq Micro.                                              *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     tpiu_regs.arm.src                                                  *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/28/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   watchdog timer of the Ambig MCU.   It is expected to be parsed and         *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+block_name          =   TPIU
+block_rev           =   1
+block_brief         =   ARM Trace Port Interface Unit
+
+extreg
+    name            =   SSPSR
+    offset          =   0xE0040000
+    reg_brief       =   Supported Parallel Port Sizes.
+    bf_ext
+        name        =   SWIDTH0
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Parallel Port Width 1 supported
+
+extreg
+    name            =   CSPSR
+    offset          =   0xE0040004
+    reg_brief       =   Current Parallel Port Size.
+    bf_ext
+        name        =   CWIDTH
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x1
+        desc        =   One-hot representation of the current port width.
+        enum
+            name    =   1BIT
+            value   =   0x1
+            desc    =   Set width to 1.
+
+extreg
+    name            =   ACPR
+    offset          =   0xE0040010
+    reg_brief       =   Asynchronous Clock Prescaler.
+    bf_reserved
+        name        =   RSVD
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   SWOSCALER
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Prescaler value for the baudrate of SWO.
+        enum
+            name    =   115200
+            value   =   0x33
+            desc    =   Set divisor correctly for 115200 baud.
+
+extreg
+    name            =   SPPR
+    offset          =   0xE00400F0
+    reg_brief       =   Selected Pin Protocol.
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   TXMODE
+        width       =   2
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Selects the protocol used for trace output.
+        enum
+            name    =   PARALLEL
+            value   =   0x0
+            desc    =   Parallel trace port.
+        enum
+            name    =   MANCHESTER
+            value   =   0x1
+            desc    =   Manchester encoded.
+        enum
+            name    =   NRZ
+            value   =   0x2
+            desc    =   Non-return-to-zero encoding.
+        enum
+            name    =   UART
+            value   =   0x2
+            desc    =   UART encoding.
+
+extreg
+    name            =   TYPE
+    offset          =   0xE0040FC8
+    reg_brief       =   TPIU Type.
+    bf_reserved
+        name        =   RSVD
+        width       =   20
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   NRZVALID
+        width       =   1
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x1
+        desc        =   1 Indicates UART/NRZ support.
+    bf_ext
+        name        =   MANCVALID
+        width       =   1
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x1
+        desc        =   1 Indicates Manchester support.
+    bf_ext
+        name        =   PTINVALID
+        width       =   1
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x1
+        desc        =   0 Indicates Parallel Trace support.
+    bf_ext
+        name        =   FIFOSZ
+        width       =   3
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x2
+        desc        =   FIFO Size reported as a power of two. For instance, 0x3 indicates a FIFO size of 8 bytes.
+
+extreg 
+    name            =   FFCR
+    offset          =   0xE0040304
+    reg_brief       =   Formatter and Flush Control Register.
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x1
+        desc        =   RESERVED
+    bf_ext
+        name        =   ENFCONT
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable continuous formatting.
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+
+extreg 
+    name            =   ITCTRL
+    offset          =   0xE0040F00
+    reg_brief       =   Specifies normal or integration mode for the TPIU.
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   MODE
+        width       =   2
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Specifies the current mode for the TPIU.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   Normal mode.
+        enum
+            name    =   TEST
+            value   =   0x1
+            desc    =   Integration test mode.
+        enum
+            name    =   DATA_TEST
+            value   =   0x2
+            desc    =   Integration data test mode.

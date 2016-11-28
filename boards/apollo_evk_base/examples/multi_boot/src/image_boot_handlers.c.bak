@@ -1,0 +1,88 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include "am_mcu_apollo.h"
+#include "am_bootloader.h"
+
+#ifdef BOOTLOADER_DEBUG
+#include "am_util_stdio.h"
+#include "am_util_delay.h"
+// might need va_list someday, but not so far today.
+#define DPRINTF(x) am_util_stdio_printf x
+#else
+#define DPRINTF(x)
+#endif
+
+uint32_t g_ui32FlashLoadingBuffer[AM_HAL_FLASH_PAGE_SIZE / 4];  //global SRAM buffer to perform flash operation.
+//*****************************************************************************
+//
+//! @brief Read an image start packet from the IOS LRAM
+//!
+//! @param psImage is the image structure to read the packet into.
+//!
+//! This function reads the IOS LRAM as a "new image" packet, and uses that
+//! packet to fill in a bootloader image structure. The caller is responsible
+//! for verifying the packet type before calling this function.
+//!
+//! @return None.
+//
+//*****************************************************************************
+void
+flash_load_from_image( uint32_t* pui32TargetAddress, uint32_t* pui32StorageAddress, uint32_t NumberBytes)
+{
+    uint32_t i;
+    uint32_t ui32CurrentPage, ui32CurrentBlock;
+
+    //
+    // Loop through the data, copying it into the global buffer and load to flash.
+    //
+    for(i = 0; i < NumberBytes/AM_HAL_FLASH_PAGE_SIZE; i++)
+    {
+        //
+        // Load data from internal flash to SRAM buffer to avoid operation from same bank
+        // Always operate in unit of page size
+        memcpy((uint8_t*)g_ui32FlashLoadingBuffer, (uint8_t*)(pui32StorageAddress + i*AM_HAL_FLASH_PAGE_SIZE / 4), AM_HAL_FLASH_PAGE_SIZE);
+
+        //
+        // Figure out what page and block we're working on.
+        //
+        ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)(pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4));
+        ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4));
+
+        am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
+                                    ui32CurrentBlock, ui32CurrentPage);
+
+        //
+        // Program the flash page with the data.
+        //
+        am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, g_ui32FlashLoadingBuffer,
+                                  (pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4), AM_HAL_FLASH_PAGE_SIZE / 4);
+    }
+
+    //
+    // Load the remaining bytes (must be word padded) into the flash, if there is any
+    //
+    uint32_t ui32RemainderBytes = NumberBytes%AM_HAL_FLASH_PAGE_SIZE;
+    if(ui32RemainderBytes)
+    {
+        //
+        // Load data from internal flash to SRAM buffer to avoid operation from same bank
+        // Always operate in unit of page size
+        memcpy((uint8_t*)g_ui32FlashLoadingBuffer, (uint8_t*)(pui32StorageAddress + (NumberBytes - ui32RemainderBytes) / 4), ui32RemainderBytes);
+
+        //
+        // Figure out what page and block we're working on.
+        //
+        ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)(pui32TargetAddress + (NumberBytes - ui32RemainderBytes) / 4));
+        ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress + (NumberBytes - ui32RemainderBytes) / 4));
+
+        am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
+                                    ui32CurrentBlock, ui32CurrentPage);
+
+        //
+        // Program the flash page with the data.
+        //
+        am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, g_ui32FlashLoadingBuffer,
+                                  (pui32TargetAddress + (NumberBytes - ui32RemainderBytes) / 4), ui32RemainderBytes / 4);
+    }
+}

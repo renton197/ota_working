@@ -1,0 +1,166 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     wdt_regs.src                                                       *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     01/20/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   watchdog timer of the Ambig MCU.   It is expected to be parsed and         *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   WDT
+block_rev           =   1
+block_brief         =   Watchdog Timer
+
+register
+    name            =   WDTCFG
+    friendly        =   CFG
+    reg_brief       =   Configuration Register
+    offset          =   0
+    enable          =   yes
+    createbfs       =   Yes
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   INTVAL
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield is the compare value for counter bits 7:0 to generate a watchdog interrupt.
+    bf_standard
+        name        =   RESVAL
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield is the compare value for counter bits 7:0 to generate a watchdog reset.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   RESEN
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield enables the WDT reset.
+    bf_standard
+        name        =   INTEN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield enables the WDT interrupt. Note : This bit must be set before the interrupt status bit will reflect a watchdog timer expiration.  The IER interrupt register must also be enabled for a WDT interrupt to be sent to the NVIC.
+    bf_standard
+        name        =   WDTEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This bitfield enables the WDT.
+
+extreg
+    name            =   WDTRSTRT
+    friendly        =   RSTRT
+    offset          =   4
+    enable          =   None
+    reg_brief       =   Restart the watchdog timer
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   WDTRSTRT
+        friendly    =   RSTRT
+        width       =   8
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        desc        =   Writing 0xB2 to WDTRSTRT restarts the watchdog timer.
+        enum
+            name    =   KEYVALUE
+            value   =   0xB2
+            desc    =   This is the key value to write to WDTRSTRT to restart the WDT.
+
+extreg
+    name            =   WDTLOCK
+    friendly        =   LOCK
+    offset          =   8
+    enable          =   None
+    reg_brief       =   Locks the WDT
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   WDTLOCK
+        friendly    =   LOCK
+        width       =   8
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        desc        =   Writing 0x3A locks the watchdog timer. Once locked, the WDTCFG reg cannot be written and WDTEN is set.
+        enum
+            name    =   KEYVALUE
+            value   =   0x3A
+            desc    =   This is the key value to write to WDTLOCK to lock the WDT.
+
+intregs
+    name            =   WDT_IER
+    friendly        =   INT
+    offset          =   512
+    clearall        =   none
+    numints         =   1
+    reg_brief       =   WDT Interrupt register
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_int
+        name        =   WDT
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Watchdog Timer Interrupt.
+
+

@@ -1,0 +1,381 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013 Ambiq Micro.                                              *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     nvic_regs.arm.src                                                      *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/27/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   watchdog timer of the Ambig MCU.   It is expected to be parsed and         *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   NVIC
+block_rev           =   1
+block_brief         =   Nested Vectored Interrupt Controller
+
+extreg
+    name            =   ISER0
+    offset          =   0xE000E100
+    reg_brief       =   Interrupt Set-Enable Register 0
+    bf_ext
+        name        =   BITS
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "NVIC_ISERn[31:0] are the set-enable bits for interrupts 31 through 0."
+
+extreg
+    name            =   ICER0
+    offset          =   0xE000E180
+    reg_brief       =   Interrupt Clear-Enable Register 0
+    bf_ext
+        name        =   BITS
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "NVIC_ISERn[31:0] are the clear-enable bits for interrupts 31 through 0."
+
+extreg
+    name            =   ISPR0
+    offset          =   0xE000E200
+    reg_brief       =   Interrupt Set-Pending Register 0
+    bf_ext
+        name        =   BITS
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "NVIC_ISERn[31:0] are the set-pending bits for interrupts 31 through 0."
+
+extreg
+    name            =   ICPR0
+    offset          =   0xE000E280
+    reg_brief       =   Interrupt Clear-Pending Register 0
+    bf_ext
+        name        =   BITS
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "NVIC_ISERn[31:0] are the clear-pending bits for interrupts 31 through 0."
+
+extreg
+    name            =   IABR0
+    offset          =   0xE000E300
+    reg_brief       =   Interrupt Active Bit Register 0
+    bf_ext
+        name        =   BITS
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   "NVIC_ISERn[31:0] are the interrupt active bits for interrupts 31 through 0."
+
+extreg
+    name            =   IPR0
+    offset          =   0xE000E400
+    reg_brief       =   Interrupt Priority Register 0
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 3."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 2."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 1."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 0."
+
+extreg
+    name            =   IPR1
+    offset          =   0xE000E404
+    reg_brief       =   Interrupt Priority Register 1
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 7."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 6."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 5."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 4."
+
+extreg
+    name            =   IPR2
+    offset          =   0xE000E408
+    reg_brief       =   Interrupt Priority Register 2
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 11."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 10."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 9."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 8."
+
+extreg
+    name            =   IPR3
+    offset          =   0xE000E40C
+    reg_brief       =   Interrupt Priority Register 3
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 15."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 14."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 13."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 12."
+
+extreg
+    name            =   IPR4
+    offset          =   0xE000E410
+    reg_brief       =   Interrupt Priority Register 4
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 19."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 18."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 17."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 16."
+
+extreg
+    name            =   IPR5
+    offset          =   0xE000E414
+    reg_brief       =   Interrupt Priority Register 5
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 23."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 22."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 21."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 20."
+
+extreg
+    name            =   IPR6
+    offset          =   0xE000E418
+    reg_brief       =   Interrupt Priority Register 6
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 27."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 26."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 25."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 24."
+
+extreg
+    name            =   IPR7
+    offset          =   0xE000E41C
+    reg_brief       =   Interrupt Priority Register 7
+    bf_ext
+        name        =   PRI_N3
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 31."
+    bf_ext
+        name        =   PRI_N2
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 30."
+    bf_ext
+        name        =   PRI_N1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 29."
+    bf_ext
+        name        =   PRI_N0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Priority assignment for interrupt vector 28."
+
+# extreg
+#     name            =   
+#     offset          =   0
+#     enable          =   None
+#     reg_brief       =   Locks the WDT
+#     bf_reserved
+#         name        =   RSVD
+#         width       =   24
+#         lsb         =   8
+#         rw          =   RO
+#         reset       =   0x0
+#         desc        =   "This bitfield is reserved for future use."
+#     bf_ext
+#         name        =   WDTLOCK
+#         width       =   8
+#         lsb         =   0 
+#         rw          =   WO
+#         reset       =   0x0
+#         desc        =   "Writing 0x3A locks the watchdog timer. Once locked, the WDTCFG reg cannot be writted and WDTEN is set."
+#         value
+#             name    =   KEY
+#             num     =   0x3A
+#             desc    =   Lock the watchdog timer
+

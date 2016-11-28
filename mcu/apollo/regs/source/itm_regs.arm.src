@@ -1,0 +1,690 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013 Ambiq Micro.                                              *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     sysctrl_regs.arm.src                                                   *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/27/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   watchdog timer of the Ambig MCU.   It is expected to be parsed and         *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+block_name          =   ITM
+block_rev           =   1
+block_brief         =   ARM ITM Registers.
+
+extreg
+    name            =   STIM0
+    offset          =   0xE0000000
+    reg_brief       =   Stimulus Port Register 0
+    bf_ext
+        name        =   STIM0
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 0."
+extreg
+    name            =   STIM1
+    offset          =   0xE0000004
+    reg_brief       =   Stimulus Port Register 1
+    bf_ext
+        name        =   STIM1
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 1."
+extreg
+    name            =   STIM2
+    offset          =   0xE0000008
+    reg_brief       =   Stimulus Port Register 2
+    bf_ext
+        name        =   STIM2
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 2."
+extreg
+    name            =   STIM3
+    offset          =   0xE000000C
+    reg_brief       =   Stimulus Port Register 3
+    bf_ext
+        name        =   STIM3
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 3."
+extreg
+    name            =   STIM4
+    offset          =   0xE0000010
+    reg_brief       =   Stimulus Port Register 4
+    bf_ext
+        name        =   STIM4
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 4."
+extreg
+    name            =   STIM5
+    offset          =   0xE0000014
+    reg_brief       =   Stimulus Port Register 5
+    bf_ext
+        name        =   STIM5
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 5."
+extreg
+    name            =   STIM6
+    offset          =   0xE0000018
+    reg_brief       =   Stimulus Port Register 6
+    bf_ext
+        name        =   STIM6
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 6."
+extreg
+    name            =   STIM7
+    offset          =   0xE000001C
+    reg_brief       =   Stimulus Port Register 7
+    bf_ext
+        name        =   STIM7
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 7."
+extreg
+    name            =   STIM8
+    offset          =   0xE0000020
+    reg_brief       =   Stimulus Port Register 8
+    bf_ext
+        name        =   STIM8
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 8."
+extreg
+    name            =   STIM9
+    offset          =   0xE0000024
+    reg_brief       =   Stimulus Port Register 9
+    bf_ext
+        name        =   STIM9
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 9."
+extreg
+    name            =   STIM10
+    offset          =   0xE0000028
+    reg_brief       =   Stimulus Port Register 10
+    bf_ext
+        name        =   STIM10
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 10."
+extreg
+    name            =   STIM11
+    offset          =   0xE000002C
+    reg_brief       =   Stimulus Port Register 11
+    bf_ext
+        name        =   STIM11
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 11."
+extreg
+    name            =   STIM12
+    offset          =   0xE0000030
+    reg_brief       =   Stimulus Port Register 12
+    bf_ext
+        name        =   STIM12
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 12."
+extreg
+    name            =   STIM13
+    offset          =   0xE0000034
+    reg_brief       =   Stimulus Port Register 13
+    bf_ext
+        name        =   STIM13
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 13."
+extreg
+    name            =   STIM14
+    offset          =   0xE0000038
+    reg_brief       =   Stimulus Port Register 14
+    bf_ext
+        name        =   STIM14
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 14."
+extreg
+    name            =   STIM15
+    offset          =   0xE000003C
+    reg_brief       =   Stimulus Port Register 15
+    bf_ext
+        name        =   STIM15
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 15."
+extreg
+    name            =   STIM16
+    offset          =   0xE0000040
+    reg_brief       =   Stimulus Port Register 16
+    bf_ext
+        name        =   STIM16
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 16."
+extreg
+    name            =   STIM17
+    offset          =   0xE0000044
+    reg_brief       =   Stimulus Port Register 17
+    bf_ext
+        name        =   STIM17
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 17."
+extreg
+    name            =   STIM18
+    offset          =   0xE0000048
+    reg_brief       =   Stimulus Port Register 18
+    bf_ext
+        name        =   STIM18
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 18."
+extreg
+    name            =   STIM19
+    offset          =   0xE000004C
+    reg_brief       =   Stimulus Port Register 19
+    bf_ext
+        name        =   STIM19
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 19."
+extreg
+    name            =   STIM20
+    offset          =   0xE0000050
+    reg_brief       =   Stimulus Port Register 20
+    bf_ext
+        name        =   STIM20
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 20."
+extreg
+    name            =   STIM21
+    offset          =   0xE0000054
+    reg_brief       =   Stimulus Port Register 21
+    bf_ext
+        name        =   STIM21
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 21."
+extreg
+    name            =   STIM22
+    offset          =   0xE0000058
+    reg_brief       =   Stimulus Port Register 22
+    bf_ext
+        name        =   STIM22
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 22."
+extreg
+    name            =   STIM23
+    offset          =   0xE000005C
+    reg_brief       =   Stimulus Port Register 23
+    bf_ext
+        name        =   STIM23
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 23."
+extreg
+    name            =   STIM24
+    offset          =   0xE0000060
+    reg_brief       =   Stimulus Port Register 24
+    bf_ext
+        name        =   STIM24
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 24."
+extreg
+    name            =   STIM25
+    offset          =   0xE0000064
+    reg_brief       =   Stimulus Port Register 25
+    bf_ext
+        name        =   STIM25
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 25."
+extreg
+    name            =   STIM26
+    offset          =   0xE0000068
+    reg_brief       =   Stimulus Port Register 26
+    bf_ext
+        name        =   STIM26
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 26."
+extreg
+    name            =   STIM27
+    offset          =   0xE000006C
+    reg_brief       =   Stimulus Port Register 27
+    bf_ext
+        name        =   STIM27
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 27."
+extreg
+    name            =   STIM28
+    offset          =   0xE0000070
+    reg_brief       =   Stimulus Port Register 28
+    bf_ext
+        name        =   STIM28
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 28."
+extreg
+    name            =   STIM29
+    offset          =   0xE0000074
+    reg_brief       =   Stimulus Port Register 29
+    bf_ext
+        name        =   STIM29
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 29."
+extreg
+    name            =   STIM30
+    offset          =   0xE0000078
+    reg_brief       =   Stimulus Port Register 30
+    bf_ext
+        name        =   STIM30
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 30."
+extreg
+    name            =   STIM31
+    offset          =   0xE000007C
+    reg_brief       =   Stimulus Port Register 31
+    bf_ext
+        name        =   STIM31
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Stimulus Port Register 31."
+extreg
+    name            =   TER
+    offset          =   0xE0000E00
+    reg_brief       =   Trace Enable Register.
+    bf_ext
+        name        =   STIMENA
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Bit mask to enable tracing on ITM stimulus ports. One bit per stimulus port.."
+extreg
+    name            =   TPR
+    offset          =   0xE0000E40
+    reg_brief       =   Trace Privilege Register.
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   PRIVMASK
+        width       =   4
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Bit mask to enable tracing on ITM stimulus ports. bit[0] = stimulus ports[7:0], bit[1] = stimulus ports[15:8], bit[2] = stimulus ports[23:16], bit[3] = stimulus ports[31:24]."
+        value
+            name    =   PRIVMASK_0_7
+            num     =   0x00000001
+            desc    =   Enable ports 0-7
+        value
+            name    =   PRIVMASK_8_15
+            num     =   0x00000002
+            desc    =   Enable ports 8-15
+        value
+            name    =   PRIVMASK_16_23
+            num     =   0x00000004
+            desc    =   Enable ports 16-23
+        value
+            name    =   PRIVMASK_24_31
+            num     =   0x00000008
+            desc    =   Enable ports 24-31
+
+extreg
+    name            =   TCR
+    offset          =   0xE0000E80
+    reg_brief       =   Trace Control Register.
+    bf_reserved
+        name        =   RSVD3
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   BUSY
+        width       =   1
+        lsb         =   23
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Set when ITM events present and being drained."
+    bf_ext
+        name        =   ATB_ID
+        width       =   7
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "ATB ID for CoreSight system."
+    bf_reserved
+        name        =   RSVD2
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   TS_FREQ
+        width       =   2
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Global Timestamp Frequency."
+    bf_ext
+        name        =   TS_PRESCALE
+        width       =   2
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Timestamp prescaler: 0b00 = no prescaling 0b01 = divide by 4 0b10 = divide by 16 0b11 = divide by 64."
+    bf_reserved
+        name        =   RSVD1
+        width       =   3
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SWV_ENABLE
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enable SWV behavior – count on TPIUEMIT and TPIUBAUD."
+    bf_ext
+        name        =   DWT_ENABLE
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enables the DWT stimulus."
+    bf_ext
+        name        =   SYNC_ENABLE
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enables sync packets for TPIU."
+    bf_ext
+        name        =   TS_ENABLE
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enables differential timestamps. Differential timestamps are emitted when a packet is written to the FIFO with a non-zero timestamp counter, and when the timestamp counter overflows. Timestamps are emitted during idle times after a fixed number of cycles. This provides a time reference for packets and inter-packet gaps."
+    bf_ext
+        name        =   ITM_ENABLE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enable ITM. This is the master enable, and must be set before ITM Stimulus and Trace Enable registers can be written."
+keyreg
+    name            =   LOCKAREG
+    reg_brief       =   Lock Access Register
+    offset          =   0xE0000FB0
+    keyed           =   ACCESSKEY
+    keyval          =   0xC5ACCE55
+    desc            =   "A privileged write of 0xC5ACCE55 enables more write access to Control Register 0xE00::0xFFC. An invalid write removes write access."
+
+extreg
+    name            =   LOCKSREG
+    offset          =   0xE0000FB4
+    reg_brief       =   Lock Status Register
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   BYTEACC
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   "You cannot implement 8-bit lock accesses."
+    bf_ext
+        name        =   ACCESS
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   "Write access to component is blocked. All writes are ignored, reads are permitted."
+    bf_ext
+        name        =   PRESENT
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x1
+        desc        =   "Indicates that a lock mechanism exists for this component."
+extreg
+    name            =   PID4
+    offset          =   0xE0000FD0
+    reg_brief       =   Peripheral Identification Register 4
+    bf_ext
+        name        =   PID4
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x4
+        desc        =   "Peripheral Identification 4."
+extreg
+    name            =   PID5
+    offset          =   0xE0000FD4
+    reg_brief       =   Peripheral Identification Register 5
+    bf_ext
+        name        =   PID5
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x0
+        desc        =   "Peripheral Identification 5."
+extreg
+    name            =   PID6
+    offset          =   0xE0000FD8
+    reg_brief       =   Peripheral Identification Register 6
+    bf_ext
+        name        =   PID6
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x0
+        desc        =   "Peripheral Identification 6."
+extreg
+    name            =   PID7
+    offset          =   0xE0000FDC
+    reg_brief       =   Peripheral Identification Register 7
+    bf_ext
+        name        =   PID7
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x0
+        desc        =   "Peripheral Identification 7."
+extreg
+    name            =   PID0
+    offset          =   0xE0000FE0
+    reg_brief       =   Peripheral Identification Register 0
+    bf_ext
+        name        =   PID0
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x1
+        desc        =   "Peripheral Identification 0."
+extreg
+    name            =   PID1
+    offset          =   0xE0000FE4
+    reg_brief       =   Peripheral Identification Register 1
+    bf_ext
+        name        =   PID1
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0xB0
+        desc        =   "Peripheral Identification 1."
+extreg
+    name            =   PID2
+    offset          =   0xE0000FE8
+    reg_brief       =   Peripheral Identification Register 2
+    bf_ext
+        name        =   PID2
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x3B
+        desc        =   "Peripheral Identification 2."
+extreg
+    name            =   PID3
+    offset          =   0xE0000FEC
+    reg_brief       =   Peripheral Identification Register 3
+    bf_ext
+        name        =   PID3
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x0
+        desc        =   "Peripheral Identification 3."
+extreg
+    name            =   CID0
+    offset          =   0xE0000FF0
+    reg_brief       =   Component Identification Register 1
+    bf_ext
+        name        =   CID0
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0xD
+        desc        =   "Component Identification 1."
+extreg
+    name            =   CID1
+    offset          =   0xE0000FF4
+    reg_brief       =   Component Identification Register 1
+    bf_ext
+        name        =   CID1
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0xE0
+        desc        =   "Component Identification 1."
+extreg
+    name            =   CID2
+    offset          =   0xE0000FF8
+    reg_brief       =   Component Identification Register 2
+    bf_ext
+        name        =   CID2
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0x5
+        desc        =   "Component Identification 2."
+extreg
+    name            =   CID3
+    offset          =   0xE0000FFC
+    reg_brief       =   Component Identification Register 3
+    bf_ext
+        name        =   CID3
+        width       =   32
+        lsb         =   0
+        rw          =   R0
+        reset       =   0xB1
+        desc        =   "Component Identification 3."

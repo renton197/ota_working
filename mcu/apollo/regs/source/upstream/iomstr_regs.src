@@ -1,0 +1,572 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     iomstr_regs.src                                                    *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     09/18/2013                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   IOMSTR block of the Ambiq MCU.  It is expected to be parsed and            *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_instances     =   2,0x1000
+block_name          =   IOMSTR
+block_rev           =   1
+block_brief         =   I2C/SPI Master
+
+extreg
+    name            =   FIFO
+    offset          =   0
+    enable          =   None
+    reg_brief       =   FIFO Access Port
+    bf_ext
+        name        =   FIFO
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   FIFO access port.
+
+register
+    name            =   FIFOPTR
+    offset          =   256
+    enable          =   None
+    reg_brief       =   Current FIFO Pointers
+    bf_reserved
+        name        =   RSVD
+        width       =   9
+        lsb         =   23
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   FIFOREM
+        width       =   7
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   The number of bytes remaining in the FIFO (i.e. 64-FIFOSIZ).
+    bf_reserved
+        name        =   RSVD
+        width       =   9
+        lsb         =   7
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   FIFOSIZ
+        width       =   7
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   The number of bytes currently in the FIFO.
+
+register
+    name            =   TLNGTH
+    reg_brief       =   Transfer Length
+    offset          =   260
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   20
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   TLNGTH
+        width       =   12
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Remaining transfer length.
+
+register
+    name            =   FIFOTHR
+    reg_brief       =   FIFO Threshold Configuration
+    offset          =   264
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   18
+        lsb         =   14
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   FIFOWTHR
+        width       =   6
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO write threshold.
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   FIFORTHR
+        width       =   6
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO read threshold.
+
+register
+    name            =   CLKCFG
+    reg_brief       =   I/O Clock Configuration
+    offset          =   268
+    enable          =   None
+    bf_standard
+        name        =   TOTPER
+        width       =   8
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Clock total count minus 1.
+    bf_standard
+        name        =   LOWPER
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Clock low count minus 1.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   DIVEN
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable clock division by TOTPER.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable TOTPER division.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable TOTPER division.
+    bf_standard
+        name        =   DIV3
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable divide by 3.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Select divide by 1.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Select divide by 3.
+    bf_clksel
+        name        =   FSEL
+        width       =   3
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the input clock frequency.
+        enum
+            name    =   HFRC_DIV64
+            value   =   0x0
+            desc    =   Selects the HFRC / 64 as the input clock.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Selects the HFRC as the input clock.
+        enum
+            name    =   HFRC_DIV2
+            value   =   0x2
+            desc    =   Selects the HFRC / 2 as the input clock.
+        enum
+            name    =   HFRC_DIV4
+            value   =   0x3
+            desc    =   Selects the HFRC / 4 as the input clock.
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x4
+            desc    =   Selects the HFRC / 8 as the input clock.
+        enum
+            name    =   HFRC_DIV16
+            value   =   0x5
+            desc    =   Selects the HFRC / 16 as the input clock.
+        enum
+            name    =   HFRC_DIV32
+            value   =   0x6
+            desc    =   Selects the HFRC / 32 as the input clock.
+        enum
+            name    =   RSVD
+            value   =   0x7
+            desc    =   Reserved.
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+
+extreg
+    name            =   CMD
+    reg_brief       =   Command Register
+    offset          =   272
+    enable          =   None
+    bf_ext
+        name        =   CMD
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This register is the I/O Command.  The command fields are as follow:<BR>
+                        <pre>
+                           |31|30|29|28|27|26|25|24|23|22|21|20|19|18|17|16|15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
+                        I2C|--OPER--|CT|LB|10|--------|-------ADDRESS------|------- OFFSET --------|-------- LENGTH -------|
+                        SPI|--OPER--|CT|LB|--UPLNGTH--|-- Rsvd ---|--CHNL--|Rv|---- OFFSET --------|-------- LENGTH -------|
+                        OPER: Write: 000, Read 100, Write Raw 010, Read Raw 110 (bit30 indicates RAW, IOMSTR_CMD_RAW)
+                        I2C CMD fields: OPER, CONT, LSB, 10BIT, ADDRESS (7 or 10 bits), OFFSET, LENGTH
+                        SPI CMD fields: OPER, CONT, LSB, UPLNGTH, Rsvd, CHANNEL, Rsvd, OFFSET, LENGTH
+                                        SPI length is 12 bits, [26:23][7:0].
+                        SPI OFFSET is 7 bits (bit15 is RSVD), I2C OFFSET is 8 bits.
+                        </pre>
+        enum
+            name    =   POS_LENGTH
+            value   =   0
+            desc    =   LSB bit position of the CMD LENGTH field.
+        enum
+            name    =   POS_OFFSET
+            value   =   8
+            desc    =   LSB bit position of the CMD OFFSET field.
+        enum
+            name    =   POS_ADDRESS
+            value   =   16
+            desc    =   LSB bit position of the I2C CMD ADDRESS field.
+        enum
+            name    =   POS_CHNL
+            value   =   16
+            desc    =   LSB bit position of the SPI CMD CHANNEL field.
+        enum
+            name    =   POS_UPLNGTH
+            value   =   23
+            desc    =   LSB bit position of the SPI CMD UPLNGTH field.
+        enum
+            name    =   POS_10BIT
+            value   =   26
+            desc    =   LSB bit position of the I2C CMD 10-bit field.
+        enum
+            name    =   POS_LSB
+            value   =   27
+            desc    =   LSB bit position of the CMD LSB-first field.
+        enum
+            name    =   POS_CONT
+            value   =   28
+            desc    =   LSB bit position of the CMD CONTinue field.
+        enum
+            name    =   POS_OPER
+            value   =   29
+            desc    =   LSB bit position of the CMD OPERation field.
+        enum
+            name    =   MSK_LENGTH
+            value   =   0x000000ff
+            desc    =   LSB bit mask of the CMD LENGTH field.
+        enum
+            name    =   MSK_OFFSET
+            value   =   0x0000ff00
+            desc    =   LSB bit mask of the CMD OFFSET field.
+        enum
+            name    =   MSK_ADDRESS
+            value   =   0x00ff0000
+            desc    =   LSB bit mask of the I2C CMD ADDRESS field.
+        enum
+            name    =   MSK_CHNL
+            value   =   0x00070000
+            desc    =   LSB bit mask of the SPI CMD CHANNEL field.
+        enum
+            name    =   MSK_UPLNGTH
+            value   =   0x07800000
+            desc    =   LSB bit mask of the SPI CMD UPLNGTH field.
+        enum
+            name    =   MSK_10BIT
+            value   =   0x04000000
+            desc    =   LSB bit mask of the I2C CMD 10-bit field.
+        enum
+            name    =   MSK_LSB
+            value   =   0x08000000
+            desc    =   LSB bit mask of the CMD LSB-first field.
+        enum
+            name    =   MSK_CONT
+            value   =   0x10000000
+            desc    =   LSB bit mask of the CMD CONTinue field.
+        enum
+            name    =   MSK_OPER
+            value   =   0xE0000000
+            desc    =   LSB bit mask of the CMD OPERation field.
+
+extreg
+    name            =   CMDRPT
+    reg_brief       =   Command Repeat Register
+    offset          =   276
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   27
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CMDRPT
+        width       =   5
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   These bits hold the Command repeat count.
+
+register
+    name            =   STATUS
+    reg_brief       =   Status Register
+    offset          =   280
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   IDLEST
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit indicates if the I/O state machine is IDLE.
+        enum
+            name    =   IDLE
+            value   =   0x1
+            desc    =   The I/O state machine is in the idle state.
+    bf_readonly
+        name        =   CMDACT
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit indicates if the I/O Command is active.
+        enum
+            name    =   ACTIVE
+            value   =   0x1
+            desc    =   An I/O command is active.
+    bf_readonly
+        name        =   ERR
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit indicates if an error interrupt has occurred.
+        enum
+            name    =   ERROR
+            value   =   0x1
+            desc    =   An error has been indicated by the IOM.
+
+register
+    name            =   IOMCFG
+    friendly        =   CFG
+    reg_brief       =   I/O Master Configuration
+    offset          =   284
+    enable          =   None
+    bf_standard
+        name        =   IFCEN
+        width       =   1
+        lsb         =   31
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the IO Master.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the IO Master.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the IO Master.
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   SPHA
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects SPI phase.
+        enum
+            name    =   SAMPLE_LEADING_EDGE
+            value   =   0x0
+            desc    =   Sample on the leading (first) clock edge.
+        enum
+            name    =   SAMPLE_TRAILING_EDGE
+            value   =   0x1
+            desc    =   Sample on the trailing (second) clock edge.
+    bf_standard
+        name        =   SPOL
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects SPI polarity.
+        enum
+            name    =   CLK_BASE_0
+            value   =   0x0
+            desc    =   The base value of the clock is 0.
+        enum
+            name    =   CLK_BASE_1
+            value   =   0x1
+            desc    =   The base value of the clock is 1.
+    bf_standard
+        name        =   IFCSEL
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects the I/O interface.
+        enum
+            name    =   I2C
+            value   =   0x0
+            desc    =   Selects I2C interface for the I/O Master.
+        enum
+            name    =   SPI
+            value   =   0x1
+            desc    =   Selects SPI interface for the I/O Master.
+
+intregs
+    name            =   IOMSTRINT
+    friendly        =   INT
+    offset          =   512
+    clearall        =   None
+    numints         =   11
+    createbfs       =   Yes
+    statout         =   Yes
+    reg_brief       =   IO Master Interrupts
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_int
+        name        =   ARB
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the arbitration loss interrupt.
+    bf_int
+        name        =   STOP
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the STOP command interrupt.
+    bf_int
+        name        =   START
+        width       =   1
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the START command interrupt.
+    bf_int
+        name        =   ICMD
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the illegal command interrupt.
+    bf_int
+        name        =   IACC
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the illegal FIFO access interrupt.
+    bf_int
+        name        =   WTLEN
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the write length mismatch interrupt.
+    bf_int
+        name        =   NAK
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the I2C NAK interrupt.
+    bf_int
+        name        =   FOVFL
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the Read FIFO Overflow interrupt.
+    bf_int
+        name        =   FUNDFL
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the Write FIFO Underflow interrupt.
+    bf_int
+        name        =   THR
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the FIFO Threshold interrupt.
+    bf_int
+        name        =   CMDCMP
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This is the Command Complete interrupt.
+

@@ -1,0 +1,25 @@
+--create .\bin\libam_hal.lib
+.\bin\am_hal_adc.o
+.\bin\am_hal_clkgen.o
+.\bin\am_hal_ctimer.o
+.\bin\am_hal_debug.o
+.\bin\am_hal_flash.o
+.\bin\am_hal_global.o
+.\bin\am_hal_gpio.o
+.\bin\am_hal_i2c_bit_bang.o
+.\bin\am_hal_interrupt.o
+.\bin\am_hal_iom.o
+.\bin\am_hal_ios.o
+.\bin\am_hal_itm.o
+.\bin\am_hal_mcuctrl.o
+.\bin\am_hal_otp.o
+.\bin\am_hal_queue.o
+.\bin\am_hal_reset.o
+.\bin\am_hal_rtc.o
+.\bin\am_hal_sysctrl.o
+.\bin\am_hal_systick.o
+.\bin\am_hal_tpiu.o
+.\bin\am_hal_ttp.o
+.\bin\am_hal_uart.o
+.\bin\am_hal_vcomp.o
+.\bin\am_hal_wdt.o

@@ -1,0 +1,292 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     flash_ctrl_regs.src                                                *
+#                                                                              *
+# Title:    Ambiq Micro MCU Flash Controller register definitions              *
+#                                                                              *
+# Date:     09/11/2013                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   FLASH Controller block of the Ambiq MCU.  It is expected to be parsed and  *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_instances     =   2,0x1000
+block_name          =   FLASH_CTRL
+block_rev           =   1
+block_brief         =   Flash Controller
+
+register
+    name            = STATUS
+    offset          = 0x0
+    enable          = None
+    reg_brief       = Flash Controller Status Register
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_readonly
+        name        =   INFOCMDEN
+        width       =   1
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Information Space Command Enable. When set to 1, this bit indicates that write operations to the Flash INFO_CMD register are enabled. When set to 0, write and program operations are disabled to the Flash Information space.
+        enum
+            name    =   DISABLED
+            value   =   0x0
+            desc    =   Info command disabled.
+        enum
+            name    =   ENABLED
+            value   =   0x1
+            desc    =   Info command enabled for writing.
+    bf_readonly
+        name        =   WRITERDY
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Write Data Ready. When set to 1, this bit indicates that the Flash Controller is ready to accept a new write data via the WR_DATA register. When set to a 0, the Flash Controller is not ready for a new write data.
+        enum
+            name    =   NOTREADY
+            value   =   0x0
+            desc    =   WRDATA register is not ready to accept data.
+        enum
+            name    =   READY
+            value   =   0x1
+            desc    =   WRDATA register can accept data.
+    bf_readonly
+        name        =   ADDRERROR
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Write Address Error. When set to 1, this bit indicates that an address has been written to the WRADDR register which is outside the range of valid addresses for the Flash Memory. This bit will be cleared on a write to the WRADDR register with a value that falls in the range of valid addresses. Additionally, when a write to the Write Data registers occurs and the Write Address is auto-incremented, this bit will be set if the new address increments beyond the end of the valid Flash address space.
+        enum
+            name    =   VALID
+            value   =   0x0
+            desc    =   The last address written to WRADDR was valid.
+        enum
+            name    =   INVALID
+            value   =   0x1
+            desc    =   Invalid address written to WRADDR.
+    bf_readonly
+        name        =   BUSY
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Controll Busy. This bit reflects the status of the most recently requested Flash operation. When set to 1, the Flash Controller is still processing the last operation. When set to 0, the controller is idle and ready to accept a new command request.
+        enum
+            name    =   IDLE
+            value   =   0x0
+            desc    =   Flash controller is idle and ready for a new command.
+        enum
+            name    =   FLASHBUSY
+            value   =   0x1
+            desc    =   Flash controller is processing an operation.
+
+extreg
+    name            = WRADDR
+    offset          = 0x4
+    enable          = ACCESS
+    reg_brief       = Flash Controller Write Address Register
+    bf_reserved
+        name        =   RSVD
+        width       =   14
+        lsb         =   18
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   ADDR
+        width       =   18
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   The value written to this field contains the byte address to use for the next Erase or Program operation to the Flash Instance. An instance address is required (i.e. 0-0x3FFFF).  If an invalid address is written, the Address Error bit of the Status register will be set.
+
+register
+    name            = WRDATA
+    offset          = 0x8
+    enable          = ACCESS
+    reg_brief       = Flash Controller Write Address Register
+    bf_standard
+        name        =   DATA
+        width       =   32
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   The value written to this field is the next data to use for a Program operation to the Flash Instance. A write to this register will initiate the Program Word operation, and once complete, will auto-increment the WRADDR to allow continuous writes without the need to write the next Address (for Data Segment writes ONLY! This auto-increment functionality is not supported for writes to the Information space of the Flash).
+
+extreg
+    name            = DATACMD
+    offset          = 0x0c
+    enable          = ACCESS
+    reg_brief       = Flash Controller Data Space Command Register
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   DATAPROGRAM
+        friendly    =   PROGRAM
+        width       =   1
+        lsb         =   2
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bitfield initiates a programming operation to the Flash Data space. Writing a 0 to this bitfield terminates the programming operation.
+        enum
+            name    =   TERMINATE
+            value   =   0x0
+            desc    =   Terminate the programming operation.
+        enum
+            name    =   GO
+            value   =   0x1
+            desc    =   Initiate a programming operation to flash data.
+    bf_ext
+        name        =   DATAMASSERASE
+        friendly    =   MASSERASE
+        width       =   1
+        lsb         =   1
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bitfield initiates an erase operation of the entire Flash Data space of the given instance.  The WRADDR register must be 0 for this operation.
+        enum
+            name    =   GO
+            value   =   0x1
+            desc    =   Initiate a data mass erase operation.
+    bf_ext
+        name        =   DATAPAGEERASE
+        friendly    =   PAGEERASE
+        width       =   1
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bitfield initiates a erase operation to the Flash Data word line specified by the WRADDR register.
+        enum
+            name    =   GO
+            value   =   0x1
+            desc    =   Initiate an erase operation to flash data.
+
+extreg
+    name            = INFOCMD
+    offset          = 0x10
+    enable          = ACCESS
+    reg_brief       = Flash Controller Information Space Command Register
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   INFOPROGRAM
+        friendly    =   PROGRAM
+        width       =   1
+        lsb         =   2
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bitfield initiates a programming operation to the Flash Information space. Writing a 0 to this bitfield terminates the programming operation.
+        enum
+            name    =   GO
+            value   =   0x1
+            desc    =   Initiate a programming operation to flash info.
+    bf_ext
+        name        =   INFOMASSERASE
+        friendly    =   MASSERASE
+        width       =   1
+        lsb         =   1
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bitfield initiates an erase operation of both the Flash Information and Flash Data spaces for the given flash instance.  The WRADDR register must be 0 for this operation.
+        enum
+            name    =   GO
+            value   =   0x1
+            desc    =   Initiate an info and data mass erase operation.
+    bf_ext
+        name        =   INFOPAGEERASE
+        friendly    =   PAGEERASE
+        width       =   1
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bitfield initiates a erase operation to the Flash Information space for the given instance. The WRADDR register is not relevant for an Information Space page erase operation.
+        enum
+            name    =   GO
+            value   =   0x1
+            desc    =   Initiate an erase operation to flash info.
+
+intregs
+    name            =   EVENTREG
+    offset          =   0x200
+    clearall        =   Yes
+    numints         =   3
+    reg_brief       =   Flash Controller Event Registers
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_int
+        name        =   TIMEOUT
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the operation timeout Event notification.
+    bf_int
+        name        =   ERASECOMP
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the erase operation complete notification.
+    bf_int
+        name        =   WRITECOMP
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the write operation complete notification.
+
+keyreg
+    name            =   ACCESS
+    reg_brief       =   Key Register for the Flash Controller Registers
+    offset          =   0x14
+    keyval          =   0x37
+    keyed           =   none
+    reg_desc        =   A write with the value of 0x37 to this register enables access to the other Flash Controller registers. Any value written to this register other than 0x37  will disable access to the remaining Flash Controller registers. The valid write of 0x37 will also enable the flash clock to the control registers, a requirement to program the Flash. When the operations to the flash are complete, the user should write any pattern other than 0x37 to this register to disable the clock.  This register also indicates lock status when read. When in the unlccked state (i.e. 0x37 has been written), it reads as 1. When in the locked state, it reads as 0.

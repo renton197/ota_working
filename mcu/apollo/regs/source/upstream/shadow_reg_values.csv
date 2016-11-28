@@ -1,0 +1,125 @@
+name,offset,msb,lsb,functional subset,benign value,temp value,mcuctrl_value,mcuctrl_addr,mcuctrl_lsb,mcuctrl_width,Descr
+ACWARMUP_init_value,5,14,13,ANA_CLK,0x0,,,,,,
+ADCPWR0_init_value,11,7,0,ADC INIT,0x96,,0x96,0x108,0,8,ADC clk count for power switch
+ADCPWR1_init_value,11,15,8,ADC INIT,0x4B,,0x48,0x108,8,8,ADC clk count for IP Enable
+ADCPWRON_CV_value,7,26,26,ADC INIT,0x0,,,,,,Customer Visible
+ADCREFTRIM_init_value,11,28,24,ADC TRIM,0x0,,,,,,ADC reference voltage trim
+ADCTSBGSWE_CV_value,1,12,12,ADC_TS_BG,0x0,,,,,,Customer Visible
+ADCTSBGSWE_init_value,5,23,23,ADC_TS_BG,0x0,,,,,,Software enable for overriding HW control
+ANALOG_ctrl_0,11,23,16,ANA_GENERAL,0x8,,,,,,spare shadow bits for analog
+BCORETONSEL_init_value,1,18,15,ANA BUCK,0xc,,,,,,Analog Trim (set during mfg)
+BGTRIM_init_value,5,9,6,ANA TEMPSCTRL,0x0,,,,,,Analog Trim (set during mfg)
+BMEMTONSEL_init_value,1,22,19,ANA BUCK,0xd,,,,,,Analog Trim (set during mfg)
+BODLRDE_init_value,2,27,27,DIG BOD,0x0,,,,,,Disable Brownout Low (1.8V) Reset
+BUCK_CV_value,0,31,31,ANA BUCK,0x0,,,,,,Customer Visible
+BUCK2_CV_value,1,25,25,ANA BUCK,0x0,,,,,,Customer Visible
+BUCKLFCLKSEL_init_value,8,31,30,ANA BUCK,0x0,,,,,,
+BUCKSWE_init_value,1,24,24,ANA BUCK,0x0,,,,,,Software enable for overriding HW control
+BYPBUCKCORE_init_value,1,23,23,ANA BUCK,0x0,,,,,,
+BYPBUCKMEM_init_value,1,28,28,ANA BUCK,0x0,,,,,,
+BYPCMPRXTAL_init_value,5,27,27,XTALCTRL,0x0,,,,,,
+CALRC_init_value,6,28,11,CLK INIT,0x0,,,,,,
+CALXT_init_value,6,10,0,XT CLK INIT,0x0,,,,,,
+CCRG_CV_value,0,27,27,ANA CCRG,0x0,,,,,,Customer Visible
+CCRGPWD_init_value,0,28,28,ANA CCRG,0x0,,,,,,
+CCRGTRIM_init_value,0,7,0,ANA CCRG,0xA1,,0x70,0x20,1,8,Analog Trim (set during mfg)
+CHIPID0_init_value,12,31,0,RO CHIP INFO,0xCC004,,,,,,set during mfg
+CHIPID1_init_value,13,31,0,RO CHIP INFO,0x0,,,,,,set during mfg
+core_buck_pup_dly,8,17,9,DIG_PWR,0xBE,,,,,,Time for the Core Buck to stabilize after the power supply is enabled
+CVREFBTRIM_init_value,0,19,16,ANA VREF,0x0,,,,,,Analog Trim (set during mfg)
+CVREFHADJ_init_value,7,31,27,ANA VREF,0x0,,,,,,Analog Trim (set during mfg)
+CVREFLADJ_init_value,0,26,24,ANA VREF,0x0,,,,,,Analog Trim (set during mfg)
+CVRGHSN_init_value,7,19,19,ANA PWR SEQ,0x0,,,,,,Analog power-up sequence (high speed_n for CVRG)
+DBGPNDISABLE_init_value,1,27,27,DEBUG ROM,0x0,,,,,,Disable Partnumber Read for debug Rom
+DISABLEHFRC_init_value,5,15,15,HFRC,0x0,,,,,,0
+ENBUCKCORE_init_value,1,31,31,ANA BUCK,0x0,,,,,,
+ENBUCKMEM_init_value,1,29,29,ANA BUCK,0x0,,,,,,
+FDBKDSBLXTAL_init_value,5,28,28,XTALCTRL,0x0,,,,,,
+flash_max_size,7,18,17,DIG_FLASH,0x3,,,,,,"3 = 512KB, 2 = 256KB, 1 = 128KB, 0 = 64KB"
+flash0_inst_enabled,14,16,16,DIG_FLASH,0x1,,,,,,Must always be enabled
+flash0_se_dly_val,7,2,0,DIG_FLASH,0x7,,,,,,Manufacturing Trim
+flash1_inst_enabled,14,17,17,DIG_FLASH,0x1,,,,,,Optionally enabled
+flash1_se_dly_val,7,5,3,DIG_FLASH,0x7,,,,,,Manufacturing Trim
+FLASHPWRDIS_CV_value,1,11,11,FLASH PWR,0x1,,,,,,Customer Visible
+HFRC_CV_value,4,31,31,HFRC,0x0,,,,,,Customer Visible
+HFRCDEL_init_value,3,28,24,HFRC,0x1F,,,,,,
+HFRCSWE_init_value,5,17,17,HFRC,0x0,,1,192,0,1,Software enable for overriding HW control
+HFTUNE_init_value,4,10,0,HFRC,0x5,,0x7FF,192,10,11,
+HYSTBUCKCORE_init_value,1,8,8,ANA BUCK,0x0,,,,,,Disable hysteresis on core buck
+HYSTBUCKMEM_init_value,1,7,7,ANA BUCK,0x0,,,,,,Disable hysteresis on mem buck
+IOCTRL_CV_value,7,15,15,DIG_IO,0x0,,,,,,Customer Visible
+IOM0DEL_init_value,7,11,9,DIG_IO,0x0,,,,,,IO Master 0 Data Delay
+IOM1DEL_init_value,7,14,12,DIG_IO,0x0,,,,,,IO Master 1 Data Delay
+IOSDEL_init_value,7,8,6,DIG_IO,0x0,,,,,,IO Slave Data Delay
+iso2active_dly_val,10,29,24,DIG_PWR,0x17,,,,,,Delay for retention flops to stabilize after removal of isolate_n signal
+iso2ret_dly_val,10,5,0,DIG_PWR,0x18,,,,,,Delay for retention flops from isolate_n assertion to retain_n assertion
+LDO2SWE_init_value,4,28,28,ANA LDO,0x0,,1,0x84,0,1,Software enable for overriding HW control
+LDO3SWE_init_value,5,10,10,ANA LDO,0x0,,,,,,Software enable for overriding HW control
+LDOREG1_CV_value,1,26,26,ANA LDO,0x0,,,,,,Customer Visible
+LDOREG2_CV_value,4,24,24,ANA LDO,0x0,,,,,,Customer Visible
+LDOREG3_CV_value,6,30,30,ANA LDO,0x0,,,,,,Customer Visible
+LDOVREFSEL_init_value,6,31,31,ANA LDO,0x1,,,,,,Analog Power-up sequence
+LFRC_CV_value,5,18,18,LFRC,0x0,,,,,,Customer Visible
+LFRCSWE_init_value,5,21,21,LFRC,0x0,,,,,,Software enable for overriding HW control
+mem_buck_pup_dly,8,8,0,DIG_PWR,0xBE,,,,,,Time for the Memory Buck Converter to stabilize once enabled
+mem_pdm33_dly,7,24,21,DIG_PWR,0x3,,,,,,TSMC Flash IP Tpdh timing - Hold time of PDM33 signal after VDD is enabled (timing = (value + 1) * fclk period)
+mem_pup_dly,8,26,18,DIG_PWR,0xBE,,,,,,Max TSMC/Dolphin time from power supply stable to first access
+OSEL_init_value,6,29,29,CLK INIT,0x0,,,,,,
+OUTLOWHFRC_init_value,5,16,16,HFRC,0x0,,,,,,
+PARTNUM_init_value,9,31,0,RO CHIP INFO,0x0,,,,,,set during mfg
+PMUENABLE_CV_value,11,30,30,DIG_PWR,0x0,,,,,,"Customer Visible - for initial debug purposes, this will be enabled"
+PMUENABLE_init_value,11,29,29,DIG_PWR,0x1,,1,0x220,0,1,"Enable the PMU by default, will enable with SW"
+PORDLY1_init_value,3,7,0,DIG_RSTGEN,0x24,,,,,,S2 delay
+PORDLY2_init_value,3,15,8,DIG_RSTGEN,0x24,,,,,,S3 delay
+PORDLY3_init_value,3,23,16,DIG_RSTGEN,0x24,,,,,,S4 delay
+pup2ret_dly_val,10,17,12,DIG_PWR,0x17,,,,,,Delay for retention flops from power supply active to safe to deassert retain_n
+PWDANALDO_init_value,4,25,25,DIG_PWR,0x0,,,,,,
+PWDCMPP18HP_init_value,5,31,31,ANA PWR SEQ,0x0,,,,,,
+PWDCMPRXTAL_init_value,5,25,25,XTALCTRL,0x0,,,,,,
+PWDCORELDO_init_value,2,28,28,DIG_PWR,0x0,,,,,,
+PWDCOREXTAL_init_value,5,26,26,XTALCTRL,0x0,,,,,,
+PWDCVREF_init_value,0,30,30,ANA VREFGEN,0x0,,,,,,Analog Power down calibrateed vref gen
+PWDLFRC_init_value,5,20,20,LFRC,0x0,,,,,,
+PWDMEMLDO_init_value,4,27,27,DIG_PWR,0x0,,,,,,
+PWDSRAMLDO_init_value,4,26,26,DIG_PWR,0x0,,,,,,
+PWDUNCALVREF_init_value,4,30,30,DIG_PWR,0x0,,,,,,
+PWRONRSTDLY_CV_value,3,29,29,DIG_PWR,0x0,,,,,,Customer Visible
+PWRSEQ1ANA_CV_value,5,30,30,ANA PWR SEQ,0x0,,,,,,Customer Visible
+PWRSEQ1SWE_init_value,7,20,20,ANA PWR SEQ,0x0,,,,,,Software enable for overriding HW control
+PWRSEQ2ANA_CV_value,5,5,5,ANA PWR SEQ,0x0,,,,,,Customer Visible
+PWRSEQ2SWE_init_value,5,4,4,ANA PWR SEQ,0x0,,,,,,
+PWRSEQ3ANA_CV_value,10,31,31,ANA PWR SEQ,0x0,,,,,,Customer Visible
+PWRSEQ3SWE_init_value,10,30,30,ANA PWR SEQ,0x0,,,,,,
+RESETLFRC_init_value,5,19,19,LFRC,0x0,,,,,,
+ret2iso_dly_val,10,23,18,DIG_PWR,0x17,,,,,,Delay for retention flops from retain_n deassertion to isolate_n deassertion
+ret2pdn_dly_val,10,11,6,DIG_PWR,0x17,,,,,,Delay for retention flops from retain_n assertion to power supply removal
+SLEEPANALDO_init_value,2,29,29,DIG_PWR,0x0,,,,,,
+SLEEPBUCKANA_init_value,1,30,30,DIG_PWR,0x0,,,,,,
+SLEEPCORELDO_init_value,3,30,30,DIG_PWR,0x0,,,,,,
+SLEEPMEMLDO_init_value,2,31,31,DIG_PWR,0x0,,,,,,
+SLEEPSRAMLDO_init_value,2,30,30,DIG_PWR,0x0,,,,,,
+sram_inst_enabled,14,7,0,DIG_SRAM,0xff,,,,,,Individual enable controls for each of the 8 SRAM instances
+sram_wipe_dly,8,29,27,DIG_SRAM,0x3,,,,,,Number of 3Hz clocks required to allow the SRAM to discharge when SRAM Protection is enabled
+SRAMPWDINSLEEP_CV_value,1,9,9,DIG_PWR,0x1,,,,,,Customer Visible
+SRAMPWRDIS_CV_value,1,10,10,DIG_PWR,0x1,,,,,,Customer Visible
+SUPPLYSRC_CV_value,1,13,13,BUCK EN,0x1,,,,,,Customer Visible
+SUPPLYSTATUS_CV_value,1,14,14,RO BUCK STATUS,0x1,,,,,,Customer Visible
+TEMPS_CV_value,5,22,22,ANA TEMPSCTRL,0x0,,,,,,Customer Visible
+TRIMANALDO_init_value,0,23,20,ANA LDO,0x5,,0xF,0x84,9,4,Analog Trim (set during mfg)
+TRIMCOEFFHFRC_init_value,5,12,11,HFRC,0x3,,,,,,
+TRIMCOREBXTAL_init_value,4,20,16,XTALCTRL,0x0,,,,,,
+TRIMCORELDOR1_init_value,2,18,10,ANA LDO,0xC8,,,,,,Analog Trim (set during mfg)
+TRIMCORELDOR2_init_value,2,9,0,ANA LDO,0x165,,,,,,Analog Trim (set during mfg)
+TRIMCORELDOR3_init_value,1,6,0,ANA LDO,0x64,,,,,,Analog Trim (set during mfg)
+TRIMLDOMEM_init_value,2,26,23,ANA LDO,0x6,,0x8,0x84,1,4,Analog Trim (set during mfg)
+TRIMSRAMLDO_init_value,2,22,19,ANA LDO,0x0,,0xF,0x84,5,4,Analog Trim (set during mfg)
+TRIMTUNELFRC_init_value,4,15,11,LFRC,0xF,,,,,,Analog Trim (set during mfg)
+TSTRIM_init_value,5,3,0,ANA TEMPSCTRL,0x0,,,,,,Analog Trim (set during mfg)
+UNCALVREF_CV_value,4,29,29,ANA UNCALVREF,0x0,,,,,,Customer Visible
+VREF_CV_value,0,29,29,ANA VREF,0x0,,,,,,Customer Visible
+VREFSELANALDO_init_value,3,31,31,ANA PWR SEQ,0x0,,,,,,May not need this : unconncected
+VREFSELCORELDO_init_value,4,23,23,ANA LDO,0x0,,,,,,
+VREFSELFLASHLDO_init_value,4,22,22,ANA LDO,0x0,,,,,,
+VREFSELSRAMLDO_init_value,4,21,21,ANA LDO,0x0,,,,,,
+XTAL_CV_value,5,24,24,XTALCTRL,0x1,,,,,,Customer Visible
+XTALSWE_init_value,5,29,29,XTALCTRL,0x0,,,,,,Software enable for overriding HW control

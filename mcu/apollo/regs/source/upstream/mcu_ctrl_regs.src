@@ -1,0 +1,2686 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     mcu_ctrl.src                                                       *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     01/13/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   MCU_CTRL block of the Ambiq MCU.  It is expected to be parsed and          *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+#                                                                              *
+#   gen_macro:                                                                 *
+#   The MCU_CTRL block .src file contains a special keyword that is currently  *
+#   not found in any other block, gen_macro.  gen_macro is used to distinguish *
+#   levels of customer-visibility.  The value of gen_macro can be thought      *
+#   of as bitfields per the following:                                         *
+#       bit0:   0 = Internal-only, register should NOT be customer-documented. *
+#               1 = Customer-visible if bit1 is 0.  If bit1 is 1, customer     *
+#                   visibility is determined by a corresponding INFO (shadow)  *
+#                   bit and so is determined external to the hardware design.  *
+#       bit1:   0 = This register is not INFO enabled.  So if bit0 is 1, it    *
+#                   is customer-documented.                                    *
+#               1 = This register is INFO enabled.  So it should only be       *
+#                   customer documented iff the device is trimmed accordingly. *
+#                                                                              *
+#   Therefore gen_macro MUST be defined as one of the following values (0,1,3):*
+#       0: This reg is internal-only and should NOT be customer documented.    *
+#          This is also the default value if gen_macro is not provided.        *
+#       1: This reg is unconditionally customer-visible.                       *
+#       2: Invalid. (reg_gen will reject.)                                     *
+#       3: Customer documentation of this reg is dependent on the trimming of  *
+#          info/shadow bits.                                                   *
+#       All other values are invalid.                                          *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   MCU_CTRL
+block_rev           =   1
+block_brief         =   MCU Miscellaneous Control Logic
+
+register
+    name            =   CHIPPN
+    friendly        =   CHIP_INFO
+    reg_brief       =   Chip Information Register
+    offset          =   0
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_readonly
+        name        =   CLASS
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Device class.
+        enum
+            name    =   APOLLO
+            value   =   0x1
+            desc    =   APOLLO
+    bf_readonly
+        name        =   FLASH
+        width       =   4
+        lsb         =   20
+        rw          =   RO
+        reset       =   0x4
+        desc        =   Device flash size.
+        enum
+            name    =   256K
+            value   =   0x3
+            desc    =   256K of available flash.
+        enum
+            name    =   512K
+            value   =   0x4
+            desc    =   512K of available flash.
+    bf_readonly
+        name        =   RAM
+        width       =   4
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Device RAM size.
+        enum
+            name    =   32K
+            value   =   0x0
+            desc    =   32K of available SRAM.
+        enum
+            name    =   64K
+            value   =   0x1
+            desc    =   64K of available SRAM.
+    bf_readonly
+        name        =   MAJORREV
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Major device revision number.
+    bf_readonly
+        name        =   MINORREV
+        width       =   4
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Minor device revision number.
+    bf_readonly
+        name        =   PKG
+        width       =   2
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Device package type.
+        enum
+            name    =   BGA
+            value   =   0x2
+            desc    =   Ball grid array.
+        enum
+            name    =   CSP
+            value   =   0x3
+            desc    =   Chip-scale package.
+    bf_readonly
+        name        =   PINS
+        width       =   3
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Number of pins.
+        enum
+            name    =   41PINS
+            value   =   0x1
+            desc    =   41 package pins total.
+        enum
+            name    =   64PINS
+            value   =   0x1
+            desc    =   64 package pins total.
+    bf_readonly
+        name        =   TEMP
+        width       =   2
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Device temperature range.
+        enum
+            name    =   COMMERCIAL
+            value   =   0x0
+            desc    =   Commercial temperature range.
+    bf_readonly
+        name        =   QUAL
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Device qualified.
+        enum
+            name    =   PROTOTYPE
+            value   =   0x0
+            desc    =   Prototype device.
+        enum
+            name    =   QUALIFIED
+            value   =   0x1
+            desc    =   Fully qualified device.
+
+register
+    name            =   CHIPID0
+    reg_brief       =   Unique Chip ID 0
+    offset          =   4
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_readonly
+        name        =   CHIPID0
+        friendly    =   VALUE
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Unique chip ID 0.
+        enum
+            name    =   APOLLO
+            value   =   0x0000
+            desc    =   Apollo CHIPID0.
+
+register
+    name            =   CHIPID1
+    reg_brief       =   Unique Chip ID 1
+    offset          =   8
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_readonly
+        name        =   CHIPID1
+        friendly    =   VALUE
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Unique chip ID 1.
+        enum
+            name    =   APOLLO
+            value   =   0x0000
+            desc    =   Apollo CHIPID1.
+
+register
+    name            =   CHIPREV
+    reg_brief       =   Chip Revision
+    offset          =   12
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_readonly
+        name        =   CHIPREV
+        friendly    =   REVISION
+        width       =   8
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Chip Revision Number.
+        enum
+            name    =   APOLLO
+            value   =   0x0000
+            desc    =   Apollo CHIPREV.
+
+register
+    name            =   SUPPLYSRC
+    reg_brief       =   Memory and Core Voltage Supply Source Select Register
+    offset          =   16
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   COREBUCKEN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enables and Selects the Core Buck as the supply for the low-voltage power domain.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the Core Buck for the low-voltage power domain.
+    bf_standard
+        name        =   MEMBUCKEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enables and select the Memory Buck as the supply for the Flash and SRAM power domain.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the Memory Buck as the supply for flash and SRAM.
+
+register
+    name            =   SUPPLYSTATUS
+    reg_brief       =   Memory and Core Voltage Supply Source Status Register
+    offset          =   20
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_readonly
+        name        =   COREBUCKON
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Indicates whether the Core low-voltage domain is supplied from the LDO or the Buck.
+        enum
+            name    =   LDO
+            value   =   0x0
+            desc    =   Indicates the the LDO is supplying the Core low-voltage.
+        enum
+            name    =   BUCK
+            value   =   0x1
+            desc    =   Indicates the the Buck is supplying the Core low-voltage.
+    bf_readonly
+        name        =   MEMBUCKON
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Indicate whether the Memory power domain is supplied from the LDO or the Buck.
+        enum
+            name    =   LDO
+            value   =   0x0
+            desc    =   Indicates the LDO is supplying the memory power domain.
+        enum
+            name    =   BUCK
+            value   =   0x1
+            desc    =   Indicates the Buck is supplying the memory power domain.
+
+register
+    name            =   CCRG
+    reg_brief       =   Calibrated Current Reference Generator Control
+    offset          =   32
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   23
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   CCRGTRIM
+        width       =   8
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Set the CCRG trim.
+        enum
+            name    =   TRIM_EN
+            value   =   0x1
+            desc    =   Enables the CCRG trim.
+    bf_shadow
+        name        =   CCRGPWD
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power down the CCRG.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Powers down the CCRG trim.
+
+register
+    name            =   VREFGEN
+    reg_brief       =   Voltage Reference Generator Control
+    offset          =   64
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   19
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PWDCVREF
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power Down, Calibrated Voltage Reference Generator.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Powers down the CVRG.
+    bf_shadow
+        name        =   CVREFHADJ
+        width       =   5
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Calibrated Voltage Reference Generator VREF high adjust.
+    bf_shadow
+        name        =   CVREFLADJ
+        width       =   3
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Calibrated Voltage Reference Generator VREF low adjust.
+    bf_shadow
+        name        =   CVREFBTRIM
+        width       =   4
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Calibrated Voltage Reference Generator tc trim (bottom transistor)
+
+register
+    name            =   BUCK
+    reg_brief       =   Analog Buck Control
+    offset          =   96
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   26
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   BYPBUCKMEM
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Memory Buck Bypass.
+        enum
+            name    =   BYPASS
+            value   =   0x1
+            desc    =   Memory Buck bypass.
+    bf_shadow
+        name        =   ENBUCKMEM
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Memory buck Enable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Memory Buck Enable.
+    bf_shadow
+        name        =   SLEEPBUCKANA
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog buck sleep.
+        enum
+            name    =   SLEEP
+            value   =   0x1
+            desc    =   Analog buck sleep.
+    bf_shadow
+        name        =   ENBUCKCORE
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Core buck enable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Core Buck enable.
+    bf_shadow
+        name        =   BYPBUCKCORE
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Core buck bypass.
+        enum
+            name    =   BYPASS
+            value   =   0x1
+            desc    =   Core Buck bypass.
+    bf_shadow
+        name        =   BUCKSWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Buck Register Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   BUCK Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   BUCK Software Override Enable.
+
+register
+    name            =   BUCK2
+    reg_brief       =   Buck Control Reg2
+    offset          =   100
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   20
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   BUCKLFCLKSEL
+        width       =   2
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable/disable hysteresis on core buck converters internal comparators.
+    bf_shadow
+        name        =   HYSTBUCKCORE
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable/disable hysteresis on core buck converters internal comparators.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable hysteresis on core buck converters internal comparators.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable hysteresis on core buck converters internal comparators.
+    bf_shadow
+        name        =   HYSTBUCKMEM
+        width       =   1
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable/disable hysteresis on memory buck converters internal comparators.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable hysteresis on memory buck converters internal comparators.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable hysteresis on memory buck converters internal comparators.
+    bf_shadow
+        name        =   BMEMTONSEL
+        width       =   4
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Flash Buck Time On Select
+    bf_shadow
+        name        =   BCORETONSEL
+        width       =   4
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Core Buck Time On Select
+
+register
+    name            =   LDOREG1
+    reg_brief       =   Analog LDO Reg 1
+    offset          =   128
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   26
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   TRIMCORELDOR3
+        width       =   7
+        lsb         =   19
+        rw          =   RW
+        reset       =   0x0
+        desc        =   CORE LDO Trim R3.
+    bf_shadow
+        name        =   TRIMCORELDOR2
+        width       =   10
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   CORE LDO Trim R2.
+    bf_shadow
+        name        =   TRIMCORELDOR1
+        width       =   9
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   CORE LDO Trim R1.
+
+register
+    name            =   LDOREG2
+    reg_brief       =   LDO Control Register 2
+    offset          =   132
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   9
+        lsb         =   23
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PWDANALDO
+        width       =   1
+        lsb         =   22
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog LDO Power Down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Power down Analog LDO.
+    bf_shadow
+        name        =   PWDMEMLDO
+        width       =   1
+        lsb         =   21
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FLASH LDO Power Down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Power down Flash LDO.
+    bf_shadow
+        name        =   PWDCORELDO
+        width       =   1
+        lsb         =   20
+        rw          =   RW
+        reset       =   0x0
+        desc        =   CORE LDO Power Down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Power down Core LDO.
+    bf_shadow
+        name        =   SLEEPANALDO
+        width       =   1
+        lsb         =   19
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog LDO Sleep.
+        enum
+            name    =   SLEEP
+            value   =   0x1
+            desc    =   Analog LDO sleep.
+    bf_shadow
+        name        =   SLEEPMEMLDO
+        width       =   1
+        lsb         =   18
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FLASH LDO Sleep.
+        enum
+            name    =   SLEEP
+            value   =   0x1
+            desc    =   SRAM LDO sleep.
+    bf_shadow
+        name        =   SLEEPCORELDO
+        width       =   1
+        lsb         =   17
+        rw          =   RW
+        reset       =   0x0
+        desc        =   CORE LDO Sleep.
+        enum
+            name    =   SLEEP
+            value   =   0x1
+            desc    =   Core LDO sleep.
+    bf_shadow
+        name        =   VREFSELANALDO
+        width       =   1
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog LDO VREF Select.
+        enum
+            name    =   SELECT
+            value   =   0x1
+            desc    =   Analog LDO VREF select.
+    bf_shadow
+        name        =   VREFSELSRAMLDO
+        width       =   1
+        lsb         =   15
+        rw          =   RW
+        reset       =   0x0
+        desc        =   SRAM LDO VREF Select.
+        enum
+            name    =   SELECT
+            value   =   0x1
+            desc    =   SRAM LDO VREF select.
+    bf_shadow
+        name        =   VREFSELFLASHLDO
+        width       =   1
+        lsb         =   14
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Flash LDO VREF Select.
+        enum
+            name    =   SELECT
+            value   =   0x1
+            desc    =   Flash LDO VREF select.
+    bf_shadow
+        name        =   VREFSELCORELDO
+        width       =   1
+        lsb         =   13
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Core LDO VREF Select.
+        enum
+            name    =   SELECT
+            value   =   0x1
+            desc    =   Core LDO VREF select.
+    bf_shadow
+        name        =   TRIMANALDO
+        width       =   4
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog LDO Trim.
+    bf_shadow
+        name        =   TRIMSRAMLDO
+        width       =   4
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   SRAM LDO Trim.
+    bf_shadow
+        name        =   TRIMLDOMEM
+        width       =   4
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Mem LDO Trim.
+    bf_shadow
+        name        =   LDO2SWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   LDO2 Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   LDO2 Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   LDO2 Software Override Enable.
+
+register
+    name            =   LDOREG3
+    reg_brief       =   LDO Control Register 3
+    offset          =   136
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PWDSRAMLDO
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   SRAM LDO Power Down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Power down SRAM LDO.
+    bf_shadow
+        name        =   SLEEPSRAMLDO
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Bypass SRAM LDO.
+        enum
+            name    =   BYPASS
+            value   =   0x1
+            desc    =   Bypass SRAM LDO.
+    bf_shadow
+        name        =   LDO3SWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   LDO3 Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   LDO3 Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   LDO3 Software Override Enable.
+
+register
+    name            =   UNCALVREF
+    reg_brief       =   Uncalibrated VREF Control
+    offset          =   160
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PWDUNCALVREF
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Uncalibrated vref power down
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Power down uncalibrated vref.
+
+register
+    name            =   HFRC
+    reg_brief       =   HFRC Control
+    offset          =   192
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   11
+        lsb         =   21
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   HFTUNE
+        width       =   11
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Default HFRC frequency tune value
+    bf_shadow
+        name        =   HFRCDEL
+        width       =   5
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power Up Delay before enabling clocks.
+    bf_shadow
+        name        =   DISABLEHFRC
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power Down HFRC.
+        enum
+            name    =   PWRUP
+            value   =   0x0
+            desc    =   Power up the HFRC Oscillator
+        enum
+            name    =   PWRDN
+            value   =   0x1
+            desc    =   Power down the HFRC Oscillator
+    bf_shadow
+        name        =   OUTLOWHFRC
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force HFRC Output Low.
+        enum
+            name    =   EN
+            value   =   0x0
+            desc    =   Enable the HFRC Oscillator
+        enum
+            name    =   OUTLOW
+            value   =   0x1
+            desc    =   Force the HFRC Oscillator output low
+    bf_shadow
+        name        =   TRIMCOEFFHFRC
+        width       =   2
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   HFRC Frequency Tune trim bits
+    bf_shadow
+        name        =   HFRCSWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   HFRC Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   HFRC Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   HFRC Software Override Enable.
+
+register
+    name            =   LFRC
+    reg_brief       =   LFRC Control
+    offset          =   224
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   RESETLFRC
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   LFRC Reset.
+        enum
+            name    =   EN
+            value   =   0x0
+            desc    =   Enable LFRC.
+        enum
+            name    =   RESET
+            value   =   0x1
+            desc    =   Reset LFRC.
+    bf_shadow
+        name        =   PWDLFRC
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power Down LFRC.
+        enum
+            name    =   PWRUP
+            value   =   0x0
+            desc    =   Power up LFRC.
+        enum
+            name    =   PWRDN
+            value   =   0x1
+            desc    =   Power down LFRC.
+    bf_shadow
+        name        =   TRIMTUNELFRC
+        width       =   5
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   LFRC Frequency Tune trim bits
+    bf_shadow
+        name        =   LFRCSWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   LFRC Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   LFRC Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   LFRC Software Override Enable.
+
+register
+    name            =   IOCTRL
+    reg_brief       =   IO Master and Slave Control (NOT CURRENTLY USED)
+    offset          =   228
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   23
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   IOM1DEL
+        width       =   3
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   IO Master 1 Delay Value.
+    bf_shadow
+        name        =   IOM0DEL
+        width       =   3
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   IO Master 0 Delay Value.
+    bf_shadow
+        name        =   IOSDEL
+        width       =   3
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   IO Slave Delay Value.
+
+register
+    name            =   BANDGAPEN
+    reg_brief       =   Band Gap Enable
+    offset          =   252
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   BGPEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Bandgap Enable
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Bandgap disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Bandgap enable.
+
+register
+    name            =   TEMPSCTRL
+    reg_brief       =   Temp Sensor Control
+    offset          =   256
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   BGTRIM
+        width       =   4
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Bandgap trim bits.
+    bf_shadow
+        name        =   TSTRIM
+        width       =   4
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Temperature sensor trim bits.
+
+register
+    name            =   BODPORCTRL
+    reg_brief       =   BOD and PDR control Register
+    offset          =   260
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   0
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   BODEXTREFSEL
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   BOD External Reference Select.
+        enum
+            name    =   SELECT
+            value   =   0x1
+            desc    =   BOD external reference select.
+    bf_standard
+        name        =   PDREXTREFSEL
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   PDR External Reference Select.
+        enum
+            name    =   SELECT
+            value   =   0x1
+            desc    =   PDR external reference select.
+    bf_standard
+        name        =   PWDBOD
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   BOD Power Down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   BOD power down.
+    bf_standard
+        name        =   PWDPDR
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   PDR Power Down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   PDR power down.
+
+register
+    name            =   ADCPWRDLY
+    reg_brief       =   ADC Power Up Delay Control
+    offset          =   264
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   11
+        lsb         =   21
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   ADCREFTRIM
+        width       =   5
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   ADC IP Reference Voltage Trim.
+    bf_shadow
+        name        =   ADCPWR1
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   ADC IP enable delay in HFRC/16 increments.
+    bf_shadow
+        name        =   ADCPWR0
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   ADC Power Switch delay in HFRC/16 increments.
+
+register
+    name            =   ADCTSBGPWD
+    reg_brief       =   ADC Temp Sensor Bandgap Power Control
+    offset          =   268
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   TSPEN
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable the Temp Sensor Power when set to 1 if the ADCTSBGSWE bit is set.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Temperature Sensor Software Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Temperature Sensor Software Enable.
+    bf_standard
+        name        =   ADCPSEN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enable the ADC Power Switch on when set to 1 if the ADCTSBGSWE bit is set.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   ADC power switch software power disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   ADC power switch software power enable.
+    bf_shadow
+        name        =   ADCTSBGSWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   ADC Temperature Sensor Bandgap Software Override Enable
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   ADC temperature sensor and bandgap Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   ADC temperature sensor and bandgap Software Override Enable.
+
+register
+    name            =   XTALCTRL
+    reg_brief       =   XTAL Oscillator Control
+    offset          =   288
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   20
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PWDCMPRXTAL
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XTAL Oscillator Power Down Comparator.
+        enum
+            name    =   PWRUPCOMP
+            value   =   0x0
+            desc    =   Power up XTAL oscillator comparator.
+        enum
+            name    =   PWRDNCOMP
+            value   =   0x1
+            desc    =   Power down XTAL oscillator comparator.
+    bf_shadow
+        name        =   PWDCOREXTAL
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XTAL Oscillator Power Down Core.
+        enum
+            name    =   PWRUPCORE
+            value   =   0x0
+            desc    =   Power up XTAL oscillator core.
+        enum
+            name    =   PWRDNCORE
+            value   =   0x1
+            desc    =   Power down XTAL oscillator core.
+    bf_shadow
+        name        =   ACWARMUP
+        width       =   2
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Auto-calibration delay control
+        enum
+            name    =   1SEC
+            value   =   0x0
+            desc    =   Warmup period of 1-2 seconds
+        enum
+            name    =   2SEC
+            value   =   0x1
+            desc    =   Warmup period of 2-4 seconds
+        enum
+            name    =   4SEC
+            value   =   0x2
+            desc    =   Warmup period of 4-8 seconds
+        enum
+            name    =   8SEC
+            value   =   0x3
+            desc    =   Warmup period of 8-16 seconds
+    bf_shadow
+        name        =   BYPCMPRXTAL
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XTAL Oscillator Bypass Comparator.
+        enum
+            name    =   USECOMP
+            value   =   0x0
+            desc    =   Use the XTAL oscillator comparator.
+        enum
+            name    =   BYPCOMP
+            value   =   0x1
+            desc    =   Bypass the XTAL oscillator comparator.
+    bf_shadow
+        name        =   FDBKDSBLXTAL
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XTAL Oscillator Disable Feedback.
+        enum
+            name    =   EN
+            value   =   0x0
+            desc    =   Enable XTAL oscillator comparator.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable XTAL oscillator comparator.
+    bf_shadow
+        name        =   TRIMCOREBXTAL
+        width       =   5
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XTAL Oscillator Core bias trim bits
+    bf_shadow
+        name        =   XTALSWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XTAL Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   XTAL Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   XTAL Software Override Enable.
+
+register
+    name            =   SRAMPWDINSLEEP
+    reg_brief       =   Powerdown an SRAM Bank in Deep Sleep mode
+    offset          =   320
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   BANK7PWDINSLEEP
+        friendly    =   BANK7
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 7 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 7 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 7 deep sleep.
+    bf_standard
+        name        =   BANK6PWDINSLEEP
+        friendly    =   BANK6
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 6 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 6 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 6 deep sleep.
+    bf_standard
+        name        =   BANK5PWDINSLEEP
+        friendly    =   BANK5
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 5 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 5 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 5 deep sleep.
+    bf_standard
+        name        =   BANK4PWDINSLEEP
+        friendly    =   BANK4
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 4 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 4 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 4 deep sleep.
+    bf_standard
+        name        =   BANK3PWDINSLEEP
+        friendly    =   BANK3
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 3 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 3 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 3 deep sleep.
+    bf_standard
+        name        =   BANK2PWDINSLEEP
+        friendly    =   BANK2
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 2 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 2 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 2 deep sleep.
+    bf_standard
+        name        =   BANK1PWDINSLEEP
+        friendly    =   BANK1
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 1 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 1 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 1 deep sleep.
+    bf_standard
+        name        =   BANK0PWDINSLEEP
+        friendly    =   BANK0
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Force SRAM Bank 0 to powerdown in deep sleep mode, causing the contents of the bank to be lost.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   SRAM Bank 0 normal operation.
+        enum
+            name    =   PWRDN_IN_DEEPSLEEP
+            value   =   0x1
+            desc    =   SRAM Bank 0 deep sleep.
+
+register
+    name            =   SRAMPWRDIS
+    reg_brief       =   Disables individual banks of the SRAM array
+    offset          =   324
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   VDDR7DIS
+        friendly    =   BANK7
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 7 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 7.
+    bf_standard
+        name        =   VDDR6DIS
+        friendly    =   BANK6
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 6 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 6.
+    bf_standard
+        name        =   VDDR5DIS
+        friendly    =   BANK5
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 5 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 5.
+    bf_standard
+        name        =   VDDR4DIS
+        friendly    =   BANK4
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 4 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 4.
+    bf_standard
+        name        =   VDDR3DIS
+        friendly    =   BANK3
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 3 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 3.
+    bf_standard
+        name        =   VDDR2DIS
+        friendly    =   BANK2
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 2 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 2.
+    bf_standard
+        name        =   VDDR1DIS
+        friendly    =   BANK1
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 1 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 1.
+    bf_standard
+        name        =   VDDR0DIS
+        friendly    =   BANK0
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from SRAM Bank 0 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable SRAM Bank 0.
+
+register
+    name            =   FLASHPWRDIS
+    reg_brief       =   Disables individual banks of the Flash array
+    offset          =   328
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   VDDF1DIS
+        friendly    =   BANK1
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from Flash Bank 1 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable Flash instance 1.
+    bf_standard
+        name        =   VDDF0DIS
+        friendly    =   BANK0
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Remove power from Flash Bank 0 which will cause an access to its address space to generate a Hard Fault.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable Flash instance 0.
+
+
+register
+    name            =   FLASHSEDLY
+    reg_brief       =   Flash SE Delay Values
+    offset          =   332
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   0
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   SEDELVAL1
+        friendly    =   BANK1
+        width       =   3
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Flash instance 1 SE Delay Value. 0 = shortest delay; 7 = longest delay
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   SEDELVAL0
+        friendly    =   BANK0
+        width       =   3
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Flash instance 0 SE Delay Value. 0 = shortest delay; 7 = longest delay
+
+extreg
+    name            =   MFGTEST1
+    reg_brief       =   Manufacturing Test Register 1
+    offset          =   352
+    enable          =   yes
+    gen_macro       =   0
+    createbfs       =   yes
+    bf_reserved
+        name        =   RSVD
+        width       =   20
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   EXT_HF
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        extstrobes  =   Yes
+        reset       =   0x0
+        desc        =   Manufacturing Test HFRC External Clock Source Select.
+        enum
+            name    =   INT
+            value   =   0x0
+            desc    =   Select the internal HFRC clock source.
+        enum
+            name    =   EXT
+            value   =   0x1
+            desc    =   Select the external HFRC clock source.
+    bf_ext
+        name        =   EXT_LF
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        extstrobes  =   Yes
+        reset       =   0x0
+        desc        =   Manufacturing Test LFRC External Clock Source Select.
+        enum
+            name    =   INT
+            value   =   0x0
+            desc    =   Select the internal LFRC clock source.
+        enum
+            name    =   EXT
+            value   =   0x1
+            desc    =   Select the external LFRC clock source.
+    bf_ext
+        name        =   EXT_XT
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        extstrobes  =   Yes
+        reset       =   0x0
+        desc        =   Manufacturing Test XT External Clock Source Select.
+        enum
+            name    =   INT
+            value   =   0x0
+            desc    =   Select the internal XT clock source.
+        enum
+            name    =   EXT
+            value   =   0x1
+            desc    =   Select the external XT clock source.
+    bf_ext
+        name        =   CLKTEST
+        width       =   1
+        lsb         =   8
+        rw          =   RW
+        extstrobes  =   Yes
+        reset       =   0x0
+        desc        =   Manufacturing Test ripple counter short circuit control.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   Select normal ripple counter behavior.
+        enum
+            name    =   SHORT
+            value   =   0x1
+            desc    =   Select manufacturing test ripple counter short circuit.
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+
+register
+    name            =   MFGTEST2
+    reg_brief       =   Manufacturing Test Register 2 : SRAM BIST Control
+    offset          =   356
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   0
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   SBISTEN
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   One-hot Encoding to Enable SRAM BIST for any/all SRAM instances 0-7.
+        enum
+            name    =   BISTDIS
+            value   =   0x00
+            desc    =   All SRAM Instances Disabled.
+        enum
+            name    =   BIST0EN
+            value   =   0x01
+            desc    =   SRAM Instance 0 Enabled.
+        enum
+            name    =   BIST1EN
+            value   =   0x02
+            desc    =   SRAM Instance 1 Enabled.
+        enum
+            name    =   BIST2EN
+            value   =   0x04
+            desc    =   SRAM Instance 2 Enabled.
+        enum
+            name    =   BIST3EN
+            value   =   0x08
+            desc    =   SRAM Instance 3 Enabled.
+        enum
+            name    =   BIST4EN
+            value   =   0x10
+            desc    =   SRAM Instance 4 Enabled.
+        enum
+            name    =   BIST5EN
+            value   =   0x20
+            desc    =   SRAM Instance 5 Enabled.
+        enum
+            name    =   BIST6EN
+            value   =   0x40
+            desc    =   SRAM Instance 6 Enabled.
+        enum
+            name    =   BIST7EN
+            value   =   0x80
+            desc    =   SRAM Instance 7 Enabled.
+
+extreg
+    name            =   MFGTEST3
+    reg_brief       =   Manufacturing Test Register 3 : SRAM BIST Results
+    offset          =   360
+    enable          =   yes
+    gen_macro       =   0
+    createbfs       =   yes
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SBISTERR
+        width       =   8
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   One-hot encoding SRAM BIST pass/fail results for the BIST enabled instances.  1=FAIL, 0=PASS.
+        enum
+            name    =   BISTPASS
+            value   =   0x00
+            desc    =   All SRAM Instances Disabled.
+        enum
+            name    =   BIST0FAIL
+            value   =   0x01
+            desc    =   SRAM Instance 0 Failed.
+        enum
+            name    =   BIST1FAIL
+            value   =   0x02
+            desc    =   SRAM Instance 1 Failed.
+        enum
+            name    =   BIST2FAIL
+            value   =   0x04
+            desc    =   SRAM Instance 2 Failed.
+        enum
+            name    =   BIST3FAIL
+            value   =   0x08
+            desc    =   SRAM Instance 3 Failed.
+        enum
+            name    =   BIST4FAIL
+            value   =   0x10
+            desc    =   SRAM Instance 4 Failed.
+        enum
+            name    =   BIST5FAIL
+            value   =   0x20
+            desc    =   SRAM Instance 5 Failed.
+        enum
+            name    =   BIST6FAIL
+            value   =   0x40
+            desc    =   SRAM Instance 6 Failed.
+        enum
+            name    =   BIST7FAIL
+            value   =   0x80
+            desc    =   SRAM Instance 7 Failed.
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SBISTEND
+        width       =   8
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   SRAM BIST sequence completed status for the BIST enabled instances. 1=COMPLETE, 0=IN PROGRESS.
+        enum
+            name    =   ALLBISTCOMP
+            value   =   0xFF
+            desc    =   All SRAM Instances Completed.
+        enum
+            name    =   BIST0COMP
+            value   =   0x01
+            desc    =   SRAM Instance 0 Completed.
+        enum
+            name    =   BIST1COMP
+            value   =   0x02
+            desc    =   SRAM Instance 1 Completed.
+        enum
+            name    =   BIST2COMP
+            value   =   0x04
+            desc    =   SRAM Instance 2 Completed.
+        enum
+            name    =   BIST3COMP
+            value   =   0x08
+            desc    =   SRAM Instance 3 Completed.
+        enum
+            name    =   BIST4COMP
+            value   =   0x10
+            desc    =   SRAM Instance 4 Completed.
+        enum
+            name    =   BIST5COMP
+            value   =   0x20
+            desc    =   SRAM Instance 5 Completed.
+        enum
+            name    =   BIST6COMP
+            value   =   0x40
+            desc    =   SRAM Instance 6 Completed.
+        enum
+            name    =   BIST7COMP
+            value   =   0x80
+            desc    =   SRAM Instance 7 Completed.
+
+extreg
+    name            =   MFGTEST4
+    reg_brief       =   Non scannable MFGTST Register
+    offset          =   364
+    enable          =   yes
+    gen_macro       =   0
+    createbfs       =   yes
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   PINTEST
+        width       =   4
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Manufacturing Test field for GPIO control.
+        enum
+            name    =   Noraml
+            value   =   0x0
+            desc    =   Powerup state, selects normal pin functions.
+        enum
+            name    =   HAST
+            value   =   0x1
+            desc    =   GPIO's setup for HAST Mode (All tri-stated).
+        enum
+            name    =   VIN36A
+            value   =   0x4
+            desc    =   Selects one VIN test for the 36-pin CSP configuration.  One output VINOUTA (pad[0]) is selected to receive a NAND chain from the inputs from pad[10] through pad[21].
+        enum
+            name    =   VIN36B
+            value   =   0x5
+            desc    =   Selects the alternate VIN test for the 36-pin CSP configuration.  VINOUTB (pad[21])receives the NAND chain from the inputs pad[0] through pad[9] and the RSTN pad.
+        enum
+            name    =   VIN64A
+            value   =   0x6
+            desc    =   Selects one VIN test for the 64-pin configuration.  One output VINOUTA (pad[0]) is selected to receive a NAND chain from the inputs from pad[10] through pad[35].
+        enum
+            name    =   VIN64B
+            value   =   0x7
+            desc    =   Selects the alternate VIN test for the 64-pin configuration.  One output VINOUTB (pad[21]) is selected to receive a NAND chain from the inputs from pad[0] through pin[9], pad[36] through pad[49] and the RSTN pad.
+        enum
+            name    =   VOUTAHI
+            value   =   0x8
+            desc    =   The input pin VOUTINA (pad[0]) value is driven to all of the other digital pads.  Note that the 36 and 64 pin tests can be the same in this case.  High drive strength version.
+        enum
+            name    =   VOUTALO
+            value   =   0x9
+            desc    =   The input pin VOUTINA (pad[0]) value is driven to all of the other digital pads.  Note that the 36 and 64 pin tests can be the same in this case.  Low drive strength version.
+        enum
+            name    =   VOUTBHI
+            value   =   0xA
+            desc    =   Selects the alternate VOUT test which drives VOUTINB (pad[21]) to all other pads.  High drive strength version.
+        enum
+            name    =   VOUTBLO
+            value   =   0xB
+            desc    =   Selects the alternate VOUT test which drives VOUTINB (pad[21]) to all other pads.  Low drive strength version.
+
+register
+    name            =   ANATEST
+    reg_brief       =   Analog Test Register
+    offset          =   368
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   0
+    bf_reserved
+        name        =   RSVD
+        width       =   11
+        lsb         =   21
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_readonly
+        name        =   CMPCCRGCAL
+        width       =   1
+        lsb         =   20
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Analog Output 4.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog output 4.
+    bf_readonly
+        name        =   CMP2P2
+        width       =   1
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Analog Output 3.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog output 3.
+    bf_readonly
+        name        =   CMP1P8LP
+        width       =   1
+        lsb         =   18
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Analog Output 2.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog output 2.
+    bf_readonly
+        name        =   CMP1P8HP
+        width       =   1
+        lsb         =   17
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Analog Output 1.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog output 1.
+    bf_readonly
+        name        =   CMP1P0
+        width       =   1
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Analog Output 0.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog output 0.
+    bf_reserved
+        name        =   RSVD
+        width       =   7
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ANAMODE
+        width       =   1
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   No
+        desc        =   Analog Mode signal.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog mode.
+    bf_standard
+        name        =   ANAFRC
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   No
+        desc        =   Analog test force, measure.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog force, measure.
+    bf_standard
+        name        =   ANABLOCK
+        width       =   5
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   No
+        desc        =   Analog Block Under Test.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog test.
+    bf_standard
+        name        =   ANASIG
+        width       =   2
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   No
+        desc        =   Analog Block signal.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable analog block.
+
+register
+    name            =   PWRONRSTDLY
+    reg_brief       =   Power On Sequence Delay Register
+    offset          =   384
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PORDLY3
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power On Sequence Delay 3. Aanalog stabalizing after ldo_vref_sel and pwd_cmp_1p8hp assertion. Increments of 32768/HFRC ns.
+    bf_shadow
+        name        =   PORDLY2
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power On Sequence Delay 2. Delay before ldo_vref_sel and pwd_cmp_1p8hp assertion. Increments of 32768/HFRC ns.
+    bf_shadow
+        name        =   PORDLY1
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Power On Sequence Delay 1. Delay before cvrg_hs_n de-assertion. Increments of 32768/HFRC ns.
+
+register
+    name            =   PWRSEQ1ANA
+    reg_brief       =   Power on analog sequence1
+    offset          =   388
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   CVRGHSN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x1
+        desc        =   Calibrated Voltage Reference Generator speed mode (high speed = 0, low speed mode = 1)
+        enum
+            name    =   HIGH
+            value   =   0x0
+            desc    =   CVRG high speed mode.
+        enum
+            name    =   LOW
+            value   =   0x1
+            desc    =   CVRG low speed mode.
+    bf_shadow
+        name        =   PWRSEQ1SWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog Power sequence signals Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   Analog Power sequence 1 Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   Analog Power sequence 1 Software Override Enable.
+
+register
+    name            =   PWRSEQ2ANA
+    reg_brief       =   Power on analog sequence2
+    offset          =   392
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   LDOVREFSEL
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x1
+        desc        =   Select to the ALDO and CLDO to use uncalibrated (0) or calibrated (1) voltage reference.
+        enum
+            name    =   UNCALIBRATED
+            value   =   0x0
+            desc    =   ALDO and CLDO use uncalibrated voltage reference.
+        enum
+            name    =   CALIBRATED
+            value   =   0x1
+            desc    =   ALDO and CLDO use calibrated voltage reference.
+    bf_shadow
+        name        =   PWRSEQ2SWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog Power sequence signals Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   Analog Power sequence 2 Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   Analog Power sequence 2 Software Override Enable.
+
+register
+    name            =   PWRSEQ3ANA
+    reg_brief       =   Power on analog sequence3
+    offset          =   396
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PWDCMPP18HP
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x1
+        desc        =   reset power stable comparator power down.
+        enum
+            name    =   PWR_DN
+            value   =   0x1
+            desc    =   Power down power comparator.
+    bf_shadow
+        name        =   PWRSEQ3SWE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Analog Power sequence signals Software Override Enable.
+        enum
+            name    =   OVERRIDE_DIS
+            value   =   0x0
+            desc    =   Analog Power sequence 3 Software Override Disable.
+        enum
+            name    =   OVERRIDE_EN
+            value   =   0x1
+            desc    =   Analog Power sequence 3 Software Override Enable.
+
+register
+    name            =   LABCHAR
+    reg_brief       =   Lab acterization Miscellaneous Regs
+    offset          =   400
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   0
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   BODLRDE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Disable 1.8V Brown-out reset.
+        enum
+            name    =   EN
+            value   =   0x0
+            desc    =   Enable 1.8v brown out reset.
+        enum
+            name    =   DIS
+            value   =   0x1
+            desc    =   Disable 1.8v brown out reset.
+
+extreg
+    name            =   BOOTLOADERLOW
+    reg_brief       =   Determines whether the bootloader code is visible at address 0x00000000
+    offset          =   416
+    enable          =   none
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   BOOTLOADERLOW
+        friendly    =   VALUE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x1
+        desc        =   Determines whether the bootloader code is visible at address 0x00000000 or not.
+        enum
+            name    =   ADDR0
+            value   =   0x1
+            desc    =   Bootloader code at 0x00000000.
+
+register
+    name            =   SHADOWVALID
+    reg_brief       =   Register to indicate whether the shadow registers have been successfully loaded from the Flash Information Space.
+    offset          =   420
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_readonly
+        name        =   SHADOWVALID
+        friendly    =   VALID
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x1
+        desc        =   Indicates whether the shadow registers contain valid data from the Flash Information Space.
+        enum
+            name    =   VALID
+            value   =   0x1
+            desc    =   Flash information space contains valid data.
+
+register
+    name            =   ICODEFAULTADDR
+    reg_brief       =   ICODE bus address which was present when a bus fault occurred.
+    offset          =   448
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_readonly
+        name        =   ICODEFAULTADDR
+        friendly    =   ADDR
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   The ICODE bus address observed when a Bus Fault occurred. Once an address is captured in this field, it is held until the corresponding Fault Observed bit is cleared in the FAULTSTATUS register.
+
+register
+    name            =   DCODEFAULTADDR
+    reg_brief       =   DCODE bus address which was present when a bus fault occurred.
+    offset          =   452
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_readonly
+        name        =   DCODEFAULTADDR
+        friendly    =   ADDR
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   The DCODE bus address observed when a Bus Fault occurred. Once an address is captured in this field, it is held until the corresponding Fault Observed bit is cleared in the FAULTSTATUS register.
+
+register
+    name            =   SYSFAULTADDR
+    reg_brief       =   System bus address which was present when a bus fault occurred.
+    offset          =   456
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_readonly
+        name        =   SYSFAULTADDR
+        friendly    =   ADDR
+        width       =   32
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   SYS bus address observed when a Bus Fault occurred. Once an address is captured in this field, it is held until the corresponding Fault Observed bit is cleared in the FAULTSTATUS register.
+
+extreg
+    name            =   FAULTSTATUS
+    reg_brief       =   Reflects the status of the bus decoders' fault detection. Any write to this register will clear all of the status bits within the register.
+    offset          =   460
+    enable          =   none
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD
+        width       =   29
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SYSFAULT
+        friendly    =   SYS
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   SYS Bus Decoder Fault Detected bit. When set, a fault has been detected, and the SYSFAULTADDR register will contain the bus address which generated the fault.
+        enum
+            name    =   NOFAULT
+            value   =   0x0
+            desc    =   No bus fault has been detected.
+        enum
+            name    =   FAULT
+            value   =   0x1
+            desc    =   Bus fault detected.
+    bf_ext
+        name        =   DCODEFAULT
+        friendly    =   DCODE
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   DCODE Bus Decoder Fault Detected bit. When set, a fault has been detected, and the DCODEFAULTADDR register will contain the bus address which generated the fault.
+        enum
+            name    =   NOFAULT
+            value   =   0x0
+            desc    =   No DCODE fault has been detected.
+        enum
+            name    =   FAULT
+            value   =   0x1
+            desc    =   DCODE fault detected.
+    bf_ext
+        name        =   ICODEFAULT
+        friendly    =   ICODE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   The ICODE Bus Decoder Fault Detected bit. When set, a fault has been detected, and the ICODEFAULTADDR register will contain the bus address which generated the fault.
+        enum
+            name    =   NOFAULT
+            value   =   0x0
+            desc    =   No ICODE fault has been detected.
+        enum
+            name    =   FAULT
+            value   =   0x1
+            desc    =   ICODE fault detected.
+
+register
+    name            =   FAULTCAPTUREEN
+    reg_brief       =   Enable the fault capture registers
+    offset          =   464
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   FAULTCAPTUREEN
+        friendly    =   ENABLE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Fault Capture Enable field. When set, the Fault Capture monitors are enabled and addresses which generate a hard fault are captured into the FAULTADDR registers.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable fault capture.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable fault capture.
+
+keyreg
+    name            =   SRAMPWRKEY
+    reg_brief       =   INVALID REGISTER, DO NOT USE.  REMOVE IN SHELBY.
+    offset          =   512
+    gen_macro       =   0
+    keyed           =   SRAMPWRDIS
+    keyval          =   0x19
+
+keyreg
+    name            =   FLASHPWRKEY
+    reg_brief       =   INVALID REGISTER, DO NOT USE.  REMOVE IN SHELBY.
+    offset          =   516
+    gen_macro       =   0
+    keyed           =   FLASHPWRDIS
+    keyval          =   0xd3
+
+keyreg
+    name            =   AIKEY
+    reg_brief       =   Key Register for Ambiq Internal Settings (mfg test, trims).
+    offset          =   520
+    gen_macro       =   0
+    keyed           =   None
+    keyval          =   0x73
+
+register
+    name            =   PMUENABLE
+    reg_brief       =   Control bit to enable/disable the PMU
+    offset          =   544
+    enable          =   yes
+    create_sel      =   1
+    gen_macro       =   3
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_shadow
+        name        =   PMUENABLE
+        friendly    =   ENABLE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x1
+        desc        =   PMU Enable Control bit. When set, the MCU's PMU will place the MCU into the lowest power consuming Deep Sleep mode upon execution of a WFI instruction (dependent on the setting of the SLEEPDEEP bit in the ARM SCR register). When cleared, regardless of the requested sleep mode, the PMU will not enter the lowest power Deep Sleep mode, instead entering the Sleep mode.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable MCU power management.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable MCU power management.
+
+register
+    name            =   MISCDEVST
+    reg_brief       =   Miscellaneous Device State
+    offset          =   576
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   0
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_readonly
+        name        =   FABD
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Indicates the state of the chip's (Failure Analysis Backdoor) FA_BD control.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Failure Analysis Backdoor disabled.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Failure Analysis Backdoor enabled.
+    bf_readonly
+        name        =   SRAMWIPED
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Indicates that the SRAM was forced to power-off when a debugger was attached.
+        enum
+            name    =   TRUE
+            value   =   0x1
+            desc    =   SRAM was wiped after a debugger was attached.
+        enum
+            name    =   FALSE
+            value   =   0x0
+            desc    =   SRAM has not been wiped due to a debugger attachment.
+
+register
+    name            =   TPIUCTRL
+    reg_brief       =   TPIU Control Register. Determines the clock enable and frequency for the M4's TPIU interface.
+    offset          =   592
+    enable          =   none
+    create_sel      =   1
+    gen_macro       =   1
+    bf_reserved
+        name        =   RSVD1
+        width       =   22
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   TPIUCLKSEL
+        friendly    =   CLKSEL
+        width       =   2
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This field selects the frequency of the ARM M4 TPIU port.
+        enum
+            name    =   LOW_PWR
+            value   =   0x0
+            desc    =   Low power state.
+        enum
+            name    =   0MHz
+            value   =   0x0
+            desc    =   Low power state.
+        enum
+            name    =   6MHZ
+            value   =   0x1
+            desc    =   Selects 6MHz frequency.
+        enum
+            name    =   3MHZ
+            value   =   0x2
+            desc    =   Selects 3MHz frequency.
+        enum
+            name    =   1_5MHZ
+            value   =   0x3
+            desc    =   Selects 1.5 MHz frequency.
+    bf_reserved
+        name        =   RSVD0
+        width       =   7
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   TPIUENABLE
+        friendly    =   ENABLE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   TPIU Enable field. When set, the ARM M4 TPIU is enabled and data can be streamed out of the MCU's SWO port using the ARM ITM and TPIU modules.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the TPIU.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the TPIU.
+

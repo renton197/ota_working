@@ -1,0 +1,218 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     rstgen_regs.src                                                    *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     03/05/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   reset gen module of  the Ambig MCU.   It is expected to be parsed and      *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   RSTGEN
+block_rev           =   1
+block_brief         =   MCU Reset Generator
+
+register
+    name            =   RST_CFG
+    friendly        =   CFG
+    reg_brief       =   Configuration Register
+    offset          =   0
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WDREN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Watchdog Timer Reset Enable.  NOTE: The WDT module must also be configured for WDT reset.
+    bf_standard
+        name        =   BODHREN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Brown out high (2.1v) reset enable.
+
+extreg
+    name            =   SWPOI
+    reg_brief       =   Software POI Reset
+    offset          =   4
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SWPOIKEY
+        width       =   8
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        desc        =   0x1B generates a software POI reset.
+        enum
+            name    =   KEYVALUE
+            value   =   0x1B
+            desc    =   Writing 0x1B key value generates a software POI reset.
+
+extreg
+    name            =   SWPOR
+    reg_brief       =   Software POR Reset
+    offset          =   8
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SWPORKEY
+        width       =   8
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        desc        =   0xD4 generates a software POR reset.
+        enum
+            name    =   KEYVALUE
+            value   =   0xD4
+            desc    =   Writing 0xD4 key value generates a software POR reset.
+
+extreg
+    name            =   RST_STAT
+    friendly        =   STAT
+    reg_brief       =   Status Register
+    offset          =   12
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   25
+        lsb         =   7
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   WDRSTAT
+        width       =   1
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was initiated by a Watchdog Timer Reset.
+    bf_ext
+        name        =   DBGRSTAT
+        width       =   1
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was a initiated by Debugger Reset.
+    bf_ext
+        name        =   POIRSTAT
+        width       =   1
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was a initiated by Software POI Reset.
+    bf_ext
+        name        =   SWRSTAT
+        width       =   1
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was a initiated by SW POR or AIRCR Reset.
+    bf_ext
+        name        =   BORSTAT
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was initiated by a Brown-Out Reset.
+    bf_ext
+        name        =   PORSTAT
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was initiated by a Power-On Reset.
+    bf_ext
+        name        =   EXRSTAT
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Reset was initiated by an External Reset.
+
+
+extreg
+    name            =   RST_CLRSTAT
+    friendly        =   CLRSTAT
+    offset          =   16
+    enable          =   None
+    reg_brief       =   Clear the status register
+    createbfs       =   Yes
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   CLRSTAT
+        width       =   1
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing a 1 to this bit clears all bits in the RST_STAT.
+
+
+intregs
+    name            =   RST_IER
+    friendly        =   INT
+    offset          =   512
+    clearall        =   none
+    numints         =   1
+    reg_brief       =   Reset Interrupt register
+    bf_reserved
+        name        =   RSVD
+        width       =   31
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_int
+        name        =   BODH
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Enables an interrupt that triggers when VCC is below BODH level.

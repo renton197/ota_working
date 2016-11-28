@@ -1,0 +1,14 @@
+#******************************************************************************
+#
+# filelist.txt
+#
+# List of files to be included in public builds and delivered to customers.
+#
+#******************************************************************************
+[normal]
+am_bootloader.c
+am_bootloader.h
+
+[mbrd]
+am_bootloader.c
+am_bootloader.h

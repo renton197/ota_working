@@ -1,0 +1,1927 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     ctimer_regs.src                                                    *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     12/11/2013                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   CTIMER block of the Ambiq MCU.  It is expected to be parsed and            *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   CTIMER
+block_rev           =   1
+block_brief         =   Counter/Timer
+block_desc          =   The Counter/Timer block contains 8 sixteen bit counter or timer functions. Each pair of these counters can be cascaded into 32 bit Counter/Timer functions.
+
+register
+    name            =   CTTMR0
+    friendly        =   TMR0
+    offset          =   0
+    enable          =   None
+    reg_brief       =   Counter/Timer Register
+    reg_desc        =   This register holds the running time or event count, either for each 16 bit half or for the whole 32 bit count when the pair is linked.
+    bf_readonly
+        name        =   CTTMRB0
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer B0.
+    bf_readonly
+        name        =   CTTMRA0
+        width       =   16
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer A0.
+
+register
+    name            =   CMPRA0
+    offset          =   4
+    enable          =   None
+    reg_brief       =   Counter/Timer A0 Compare Registers
+    reg_desc        =   Compare limits for timer half A.
+    bf_standard
+        name        =   CMPR1A0
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Compare Register 1. Holds the upper limit for timer half A.
+    bf_standard
+        name        =   CMPR0A0
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Compare Register 0. Holds the lower limit for timer half A.
+
+register
+    name            =   CMPRB0
+    offset          =   8
+    enable          =   None
+    reg_brief       =   Counter/Timer B0 Compare Registers
+    reg_desc        =   Compare limits for timer half B.
+    bf_standard
+        name        =   CMPR1B0
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Compare Register 1. Holds the upper limit for timer half B.
+    bf_standard
+        name        =   CMPR0B0
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Compare Register 0. Holds the lower limit for timer half B.
+
+register
+    name            =   CTCTRL0
+    friendly        =   CTRL0
+    reg_brief       =   Counter/Timer Control
+    reg_desc        =   Control bit fields for both halves of timer 0.
+    offset          =   12
+    enable          =   None
+    bf_standard
+        name        =   CTLINK0
+        width       =   1
+        lsb         =   31
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0/B0 Link bit.
+        enum
+            name    =   TWO_16BIT_TIMERS
+            value   =   0x0
+            desc    =   Use A0/B0 timers as two independent 16-bit timers (default).
+        enum
+            name    =   32BIT_TIMER
+            value   =   0x1
+            desc    =   Link A0/B0 timers into a single 32-bit timer.
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   29
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRB0POL
+        width       =   1
+        lsb         =   28
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINB0 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINB0 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRB0CLR
+        width       =   1
+        lsb         =   27
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer B0 to run
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer B0 at 0x0000.
+    bf_standard
+        name        =   TMRB0PE
+        width       =   1
+        lsb         =   26
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B holds the TMRPINB signal at the value TMRB0POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B0 to generate a signal on TMRPINB.
+    bf_standard
+        name        =   TMRB0IE
+        width       =   1
+        lsb         =   25
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer B0 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B0 to generate an interrupt.
+    bf_standard
+        name        =   TMRB0FN
+        width       =   3
+        lsb         =   22
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0B0, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0B0, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0B0, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0B0, assert, count to CMPR1B0, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRB0CLK
+        width       =   5
+        lsb         =   17
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINB.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKB
+            value   =   0x10
+            desc    =   Clock source is buck converter stream B.
+    bf_standard
+        name        =   TMRB0EN
+        width       =   1
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B0 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer B0 Enable.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRA0POL
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINA0 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINA0 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRA0CLR
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer A0 to run
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer A0 at 0x0000.
+    bf_standard
+        name        =   TMRA0PE
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A holds the TMRPINA signal at the value TMRA0POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B0 to generate a signal on TMRPINB.
+    bf_standard
+        name        =   TMRA0IE
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer A0 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A0 to generate an interrupt.
+    bf_standard
+        name        =   TMRA0FN
+        width       =   3
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0A0, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0A0, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0A0, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0A0, assert, count to CMPR1A0, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRA0CLK
+        width       =   5
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINA.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKA
+            value   =   0x10
+            desc    =   Clock source is buck converter stream A.
+    bf_standard
+        name        =   TMRA0EN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A0 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer A0 Enable.
+
+register
+    name            =   CTTMR1
+    friendly        =   TMR1
+    offset          =   16
+    enable          =   None
+    reg_brief       =   Counter/Timer Register
+    reg_desc        =   This register holds the running time or event count, either for each 16 bit half or for the whole 32 bit count when the pair is linked.
+    bf_readonly
+        name        =   CTTMRB1
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer B1.
+    bf_readonly
+        name        =   CTTMRA1
+        width       =   16
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer A1.
+
+register
+    name            =   CMPRA1
+    offset          =   20
+    enable          =   None
+    reg_brief       =   Counter/Timer A1 Compare Registers
+    reg_desc        =   This register holds the compare limits for timer half A.
+    bf_standard
+        name        =   CMPR1A1
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Compare Register 1.
+    bf_standard
+        name        =   CMPR0A1
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Compare Register 0.
+
+register
+    name            =   CMPRB1
+    offset          =   24
+    enable          =   None
+    reg_brief       =   Counter/Timer B1 Compare Registers
+    reg_desc        =   This register holds the compare limits for timer half B.
+    bf_standard
+        name        =   CMPR1B1
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Compare Register 1.
+    bf_standard
+        name        =   CMPR0B1
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Compare Register 0.
+
+register
+    name            =   CTCTRL1
+    friendly        =   CTRL1
+    reg_brief       =   Counter/Timer Control
+    reg_desc        =   This register holds the control bit fields for both halves of timer 1.
+    offset          =   28
+    enable          =   None
+    bf_standard
+        name        =   CTLINK1
+        width       =   1
+        lsb         =   31
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1/B1 Link bit.
+        enum
+            name    =   TWO_16BIT_TIMERS
+            value   =   0x0
+            desc    =   Use A0/B0 timers as two independent 16-bit timers (default).
+        enum
+            name    =   32BIT_TIMER
+            value   =   0x1
+            desc    =   Link A1/B1 timers into a single 32-bit timer.
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   29
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRB1POL
+        width       =   1
+        lsb         =   28
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINB1 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINB1 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRB1CLR
+        width       =   1
+        lsb         =   27
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer B1 to run
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer B1 at 0x0000.
+    bf_standard
+        name        =   TMRB1PE
+        width       =   1
+        lsb         =   26
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B holds the TMRPINB signal at the value TMRB1POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B1 to generate a signal on TMRPINB.
+    bf_standard
+        name        =   TMRB1IE
+        width       =   1
+        lsb         =   25
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer B1 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B1 to generate an interrupt.
+    bf_standard
+        name        =   TMRB1FN
+        width       =   3
+        lsb         =   22
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0B1, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0B1, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0B1, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0B1, assert, count to CMPR1B1, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRB1CLK
+        width       =   5
+        lsb         =   17
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINB.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKB
+            value   =   0x10
+            desc    =   Clock source is buck converter stream B.
+    bf_standard
+        name        =   TMRB1EN
+        width       =   1
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B1 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer B1 Enable.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRA1POL
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINA1 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINA1 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRA1CLR
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer A1 to run
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer A1 at 0x0000.
+    bf_standard
+        name        =   TMRA1PE
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A holds the TMRPINA signal at the value TMRA1POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A1 to generate a signal on TMRPINA.
+    bf_standard
+        name        =   TMRA1IE
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer A1 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A1 to generate an interrupt.
+    bf_standard
+        name        =   TMRA1FN
+        width       =   3
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0A1, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0A1, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0A1, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0A1, assert, count to CMPR1A1, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRA1CLK
+        width       =   5
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINA.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is the HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKA
+            value   =   0x10
+            desc    =   Clock source is buck converter stream A.
+    bf_standard
+        name        =   TMRA1EN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A1 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer A1 Enable.
+
+register
+    name            =   CTTMR2
+    friendly        =   TMR2
+    offset          =   32
+    enable          =   None
+    reg_brief       =   Counter/Timer Register
+    bf_readonly
+        name        =   CTTMRB2
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer B2.
+    bf_readonly
+        name        =   CTTMRA2
+        width       =   16
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer A2.
+
+register
+    name            =   CMPRA2
+    offset          =   36
+    enable          =   None
+    reg_brief       =   Counter/Timer A2 Compare Registers
+    reg_desc        =   This register holds the compare limits for timer half A.
+    bf_standard
+        name        =   CMPR1A2
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Compare Register 1.
+    bf_standard
+        name        =   CMPR0A2
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Compare Register 0.
+
+register
+    name            =   CMPRB2
+    offset          =   40
+    enable          =   None
+    reg_brief       =   Counter/Timer B2 Compare Registers
+    reg_desc        =   This register holds the compare limits for timer half B.
+    bf_standard
+        name        =   CMPR1B2
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Compare Register 1.
+    bf_standard
+        name        =   CMPR0B2
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Compare Register 0.
+
+register
+    name            =   CTCTRL2
+    friendly        =   CTRL2
+    reg_brief       =   Counter/Timer Control
+    reg_desc        =   This register holds the control bit fields for both halves of timer 2.
+    offset          =   44
+    enable          =   None
+    bf_standard
+        name        =   CTLINK2
+        width       =   1
+        lsb         =   31
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2/B2 Link bit.
+        enum
+            name    =   TWO_16BIT_TIMERS
+            value   =   0x0
+            desc    =   Use A0/B0 timers as two independent 16-bit timers (default).
+        enum
+            name    =   32BIT_TIMER
+            value   =   0x1
+            desc    =   Link A2/B2 timers into a single 32-bit timer.
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   29
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRB2POL
+        width       =   1
+        lsb         =   28
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINB2 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINB2 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRB2CLR
+        width       =   1
+        lsb         =   27
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer B2 to run
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer B2 at 0x0000.
+    bf_standard
+        name        =   TMRB2PE
+        width       =   1
+        lsb         =   26
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B holds the TMRPINB signal at the value TMRB2POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B2 to generate a signal on TMRPINB.
+    bf_standard
+        name        =   TMRB2IE
+        width       =   1
+        lsb         =   25
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer B2 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B2 to generate an interrupt.
+    bf_standard
+        name        =   TMRB2FN
+        width       =   3
+        lsb         =   22
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0B2, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0B2, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0B2, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0B2, assert, count to CMPR1B2, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRB2CLK
+        width       =   5
+        lsb         =   17
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINB.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKA
+            value   =   0x10
+            desc    =   Clock source is buck converter stream A.
+    bf_standard
+        name        =   TMRB2EN
+        width       =   1
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B2 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer B2 Enable.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRA2POL
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINA2 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINA2 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRA2CLR
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer A2 to run
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer A2 at 0x0000.
+    bf_standard
+        name        =   TMRA2PE
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A holds the TMRPINA signal at the value TMRA2POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A2 to generate a signal on TMRPINA.
+    bf_standard
+        name        =   TMRA2IE
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer A2 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A2 to generate an interrupt.
+    bf_standard
+        name        =   TMRA2FN
+        width       =   3
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0A2, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0A2, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0A2, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0A2, assert, count to CMPR1A2, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRA2CLK
+        width       =   5
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINA.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKB
+            value   =   0x10
+            desc    =   Clock source is buck converter stream B.
+    bf_standard
+        name        =   TMRA2EN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A2 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer A2 Enable.
+
+register
+    name            =   CTTMR3
+    friendly        =   TMR3
+    offset          =   48
+    enable          =   None
+    reg_brief       =   Counter/Timer Register
+    bf_readonly
+        name        =   CTTMRB3
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer B3.
+    bf_readonly
+        name        =   CTTMRA3
+        width       =   16
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter/Timer A3.
+
+register
+    name            =   CMPRA3
+    offset          =   52
+    enable          =   None
+    reg_brief       =   Counter/Timer A3 Compare Registers
+    reg_desc        =   This register holds the compare limits for timer half A.
+    bf_standard
+        name        =   CMPR1A3
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Compare Register 1.
+    bf_standard
+        name        =   CMPR0A3
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Compare Register 0.
+
+register
+    name            =   CMPRB3
+    offset          =   56
+    enable          =   None
+    reg_brief       =   Counter/Timer B3 Compare Registers
+    reg_desc        =   This register holds the compare limits for timer half B.
+    bf_standard
+        name        =   CMPR1B3
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Compare Register 1.
+    bf_standard
+        name        =   CMPR0B3
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Compare Register 0.
+
+register
+    name            =   CTCTRL3
+    friendly        =   CTRL3
+    reg_brief       =   Counter/Timer Control
+    reg_desc        =   This register holds the control bit fields for both halves of timer 3.
+    offset          =   60
+    enable          =   None
+    bf_standard
+        name        =   CTLINK3
+        width       =   1
+        lsb         =   31
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A/B Link bit.
+        enum
+            name    =   TWO_16BIT_TIMERS
+            value   =   0x0
+            desc    =   Use A0/B0 timers as two independent 16-bit timers (default).
+        enum
+            name    =   32BIT_TIMER
+            value   =   0x1
+            desc    =   Link A3/B3 timers into a single 32-bit timer.
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   29
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRB3POL
+        width       =   1
+        lsb         =   28
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINB3 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINB3 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRB3CLR
+        width       =   1
+        lsb         =   27
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Clear bit.
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow counter/timer B3 to run.
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer B3 at 0x0000.
+    bf_standard
+        name        =   TMRB3PE
+        width       =   1
+        lsb         =   26
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B holds the TMRPINB signal at the value TMRB3POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B3 to generate a signal on TMRPINB.
+    bf_standard
+        name        =   TMRB3IE
+        width       =   1
+        lsb         =   25
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer B3 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer B3 to generate an interrupt.
+    bf_standard
+        name        =   TMRB3FN
+        width       =   3
+        lsb         =   22
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0B3, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0B3, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0B3, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0B3, assert, count to CMPR1B3, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRB3CLK
+        width       =   5
+        lsb         =   17
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINB.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKA
+            value   =   0x10
+            desc    =   Clock source is buck converter stream A.
+    bf_standard
+        name        =   TMRB3EN
+        width       =   1
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer B3 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer B3 Enable.
+    bf_standard
+        name        =   ADCEN
+        width       =   1
+        lsb         =   15
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Special Timer A3 enable for ADC function.
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   TMRA3POL
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 output polarity.
+        enum
+            name    =   NORMAL
+            value   =   0x0
+            desc    =   The polarity of the TMRPINA3 pin is the same as the timer output.
+        enum
+            name    =   INVERTED
+            value   =   0x1
+            desc    =   The polarity of the TMRPINA3 pin is the inverse of the timer output.
+    bf_standard
+        name        =   TMRA3CLR
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Clear bit.
+        enum
+            name    =   CLEAR
+            value   =   0x1
+            desc    =   Holds counter/timer A3 at 0x0000.
+    bf_standard
+        name        =   TMRA3PE
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Output Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A holds the TMRPINA signal at the value TMRA3POL.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A3 to generate a signal on TMRPINA.
+    bf_standard
+        name        =   TMRA3IE
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Interrupt Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable counter/timer A3 from generating an interrupt.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable counter/timer A3 to generate an interrupt.
+    bf_standard
+        name        =   TMRA3FN
+        width       =   3
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Function Select.
+        enum
+            name    =   SINGLECOUNT
+            value   =   0x0
+            desc    =   Single count (output toggles and sticks).  Count to CMPR0A3, stop.
+        enum
+            name    =   REPEATEDCOUNT
+            value   =   0x1
+            desc    =   Repeated count (periodic 1-clock-cycle-wide pulses).  Count to CMPR0A3, restart.
+        enum
+            name    =   PULSE_ONCE
+            value   =   0x2
+            desc    =   Pulse once (aka one-shot).  Count to CMPR0A3, assert, count to CMPR1B, deassert, stop.
+        enum
+            name    =   PULSE_CONT
+            value   =   0x3
+            desc    =   Pulse continously.  Count to CMPR0A3, assert, count to CMPR1A3, deassert, restart.
+        enum
+            name    =   CONTINUOUS
+            value   =   0x4
+            desc    =   Continuous run (aka Free Run).  Count continuously.
+    bf_standard
+        name        =   TMRA3CLK
+        width       =   5
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Clock Select.
+        enum
+            name    =   TMRPIN
+            value   =   0x0
+            desc    =   Clock source is TMRPINA.
+        enum
+            name    =   HFRC
+            value   =   0x1
+            desc    =   Clock source is the HFRC
+        enum
+            name    =   HFRC_DIV8
+            value   =   0x2
+            desc    =   Clock source is HFRC / 8
+        enum
+            name    =   HFRC_DIV128
+            value   =   0x3
+            desc    =   Clock source is HFRC / 128
+        enum
+            name    =   HFRC_DIV512
+            value   =   0x4
+            desc    =   Clock source is HFRC / 512
+        enum
+            name    =   HFRC_DIV2K
+            value   =   0x5
+            desc    =   Clock source is HFRC / 2048
+        enum
+            name    =   XT
+            value   =   0x6
+            desc    =   Clock source is the XT (uncalibrated).
+        enum
+            name    =   XT_DIV2
+            value   =   0x7
+            desc    =   Clock source is XT / 2
+        enum
+            name    =   XT_DIV16
+            value   =   0x8
+            desc    =   Clock source is XT / 16
+        enum
+            name    =   XT_DIV256
+            value   =   0x9
+            desc    =   Clock source is XT / 256
+        enum
+            name    =   LFRC_DIV2
+            value   =   0xA
+            desc    =   Clock source is LFRC / 2
+        enum
+            name    =   LFRC_DIV32
+            value   =   0xB
+            desc    =   Clock source is LFRC / 32
+        enum
+            name    =   LFRC_DIV1K
+            value   =   0xC
+            desc    =   Clock source is LFRC / 1024
+        enum
+            name    =   LFRC
+            value   =   0xD
+            desc    =   Clock source is LFRC / 16K
+        enum
+            name    =   RTC_100HZ
+            value   =   0xE
+            desc    =   Clock source is 100 Hz from the current RTC oscillator.
+        enum
+            name    =   HCLK
+            value   =   0xF
+            desc    =   Clock source is HCLK.
+        enum
+            name    =   BUCKB
+            value   =   0x10
+            desc    =   Clock source is buck converter stream B.
+    bf_standard
+        name        =   TMRA3EN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 Enable bit.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter/Timer A3 Disable.
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter/Timer A3 Enable.
+
+intregs
+    name            =   CTIMERINT
+    friendly        =   INT
+    offset          =   512
+    clearall        =   None
+    numints         =   8
+    createbfs       =   Yes
+    reg_brief       =   Counter/Timer Interrupts
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_int
+        name        =   CTMRB3INT
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B3 interrupt.
+    bf_int
+        name        =   CTMRA3INT
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A3 interrupt.
+    bf_int
+        name        =   CTMRB2INT
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B2 interrupt.
+    bf_int
+        name        =   CTMRA2INT
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A2 interrupt.
+    bf_int
+        name        =   CTMRB1INT
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B1 interrupt.
+    bf_int
+        name        =   CTMRA1INT
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A1 interrupt.
+    bf_int
+        name        =   CTMRB0INT
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer B0 interrupt.
+    bf_int
+        name        =   CTMRA0INT
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter/Timer A0 interrupt.
+

@@ -1,0 +1,266 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     vcomp_regs.src                                                     *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     01/20/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   VCOMP block of the Ambiq MCU.  It is expected to be parsed and             *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   VCOMP
+block_rev           =   1
+block_brief         =   Voltage Comparator
+block_desc          =   This is the detailed description of the Voltage Comparator Register Block. The Voltage Cmparator Register Block contains the software control for selecting the comparator inputs, powerdown control, observing comparator output status and enabling interrupts.
+
+register
+    name            =   VCMP_CFG
+    friendly        =   CFG
+    reg_brief       =   Configuration Register
+    offset          =   0
+    enable          =   none
+    reg_desc        =   The Voltage Comparator Configuration Register contains the software control for selecting beween the 4 options for the positive input as well as the multiple options for the reference input.
+    bf_reserved
+        name        =   RSVD
+        width       =   12
+        lsb         =   20
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   LVLSEL
+        width       =   4
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   When the reference input NSEL is set to NSEL_DAC, this bitfield selects the voltage level for the negative input to the comparator.
+        enum
+            name    =   0P58V
+            value   =   0x0
+            desc    =   Set Reference input to 0.58 Volts.
+        enum
+            name    =   0P77V
+            value   =   0x1
+            desc    =   Set Reference input to 0.77 Volts.
+        enum
+            name    =   0P97V
+            value   =   0x2
+            desc    =   Set Reference input to 0.97 Volts.
+        enum
+            name    =   1P16V
+            value   =   0x3
+            desc    =   Set Reference input to 1.16 Volts.
+        enum
+            name    =   1P35V
+            value   =   0x4
+            desc    =   Set Reference input to 1.35 Volts.
+        enum
+            name    =   1P55V
+            value   =   0x5
+            desc    =   Set Reference input to 1.55 Volts.
+        enum
+            name    =   1P74V
+            value   =   0x6
+            desc    =   Set Reference input to 1.74 Volts.
+        enum
+            name    =   1P93V
+            value   =   0x7
+            desc    =   Set Reference input to 1.93 Volts.
+        enum
+            name    =   2P13V
+            value   =   0x8
+            desc    =   Set Reference input to 2.13 Volts.
+        enum
+            name    =   2P32V
+            value   =   0x9
+            desc    =   Set Reference input to 2.32 Volts.
+        enum
+            name    =   2P51V
+            value   =   0xA
+            desc    =   Set Reference input to 2.51 Volts.
+        enum
+            name    =   2P71V
+            value   =   0xB
+            desc    =   Set Reference input to 2.71 Volts.
+        enum
+            name    =   2P90V
+            value   =   0xC
+            desc    =   Set Reference input to 2.90 Volts.
+        enum
+            name    =   3P09V
+            value   =   0xD
+            desc    =   Set Reference input to 3.09 Volts.
+        enum
+            name    =   3P29V
+            value   =   0xE
+            desc    =   Set Reference input to 3.29 Volts.
+        enum
+            name    =   3P48V
+            value   =   0xF
+            desc    =   Set Reference input to 3.48 Volts.
+
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   NSEL
+        width       =   2
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield selects the negative input to the comparator.
+        enum
+            name    =   VREFEXT1
+            value   =   0x0
+            desc    =   Use external reference 1 for reference input.
+        enum
+            name    =   VREFEXT2
+            value   =   0x1
+            desc    =   Use external reference 2 for reference input.
+        enum
+            name    =   VREFEXT3
+            value   =   0x3
+            desc    =   Use external reference 3 for reference input.
+        enum
+            name    =   DAC
+            value   =   0x3
+            desc    =   Use DAC output selected by LVLSEL for reference input.
+
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   PSEL
+        width       =   2
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield selects the positive input to the comparator.
+        enum
+            name    =   VDDADJ
+            value   =   0x0
+            desc    =   Use VDDADJ for the positive input.
+        enum
+            name    =   VTEMP
+            value   =   0x1
+            desc    =   Use the temperature sensor output for the positive input.
+        enum
+            name    =   VEXT1
+            value   =   0x2
+            desc    =   Use external voltage 1 for positive input.
+        enum
+            name    =   VEXT2
+            value   =   0x3
+            desc    =   Use external voltage 1 for positive input.
+
+register
+    name            =   VCMP_STAT
+    friendly        =   STAT
+    reg_brief       =   Status Register
+    offset          =   4
+    enable          =   none
+    desc            =   Powerdown and comparator output status.
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_readonly
+        name        =   PWDSTAT
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit indicates the power down state of the voltage comparator.
+        enum
+            name    =   POWERED_DOWN
+            value   =   0x1
+            desc    =   The voltage comparator is powered down.
+    bf_readonly
+        name        =   CMPOUT
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit is 1 if the positive input of the comparator is greater than the negative input.
+        enum
+            name    =   VOUT_LOW
+            value   =   0x0
+            desc    =   The negative input of the comparator is greater than the positive input.
+        enum
+            name    =   VOUT_HIGH
+            value   =   0x1
+            desc    =   The positive input of the comparator is greater than the negative input.
+
+keyreg
+    name            =   VCMP_PWDKEY
+    friendly        =   PWDKEY
+    reg_brief       =   Key Register for Powering Down the Voltage Comparator
+    offset          =   8
+    keyed           =   None
+    keyval          =   0x37
+    reg_desc        =   Write a value of 0x37 to unlock, write any other value to lock.  This register also indicates lock status when read. When in the unlccked state (i.e. 0x37 has been written), it reads as 1. When in the locked state, it reads as 0.
+    #enum
+    #    name        =   KEYVAL
+    #    value       =   0x37
+    #    desc        =   Value to use for powering down the voltage comparator.
+
+intregs
+    name            =   VCMP_IER
+    friendly        =   INT
+    offset          =   512
+    clearall        =   none
+    numints         =   2
+    reg_brief       =   Voltage Comparator Interrupt registers
+    desc            =   Full register description.
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_int
+        name        =   OUTHI
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the vcompout high interrupt.
+    bf_int
+        name        =   OUTLOW
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the vcompout low interrupt.
+

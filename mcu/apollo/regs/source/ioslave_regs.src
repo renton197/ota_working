@@ -1,0 +1,471 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     ioslave_regs.src                                                   *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/12/2013                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   IOSLAVE block of the Ambiq MCU.  It is expected to be parsed and           *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   IOSLAVE
+block_rev           =   1
+block_brief         =   I2C/SPI Slave
+
+extmem
+    name            =   IORAM
+    offset          =   0
+    size            =   256
+
+extreg
+    name            =   FIFOPTR
+    offset          =   256
+    enable          =   None
+    reg_brief       =   Current FIFO Pointer
+    bf_reserved
+        name        =   RSVD
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   FIFOSIZ
+        width       =   8
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   The number of bytes currently in the hardware FIFO.
+    bf_ext
+        name        =   FIFOPTR
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Current FIFO pointer.
+
+register
+    name            =   FIFOCFG
+    reg_brief       =   FIFO Configuration
+    offset          =   260
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   30
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ROBASE
+        width       =   6
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x20
+        desc        =   Defines the read-only area.  The IO Slave read-only area is situated in LRAM at (ROBASE*8) to (FIFOOBASE*8-1)
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   14
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   FIFOMAX
+        width       =   6
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   These bits hold the maximum FIFO address in 8 byte segments.  It is also the beginning of the RAM area of the LRAM.  Note that no RAM area is configured if FIFOMAX is set to 0x1F.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   FIFOBASE
+        width       =   5
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   These bits hold the base address of the I/O FIFO in 8 byte segments.The IO Slave FIFO is situated in LRAM at (FIFOBASE*8) to (FIFOMAX*8-1).
+
+register
+    name            =   FIFOTHR
+    reg_brief       =   FIFO Threshold Configuration
+    offset          =   264
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   FIFOTHR
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO size interrupt threshold.
+
+register
+    name            =   FUPD
+    reg_brief       =   FIFO Update Status
+    offset          =   268
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   IOREAD
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield indicates an IO read is active.
+    bf_standard
+        name        =   FIFOUPD
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit indicates that a FIFO update is underway.
+
+extreg
+    name            =   FIFOCTR
+    reg_brief       =   Overall FIFO Counter
+    offset          =   272
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   22
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   FIFOCTR
+        width       =   10
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Virtual FIFO byte count
+
+extreg
+    name            =   FIFOINC
+    reg_brief       =   Overall FIFO Counter Increment
+    offset          =   276
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   22
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   FIFOINC
+        width       =   10
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        desc        =   Increment the Overall FIFO Counter by this value on a write
+
+register
+    name            =   IOSCFG
+    friendly        =   CFG
+    reg_brief       =   I/O Slave Configuration
+    offset          =   280
+    enable          =   None
+    bf_standard
+        name        =   IFCEN
+        width       =   1
+        lsb         =   31
+        rw          =   RW
+        reset       =   0x0
+        desc        =   IOSLAVE interface enable.
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the IOSLAVE
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the IOSLAVE
+    bf_reserved
+        name        =   RSVD
+        width       =   11
+        lsb         =   20
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   I2CADDR
+        width       =   12
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   7-bit or 10-bit I2C device address.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   STARTRD
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the cycle to initiate an I/O RAM read.
+        enum
+            name    =   LATE
+            value   =   0x0
+            desc    =   Initiate I/O RAM read late in each transferred byte.
+        enum
+            name    =   EARLY
+            value   =   0x1
+            desc    =   Initiate I/O RAM read early in each transferred byte.
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   LSB
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects the transfer bit ordering.
+        enum
+            name    =   MSB_FIRST
+            value   =   0x0
+            desc    =   Data is assumed to be sent and received with MSB first.
+        enum
+            name    =   LSB_FIRST
+            value   =   0x1
+            desc    =   Data is assumed to be sent and received with LSB first.
+    bf_standard
+        name        =   SPOL
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects SPI polarity.
+        enum
+            name    =   SPI_MODES_0_3
+            value   =   0x0
+            desc    =   Polarity 0, handles SPI modes 0 and 3.
+        enum
+            name    =   SPI_MODES_1_2
+            value   =   0x1
+            desc    =   Polarity 1, handles SPI modes 1 and 2.
+    bf_standard
+        name        =   IFCSEL
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects the I/O interface.
+        enum
+            name    =   I2C
+            value   =   0x0
+            desc    =   Selects I2C interface for the IO Slave.
+        enum
+            name    =   SPI
+            value   =   0x1
+            desc    =   Selects SPI interface for the IO Slave.
+
+register
+    name            =   PRENC
+    reg_brief       =   I/O Slave Interrupt Priority Encode
+    offset          =   284
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   27
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   PRENC
+        width       =   5
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   These bits hold the priority encode of the REGACC interrupts.
+
+extreg
+    name            =   IOINTCTL
+    reg_brief       =   I/O Interrupt Control
+    offset          =   288
+    enable          =   None
+    bf_ext
+        name        =   IOINTSET
+        width       =   8
+        lsb         =   24
+        rw          =   WO
+        reset       =   0x0
+        desc        =   These bits set the IOINT interrupts when written with a 1.
+    bf_reserved
+        name        =   RSVD
+        width       =   7
+        lsb         =   17
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   IOINTCLR
+        width       =   1
+        lsb         =   16
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit clears all of the IOINT interrupts when written with a 1.
+    bf_ext
+        name        =   IOINT
+        width       =   8
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   These bits read the IOINT interrupts.
+    bf_ext
+        name        =   IOINTEN
+        width       =   8
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   These bits setread the IOINT interrupt enables.
+
+register
+    name            =   GENADD
+    reg_brief       =   General Address Data
+    offset          =   292
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_readonly
+        name        =   GADATA
+        width       =   8
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   The data supplied on the last General Address reference.
+
+intregs
+    name            =   IOSLAVEINT
+    friendly        =   INT
+    offset          =   512
+    clearall        =   None
+    numints         =   6
+    createbfs       =   Yes
+    reg_brief       =   IO Slave Interrupts
+    bf_reserved
+        name        =   RSVD
+        width       =   26
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_int
+        name        =   IOINTW
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   I2C Interrupt Write interrupt.
+    bf_int
+        name        =   GENAD
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   I2C General Address interrupt.
+    bf_int
+        name        =   FRDERR
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO Read Error interrupt.
+    bf_int
+        name        =   FUNDFL
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO Underflow interrupt.
+    bf_int
+        name        =   FOVFL
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO Overflow interrupt.
+    bf_int
+        name        =   FSIZE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO Size interrupt.
+
+intregs
+    name            =   REGACCINT
+    offset          =   528
+    clearall        =   None
+    numints         =   32
+    reg_brief       =   Register Access Interrupts
+    statout         =   Yes
+    bf_int
+        name        =   REGACC
+        width       =   32
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Register access interrupts.
+

@@ -1,0 +1,1984 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     adc_regs.src                                                       *
+#                                                                              *
+# Title:    Ambiq Micro ADC register definitions                               *
+#                                                                              *
+# Date:     02/09/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   ADC block of the MCU.  It is expected to be parsed and                     *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   ADC
+block_rev           =   1
+block_brief         =   Analog Digital Converter Control
+block_desc          =   This is the detailed description of the Analog Digital Converter Register Block. The ADC Register Block contains the software control for enablement, slot configuration, clock configuration, trigger configuration, temperature sensor enablement, power modes, accumulate/divide, window comparison and interrupt control for the ADC functional unit.
+
+register
+    name            =   ADCCFG
+    friendly        =   CFG
+    reg_brief       =   Configuration Register
+    offset          =   0
+    enable          =   none
+    reg_desc        =   The ADC Configuration Register contains the software control for selecting the clock frequency used for the SAR conversions, the trigger polarity, the trigger select, the reference voltage select, the operating mode (current control for high  frequency conversions), the low power mode, the operating mode (single scan per trigger vs. repeating mode), temperature sensor enable and ADC enable.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CLKSEL
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the source and frequency for the ADC clock.  All values not enumerated below are undefined.
+        enum
+            name    =   OFF
+            value   =   0x0
+            desc    =   Low Power Mode.
+        enum
+            name    =   12MHZ
+            value   =   0x1
+            desc    =   12 MHz ADC clock.
+        enum
+            name    =   6MHZ
+            value   =   0x2
+            desc    =   6 MHz ADC clock.
+        enum
+            name    =   3MHZ
+            value   =   0x3
+            desc    =   12 MHz ADC clock.
+        enum
+            name    =   1_5MHZ
+            value   =   0x4
+            desc    =   1.5 MHz ADC clock.
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   21
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   TRIGPOL
+        width       =   1
+        lsb         =   20
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit selects the ADC trigger polarity for external off chip triggers.
+        enum
+            name    =   RISING_EDGE
+            value   =   0
+            desc    =   Trigger on rising edge.
+        enum
+            name    =   FALLING_EDGE
+            value   =   1
+            desc    =   Trigger on falling edge.
+    bf_standard
+        name        =   TRIGSEL
+        width       =   4
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the ADC trigger source.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   Off chip External Trigger0 (ADC_ET0)
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   Off chip External Trigger1 (ADC_ET1)
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   Off chip External Trigger2 (ADC_ET2)
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   Off chip External Trigger3 (ADC_ET3)
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   Off chip External Trigger4 (ADC_ET4)
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   Off chip External Trigger5 (ADC_ET5)
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   Off chip External Trigger6 (ADC_ET6)
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   Off chip External Trigger7 (ADC_ET7)
+        enum
+            name    =   SWT
+            value   =   0x8
+            desc    =   Software Trigger
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   REFSEL
+        width       =   2
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the ADC reference voltage.
+        enum
+            name    =   INTERNAL
+            value   =   0x0
+            desc    =   Internal Bandgap Reference Voltage
+        enum
+            name    =   VDD
+            value   =   0x1
+            desc    =   Select VDD as the ADEC reference voltage.
+        enum
+            name    =   ADCREF
+            value   =   0x2
+            desc    =   Off Chip Reference (ADC_REF)
+        enum
+            name    =   UNDEFINED
+            value   =   0x3
+            desc    =   Undefined.
+    bf_standard
+        name        =   OPMODE
+        width       =   3
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the sample rate mode. It adjusts the current in the ADC for higher sample rates. A 12MHz ADC clock can result in a sample rate up to 1Msps depending on the trigger or repeating mode rate. A 1.5MHz ADC clock can result in a sample rate up 125K sps.  NOTE: All other values not specified below are undefined.
+        enum
+            name    =   SAMPLE_RATE_LE_125KSPS
+            value   =   0x0
+            desc    =   Sample Rate &lt;= 125K sps
+        enum
+            name    =   SAMPLE_RATE_125K_1MSPS
+            value   =   0x2
+            desc    =   Sample Rate 125K to 1M sps
+    bf_standard
+        name        =   LPMODE
+        width       =   2
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select power mode to enter between active scans.
+        enum
+            name    =   MODE0
+            value   =   0x0
+            desc    =   Low Power Mode 0 (2'b00).  Leaves the ADC fully powered between scans with no latency between a trigger event and sample data collection.
+        enum
+            name    =   MODE1
+            value   =   0x1
+            desc    =   Low Power Mode 1 (2'b01).  Enables a low power mode for the ADC between scans requiring 50us initialization time (latency) between a trigger event and the scan (assuming the HFRC remains running and the MCU is not in deepsleep mode in which case additional startup latency for HFRC startup is required).
+        enum
+            name    =   MODE2
+            value   =   0x2
+            desc    =   Low Power Mode 2 (2'b10).  Disconnects power and clocks to the ADC effectively eliminating all active power associated with the ADC between scans. This mode requires 150us initialization (again, assuming the HFRC remains running and the MCU is not in deepsleep mode in which case additional startup latency for HFRC startup is required).
+        enum
+            name    =   MODE_UNDEFINED
+            value   =   0x3
+            desc    =   Undefined Mode (2'b11)
+    bf_standard
+        name        =   RPTEN
+        width       =   1
+        lsb         =   2
+        rw          =   RWx
+        reset       =   0x0
+        desc        =   This bit enables Repeating Scan Mode.
+        enum
+            name    =   SINGLE_SCAN
+            value   =   0
+            desc    =   In Single Scan Mode, the ADC will complete a single scan upon each trigger event.
+        enum
+            name    =   REPEATING_SCAN
+            value   =   1
+            desc    =   In Repeating Scan Mode, the ADC will complete it's first scan upon the initial trigger event and all subsequent scans will occur at regular intervals defined by the configuration programmed for the CTTMRA3 internal timer until the timer is disabled or the ADC is disabled.
+    bf_standard
+        name        =   TMPSEN
+        friendly    =   TMPSPWR
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This enables power to the temperature sensor module.  After setting this bit, the temperature sensor will remain powered down while the ADC is power is disconnected (i.e, when the ADC PWDSTAT is 2'b10).
+        enum
+            name    =   DIS
+            value   =   0
+            desc    =   Power down the temperature sensor.
+        enum
+            name    =   EN
+            value   =   1
+            desc    =   Enable the temperature sensor when the ADC is in it's active state.
+    bf_standard
+        name        =   ADCEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the ADC module. While the ADC is enabled, the ADCCFG and SLOT Configuration regsiter settings must remain stable and unchanged.
+        enum
+            name    =   DIS
+            value   =   0
+            desc    =   Disable the ADC module.
+        enum
+            name    =   EN
+            value   =   1
+            desc    =   Enable the ADC module.
+
+register
+    name            =   ADCSTAT
+    friendly        =   STAT
+    reg_brief       =   ADC Power Status
+    offset          =   4
+    enable          =   none
+    reg_desc        =   This register indicates the power status for the ADC.  ADC power mode 0 indicates the ADC is in it's full power state and is ready to process scans.  ADC Power mode 1 indicated the ADC power switch is on, but the ADC SAR module is in a low power state.  From this state, a trigger will bring the ADC into it's active state after a 50us calibration period.  ADC power mode 2 indicates the ADC is in it's lowest power state.
+    bf_reserved
+        name        =   RSVD
+        width       =   30
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_readonly
+        name        =   PWDSTAT
+        width       =   2
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Indicates the power-status of the ADC.
+        enum
+            name    =   ON
+            value   =   0x0
+            desc    =   Powered on.
+        enum
+            name    =   SWITCH_ON_SAR_OFF
+            value   =   0x1
+            desc    =   Power switch on, ADC Low Power Mode 1.
+        enum
+            name    =   POWER_SWITCH_OFF
+            value   =   0x2
+            desc    =   Power switch off, ADC disabled.
+
+extreg
+    name            =   ADCSWT
+    friendly        =   SWT
+    offset          =   8
+    enable          =   None
+    reg_brief       =   Software trigger
+    reg_desc        =   This register enables initiating an ADC scan through software.
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   ADCSWT
+        friendly    =   SWT
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   Writing 0x37 to this register generates a software trigger.
+        enum
+            name    =   GEN_SW_TRIGGER
+            value   =   0x37
+            desc    =   Writing this value generates a software trigger.
+
+register
+    name            =   ADCSL0CFG
+    friendly        =   SL0CFG
+    reg_brief       =   Slot 0 Configuration Register
+    offset          =   12
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL0
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL0
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL0
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN0
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 0.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 0.
+    bf_standard
+        name        =   SLEN0
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 0 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 0 for ADC conversions.
+
+register
+    name            =   ADCSL1CFG
+    friendly        =   SL1CFG
+    reg_brief       =   Slot 1 Configuration Register
+    offset          =   16
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL1
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL1
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5 Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL1
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN1
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 1.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 1.
+    bf_standard
+        name        =   SLEN1
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 1 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 1 for ADC conversions.
+
+register
+    name            =   ADCSL2CFG
+    friendly        =   SL2CFG
+    reg_brief       =   Slot 2 Configuration Register
+    offset          =   20
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL2
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL2
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL2
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN2
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 2.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 2.
+    bf_standard
+        name        =   SLEN2
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 2 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 2 for ADC conversions.
+
+register
+    name            =   ADCSL3CFG
+    friendly        =   SL3CFG
+    reg_brief       =   Slot 3 Configuration Register
+    offset          =   24
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL3
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL3
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL3
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN3
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 3.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 3.
+    bf_standard
+        name        =   SLEN3
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 3 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 3 for ADC conversions.
+
+register
+    name            =   ADCSL4CFG
+    friendly        =   SL4CFG
+    reg_brief       =   Slot 4 Configuration Register
+    offset          =   28
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL4
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL4
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL4
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN4
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 4.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 4.
+    bf_standard
+        name        =   SLEN4
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 4 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 4 for ADC conversions.
+
+register
+    name            =   ADCSL5CFG
+    friendly        =   SL5CFG
+    reg_brief       =   Slot 5 Configuration Register
+    offset          =   32
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL5
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL5
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL5
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN5
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 5.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 5.
+    bf_standard
+        name        =   SLEN5
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 5 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 5 for ADC conversions.
+
+register
+    name            =   ADCSL6CFG
+    friendly        =   SL6CFG
+    reg_brief       =   Slot 6 Configuration Register
+    offset          =   36
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL6
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL6
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL6
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN6
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 6.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 6.
+    bf_standard
+        name        =   SLEN6
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 6 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 6 for ADC conversions.
+
+register
+    name            =   ADCSL7CFG
+    friendly        =   SL7CFG
+    reg_brief       =   Slot 7 Configuration Register
+    offset          =   40
+    enable          =   none
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   ADSEL7
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select the number of measurements to average in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_1_MSRMT
+            value   =   0x0
+            desc    =   Average in 1 measurement in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_2_MSRMTS
+            value   =   0x1
+            desc    =   Average in 2 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_4_MSRMTS
+            value   =   0x2
+            desc    =   Average in 4 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_8_MSRMT
+            value   =   0x3
+            desc    =   Average in 8 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_16_MSRMTS
+            value   =   0x4
+            desc    =   Average in 16 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_32_MSRMTS
+            value   =   0x5
+            desc    =   Average in 32 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_64_MSRMTS
+            value   =   0x6
+            desc    =   Average in 64 measurements in the accumulate divide module for this slot.
+        enum
+            name    =   AVG_128_MSRMTS
+            value   =   0x7
+            desc    =   Average in 128 measurements in the accumulate divide module for this slot.
+    bf_reserved
+        name        =   RSVD
+        width       =   5
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   THSEL7
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select track and hold delay for this slot.  NOTE: The track and hold delay must be less than 50us for correct operation.  When the ADC is configured to use the 1.5Mhz clock, the track and hold delay cannot exceed 64 clocks.
+        enum
+            name    =   1_ADC_CLK
+            value   =   0x0
+            desc    =   1 ADC clock cycle.
+        enum
+            name    =   2_ADC_CLKS
+            value   =   0x1
+            desc    =   2 ADC clock cycles.
+        enum
+            name    =   4_ADC_CLKS
+            value   =   0x2
+            desc    =   4 ADC clock cycles.
+        enum
+            name    =   8_ADC_CLKS
+            value   =   0x3
+            desc    =   8 ADC clock cycles.
+        enum
+            name    =   16_ADC_CLKS
+            value   =   0x4
+            desc    =   16 ADC clock cycles.
+        enum
+            name    =   32_ADC_CLKS
+            value   =   0x5
+            desc    =   32 ADC clock cycles.
+        enum
+            name    =   64_ADC_CLKS
+            value   =   0x6
+            desc    =   64 ADC clock cycles.
+        enum
+            name    =   128_ADC_CLKS
+            value   =   0x7
+            desc    =   128 ADC clock cycles.
+    bf_reserved
+        name        =   RSVD
+        width       =   4
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   CHSEL7
+        width       =   4
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Select one of the 13 channel inputs for this slot.
+        enum
+            name    =   EXT0
+            value   =   0x0
+            desc    =   ADC_EXT0 external GPIO pin connection.
+        enum
+            name    =   EXT1
+            value   =   0x1
+            desc    =   ADC_EXT1 external GPIO pin connection.
+        enum
+            name    =   EXT2
+            value   =   0x2
+            desc    =   ADC_EXT2 external GPIO pin connection.
+        enum
+            name    =   EXT3
+            value   =   0x3
+            desc    =   ADC_EXT3 external GPIO pin connection.
+        enum
+            name    =   EXT4
+            value   =   0x4
+            desc    =   ADC_EXT4 external GPIO pin connection.
+        enum
+            name    =   EXT5
+            value   =   0x5
+            desc    =   ADC_EXT5 external GPIO pin connection.
+        enum
+            name    =   EXT6
+            value   =   0x6
+            desc    =   ADC_EXT6 external GPIO pin connection.
+        enum
+            name    =   EXT7
+            value   =   0x7
+            desc    =   ADC_EXT7 external GPIO pin connection.
+        enum
+            name    =   TEMP
+            value   =   0x8
+            desc    =   ADC_TEMP internal temperature sensor.
+        enum
+            name    =   VDD
+            value   =   0x9
+            desc    =   ADC_VDD internal power rail connection.
+        enum
+            name    =   VSS
+            value   =   0xA
+            desc    =   ADC_VSS internal ground connection.
+        enum
+            name    =   VBATT
+            value   =   0xC
+            desc    =   ADC_VBATT internal voltage divide-by-3 connection to input power rail.
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_standard
+        name        =   WCEN7
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables the window compare function for slot 7.
+        enum
+            name    =   WCEN
+            value   =   0x1
+            desc    =   Enable the window compare for slot 7.
+    bf_standard
+        name        =   SLEN7
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables slot 7 for ADC conversions.
+        enum
+            name    =   SLEN
+            value   =   0x1
+            desc    =   Enable slot 7 for ADC conversions.
+
+register
+    name            =   ADCWLIM
+    friendly        =   WLIM
+    reg_brief       =   Window Comparator Limits Register
+    offset          =   44
+    enable          =   none
+    bf_standard
+        name        =   ULIM
+        width       =   16
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Sets the upper limit for the wondow comparator.
+    bf_standard
+        name        =   LLIM
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Sets the lower limit for the wondow comparator.
+
+
+extreg
+    name            =   ADCFIFO
+    friendly        =   FIFO
+    offset          =   48
+    enable          =   None
+    reg_desc        =   The ADC FIFO Register contains the slot number and fifo data for the oldest conversion data in the FIFO.  The COUNT field indicates the total number of valid entries in the FIFO.  A write to this register will pop one of the FIFO entries off the FIFO and decrease the COUNT by 1 if the COUNT is greater than zero.
+    reg_brief       =   FIFO Data and Valid Count Register
+    bf_ext
+        name        =   RSVD_27
+        width       =   5
+        lsb         =   27
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   SLOTNUM
+        width       =   3
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Slot number associated with this FIFO data.
+    bf_ext
+        name        =   RSVD_20
+        width       =   4
+        lsb         =   20
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   FIFOCNT
+        friendly    =   COUNT
+        width       =   4
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Number of valid entries in the ADC FIFO.
+    bf_ext
+        name        =   FIFODATA
+        friendly    =   DATA
+        width       =   16
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Oldest data in the FIFO.
+
+intregs
+    name            =   ADC_IER
+    friendly        =   INT
+    offset          =   512
+    clearall        =   none
+    numints         =   6
+    reg_brief       =   ADC Interrupt registers
+    bf_reserved
+        name        =   RSVD
+        width       =   26
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_int
+        name        =   WCINC
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Window comparator voltage incursion interrupt.
+        enum
+            name    =   WCINCINT
+            value   =   0x1
+            desc    =   Window comparitor voltage incursion interrupt.
+    bf_int
+        name        =   WCEXC
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Window comparator voltage excursion interrupt.
+        enum
+            name    =   WCEXCINT
+            value   =   0x1
+            desc    =   Window comparitor voltage excursion interrupt.
+    bf_int
+        name        =   FIFOOVR2
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO 100% full interrupt.
+        enum
+            name    =   FIFOFULLINT
+            value   =   0x1
+            desc    =   FIFO 100% full interrupt.
+    bf_int
+        name        =   FIFOOVR1
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   FIFO 75% full interrupt.
+        enum
+            name    =   FIFO75INT
+            value   =   0x1
+            desc    =   FIFO 75% full interrupt.
+    bf_int
+        name        =   SCNCMP
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   ADC scan complete interrupt.
+        enum
+            name    =   SCNCMPINT
+            value   =   0x1
+            desc    =   ADC scan complete interrupt.
+    bf_int
+        name        =   CNVCMP
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   ADC conversion complete interrupt.
+        enum
+            name    =   CNVCMPINT
+            value   =   0x1
+            desc    =   ADC conversion complete interrupt.

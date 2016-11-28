@@ -1,0 +1,16 @@
+ADC                0x50008000
+CLKGEN             0x40004000
+MCUCTRL            0x40020000
+CTIMER             0x40008000
+FLASHCTRL          0x40014000
+GPIO               0x40010000
+IOMSTR0            0x50004000
+IOMSTR1            0x50005000
+IOMSTR             0x50004000
+IOSLAVE            0x50000000
+MCUCTRLPRIV        0x40040000
+RSTGEN             0x40000000
+RTC                0x40004000
+UART               0x4001C000
+VCOMP              0x4000C000
+WDT                0x40024000

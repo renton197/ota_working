@@ -1,0 +1,432 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     clk_gen_rtc_regs.src                                               *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/06/2013                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   RTC section of the                                                         *
+#   CLK_GEN block of the Ambiq MCU.  It is expected to be parsed and           *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   RTC
+block_rev           =   1
+block_brief         =   Real Time Clock
+
+
+extreg
+    name            =   CTRLOW
+    reg_brief       =   RTC Counters Lower
+    offset          =   64
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   30
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CTRHR
+        width       =   6
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x1
+        desc        =   Hours Counter
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   23
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CTRMIN
+        width       =   7
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Minutes Counter
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   15
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CTRSEC
+        width       =   7
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Seconds Counter
+    bf_ext
+        name        =   CTR100
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   100ths of a second Counter
+
+extreg
+    name            =   CTRUP
+    reg_brief       =   RTC Counters Upper
+    offset          =   68
+    enable          =   None
+    bf_ext
+        name        =   CTERR
+        width       =   1
+        lsb         =   31
+        rw          =   RO
+        reset       =   0x0
+        desc        =   Counter read error status
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No read error occurred
+        enum
+            name    =   RDERR
+            value   =   0x1
+            desc    =   Read error occurred
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   29
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CEB
+        width       =   1
+        lsb         =   28
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Century enable
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Disable the Century bit from changing
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Enable the Century bit to change
+    bf_ext
+        name        =   CB
+        width       =   1
+        lsb         =   27
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Century
+        enum
+            name    =   2000
+            value   =   0x0
+            desc    =   Century is 2000s
+        enum
+            name    =   1900_2100
+            value   =   0x1
+            desc    =   Century is 1900s/2100s
+    bf_ext
+        name        =   CTRWKDY
+        width       =   3
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Weekdays Counter
+    bf_ext
+        name        =   CTRYR
+        width       =   8
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Years Counter
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CTRMO
+        width       =   5
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Months Counter
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_ext
+        name        =   CTRDATE
+        width       =   6
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Date Counter
+
+register
+    name            =   ALMLOW
+    reg_brief       =   RTC Alarms Lower
+    offset          =   72
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   30
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ALMHR
+        width       =   6
+        lsb         =   24
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Hours Alarm
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   23
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ALMMIN
+        width       =   7
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Minutes Alarm
+    bf_reserved
+        name        =   RSVD
+        width       =   1
+        lsb         =   15
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ALMSEC
+        width       =   7
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Seconds Alarm
+    bf_standard
+        name        =   ALM100
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   100ths of a second Alarm
+
+register
+    name            =   ALMUP
+    reg_brief       =   RTC Alarms Upper
+    offset          =   76
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   13
+        lsb         =   19
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ALMWKDY
+        width       =   3
+        lsb         =   16
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Weekdays Alarm
+    bf_reserved
+        name        =   RSVD
+        width       =   3
+        lsb         =   13
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ALMMO
+        width       =   5
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Months Alarm
+    bf_reserved
+        name        =   RSVD
+        width       =   2
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   ALMDATE
+        width       =   6
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Date Alarm
+
+register
+    name            =   RTCCTL
+    reg_brief       =   RTC Control Register
+    offset          =   80
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   26
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_standard
+        name        =   HR1224
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Hours Counter mode
+        enum
+            name    =   24HR
+            value   =   0x0
+            desc    =   Hours in 24 hour mode
+        enum
+            name    =   12HR
+            value   =   0x1
+            desc    =   Hours in 12 hour mode
+    bf_standard
+        name        =   RSTOP
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   RTC input clock control
+        enum
+            name    =   RUN
+            value   =   0x0
+            desc    =   Allow the RTC input clock to run
+        enum
+            name    =   STOP
+            value   =   0x1
+            desc    =   Stop the RTC input clock
+    bf_standard
+        name        =   RPT
+        width       =   3
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Alarm repeat interval
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Alarm interrupt disabled
+        enum
+            name    =   YEAR
+            value   =   0x1
+            desc    =   Interrupt every year
+        enum
+            name    =   MONTH
+            value   =   0x2
+            desc    =   Interrupt every month
+        enum
+            name    =   WEEK
+            value   =   0x3
+            desc    =   Interrupt every week
+        enum
+            name    =   DAY
+            value   =   0x4
+            desc    =   Interrupt every day
+        enum
+            name    =   HR
+            value   =   0x5
+            desc    =   Interrupt every hour
+        enum
+            name    =   MIN
+            value   =   0x6
+            desc    =   Interrupt every minute
+        enum
+            name    =   SEC
+            value   =   0x7
+            desc    =   Interrupt every second/10th/100th
+    bf_standard
+        name        =   WRTC
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Counter write control
+        enum
+            name    =   DIS
+            value   =   0x0
+            desc    =   Counter writes are disabled
+        enum
+            name    =   EN
+            value   =   0x1
+            desc    =   Counter writes are enabled
+
+intregs
+    name            =   INTRPT
+    friendly        =   INT
+    offset          =   256
+    clearall        =   0x0
+    numints         =   4
+    reg_brief       =   CLK_GEN Interrupt Register
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED
+    bf_int
+        name        =   ALM
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   RTC Alarm interrupt
+    bf_int
+        name        =   OF
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   XT Oscillator Fail interrupt
+    bf_int
+        name        =   ACC
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Autocalibration Complete interrupt
+    bf_int
+        name        =   ACF
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   Autocalibration Fail interrupt

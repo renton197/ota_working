@@ -1,0 +1,969 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013-2014 Ambiq Micro.                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     uart_regs.src                                                      *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     01/21/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   UART block of the Ambiq MCU.  It is expected to be parsed and              *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.  In this case the UART is an ARM IP block, so this     *
+#   is only used to create the macros.                                         *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always begin with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+
+block_name          =   UART
+block_rev           =   1
+block_brief         =   Serial UART
+
+extreg
+    name            =   UARTDR
+    friendly        =   DR
+    offset          =   0
+    enable          =   None
+    reg_brief       =   UART Data Register
+    bf_reserved
+        name        =   RSVD
+        width       =   20
+        lsb         =   12
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   OEDATA
+        width       =   1
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the overrun error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART OEDATA, overrun error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART OEDATA, overrun error indicator.
+    bf_ext
+        name        =   BEDATA
+        width       =   1
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the break error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART BEDATA, break error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART BEDATA, break error indicator.
+    bf_ext
+        name        =   PEDATA
+        width       =   1
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the parity error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART PEDATA, parity error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART PEDATA, parity error indicator.
+    bf_ext
+        name        =   FEDATA
+        width       =   1
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the framing error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART FEDATA, framing error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART FEDATA, framing error indicator.
+    bf_ext
+        name        =   DATA
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the UART data port.
+
+extreg
+    name            =   UARTRSR
+    friendly        =   RSR
+    offset          =   4
+    enable          =   None
+    reg_brief       =   UART Status Register
+    bf_reserved
+        name        =   RSVD
+        width       =   28
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   OESTAT
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the overrun error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART OESTAT, overrun error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART OESTAT, overrun error indicator.
+    bf_ext
+        name        =   BESTAT
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the break error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART BESTAT, break error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART BESTAT, break error indicator.
+    bf_ext
+        name        =   PESTAT
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the parity error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART PESTAT, parity error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART PESTAT, parity error indicator.
+    bf_ext
+        name        =   FESTAT
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        extstrobes  =   Yes
+        desc        =   This is the framing error indicator.
+        enum
+            name    =   NOERR
+            value   =   0x0
+            desc    =   No error on UART FESTAT, framing error indicator.
+        enum
+            name    =   ERR
+            value   =   0x1
+            desc    =   Error on UART FESTAT, framing error indicator.
+
+register
+    name            =   UARTFR
+    friendly        =   FR
+    reg_brief       =   Flag Register
+    offset          =   24
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   23
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_readonly
+        name        =   RI
+        width       =   1
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the ring indicator.
+    bf_readonly
+        name        =   TXFE
+        width       =   1
+        lsb         =   7
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the transmit FIFO empty indicator.
+        enum
+            name    =   XMTFIFO_EMPTY
+            value   =   0x1
+            desc    =   Transmit fifo is empty.
+    bf_readonly
+        name        =   RXFF
+        width       =   1
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the receive FIFO full indicator.
+        enum
+            name    =   RCVFIFO_FULL
+            value   =   0x1
+            desc    =   Receive fifo is full.
+    bf_readonly
+        name        =   TXFF
+        width       =   1
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the transmit FIFO full indicator.
+        enum
+            name    =   XMTFIFO_FULL
+            value   =   0x1
+            desc    =   Transmit fifo is full.
+    bf_readonly
+        name        =   RXFE
+        width       =   1
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the receive FIFO empty indicator.
+        enum
+            name    =   RCVFIFO_EMPTY
+            value   =   0x1
+            desc    =   Receive fifo is empty.
+    bf_readonly
+        name        =   BUSY
+        width       =   1
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the busy indicator.
+        enum
+            name    =   BUSY
+            value   =   0x1
+            desc    =   UART busy indicator.
+    bf_readonly
+        name        =   DCD
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the data carrier detect indicator.
+        enum
+            name    =   DETECTED
+            value   =   0x1
+            desc    =   Data carrier detect detected.
+    bf_readonly
+        name        =   DSR
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the data set ready indicator.
+        enum
+            name    =   READY
+            value   =   0x1
+            desc    =   Data set ready.
+    bf_readonly
+        name        =   CTS
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the clear to send indicator.
+        enum
+            name    =   CLEARTOSEND
+            value   =   0x1
+            desc    =   Clear to send is indicated.
+
+register
+    name            =   UARTILPR
+    friendly        =   ILPR
+    reg_brief       =   IrDA Counter
+    offset          =   32
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   ILPDVSR
+        width       =   8
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   These bits hold the IrDA counter divisor.
+
+extreg
+    name            =   UARTIBRD
+    friendly        =   IBRD
+    reg_brief       =   Integer Baud Rate Divisor
+    offset          =   36
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   DIVINT
+        width       =   16
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   These bits hold the baud integer divisor.
+
+extreg
+    name            =   UARTFBRD
+    friendly        =   FBRD
+    reg_brief       =   Fractional Baud Rate Divisor
+    offset          =   40
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   26
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   DIVFRAC
+        width       =   6
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   These bits hold the baud fractional divisor.
+
+register
+    name            =   UARTLCRH
+    friendly        =   LCRH
+    reg_brief       =   Line Control High
+    offset          =   44
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   24
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   SPS
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the stick parity select.
+    bf_standard
+        name        =   WLEN
+        width       =   2
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   These bits hold the write length.
+    bf_standard
+        name        =   FEN
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the FIFO enable.
+    bf_standard
+        name        =   STP2
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the two stop bits select.
+    bf_standard
+        name        =   EPS
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the even parity select.
+    bf_standard
+        name        =   PEN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the parity enable.
+    bf_standard
+        name        =   BRK
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the break set.
+
+register
+    name            =   UARTCR
+    friendly        =   CR
+    reg_brief       =   Control Register
+    offset          =   48
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   16
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   CTSEN
+        width       =   1
+        lsb         =   15
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables CTS hardware flow control.
+    bf_standard
+        name        =   RTSEN
+        width       =   1
+        lsb         =   14
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables RTS hardware flow control.
+    bf_standard
+        name        =   OUT2
+        width       =   1
+        lsb         =   13
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds modem Out2.
+    bf_standard
+        name        =   OUT1
+        width       =   1
+        lsb         =   12
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds modem Out1.
+    bf_standard
+        name        =   RTS
+        width       =   1
+        lsb         =   11
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables request to send.
+    bf_standard
+        name        =   DTR
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit enables data transmit ready.
+    bf_standard
+        name        =   RXE
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x1
+        desc        =   This bit is the receive enable.
+    bf_standard
+        name        =   TXE
+        width       =   1
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x1
+        desc        =   This bit is the transmit enable.
+    bf_standard
+        name        =   LBE
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the loopback enable.
+    bf_standard
+        name        =   CLKSEL
+        width       =   3
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bitfield is the UART clock select.
+        enum
+            name    =   NOCLK
+            value   =   0x0
+            desc    =   No UART clock.  This is the low power default.
+        enum
+            name    =   24MHZ
+            value   =   0x1
+            desc    =   24 MHz clock.  Must be used if CLKGEN CORESEL=0.
+        enum
+            name    =   12MHZ
+            value   =   0x2
+            desc    =   12 MHz clock.  Must be used if CLKGEN CORESEL=1. Note that CORESEL=1 is unsupported by the IO Master.
+        enum
+            name    =   6MHZ
+            value   =   0x3
+            desc    =   6 MHz clock.  Must be used if CLKGEN CORESEL=2, 3, or 4. Note that CORESEL=2 is unsupported.
+        enum
+            name    =   3MHZ
+            value   =   0x4
+            desc    =   3 MHz clock.  Must be used if CLKGEN CORESEL=5, 6, or 7.
+        enum
+            name    =   RSVD5
+            value   =   0x5
+            desc    =   Reserved.
+        enum
+            name    =   RSVD6
+            value   =   0x6
+            desc    =   Reserved.
+        enum
+            name    =   RSVD7
+            value   =   0x7
+            desc    =   Reserved.
+    bf_standard
+        name        =   CLKEN
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the UART clock enable.
+    bf_standard
+        name        =   SIRLP
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the SIR low power select.
+    bf_standard
+        name        =   SIREN
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the SIR ENDEC enable.
+    bf_standard
+        name        =   UARTEN
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit is the UART enable.
+
+register
+    name            =   UARTIFLS
+    friendly        =   IFLS
+    reg_brief       =   FIFO Interrupt Level Select
+    offset          =   52
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   26
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   RXIFLSEL
+        width       =   3
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x2
+        desc        =   These bits hold the receive FIFO interrupt level.
+    bf_standard
+        name        =   TXIFLSEL
+        width       =   3
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x2
+        desc        =   These bits hold the transmit FIFO interrupt level.
+
+register
+    name            =   UARTIER
+    friendly        =   IER
+    reg_brief       =   Interrupt Enable
+    offset          =   56
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_standard
+        name        =   OEIM
+        width       =   1
+        lsb         =   10
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the overflow interrupt enable.
+    bf_standard
+        name        =   BEIM
+        width       =   1
+        lsb         =   9
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the break error interrupt enable.
+    bf_standard
+        name        =   PEIM
+        width       =   1
+        lsb         =   8
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the parity error interrupt enable.
+    bf_standard
+        name        =   FEIM
+        width       =   1
+        lsb         =   7
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the framing error interrupt enable.
+    bf_standard
+        name        =   RTIM
+        width       =   1
+        lsb         =   6
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the receive timeout interrupt enable.
+    bf_standard
+        name        =   TXIM
+        width       =   1
+        lsb         =   5
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the transmit interrupt enable.
+    bf_standard
+        name        =   RXIM
+        width       =   1
+        lsb         =   4
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the receive interrupt enable.
+    bf_standard
+        name        =   DSRMIM
+        width       =   1
+        lsb         =   3
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the modem DSR interrupt enable.
+    bf_standard
+        name        =   DCDMIM
+        width       =   1
+        lsb         =   2
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the modem DCD interrupt enable.
+    bf_standard
+        name        =   CTSMIM
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the modem CTS interrupt enable.
+    bf_standard
+        name        =   RIMIM
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   This bit holds the modem RI interrupt enable.
+
+register
+    name            =   UARTIES
+    friendly        =   IES
+    reg_brief       =   Interrupt Status
+    offset          =   60
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_readonly
+        name        =   OERIS
+        width       =   1
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the overflow interrupt status.
+    bf_readonly
+        name        =   BERIS
+        width       =   1
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the break error interrupt status.
+    bf_readonly
+        name        =   PERIS
+        width       =   1
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the parity error interrupt status.
+    bf_readonly
+        name        =   FERIS
+        width       =   1
+        lsb         =   7
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the framing error interrupt status.
+    bf_readonly
+        name        =   RTRIS
+        width       =   1
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the receive timeout interrupt status.
+    bf_readonly
+        name        =   TXRIS
+        width       =   1
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the transmit interrupt status.
+    bf_readonly
+        name        =   RXRIS
+        width       =   1
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the receive interrupt status.
+    bf_readonly
+        name        =   DSRMRIS
+        width       =   1
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem DSR interrupt status.
+    bf_readonly
+        name        =   DCDMRIS
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem DCD interrupt status.
+    bf_readonly
+        name        =   CTSMRIS
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem CTS interrupt status.
+    bf_readonly
+        name        =   RIMRIS
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem RI interrupt status.
+
+register
+    name            =   UARTMIS
+    friendly        =   MIS
+    reg_brief       =   Masked Interrupt Status
+    offset          =   64
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_readonly
+        name        =   OEMIS
+        width       =   1
+        lsb         =   10
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the overflow interrupt status masked.
+    bf_readonly
+        name        =   BEMIS
+        width       =   1
+        lsb         =   9
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the break error interrupt status masked.
+    bf_readonly
+        name        =   PEMIS
+        width       =   1
+        lsb         =   8
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the parity error interrupt status masked.
+    bf_readonly
+        name        =   FEMIS
+        width       =   1
+        lsb         =   7
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the framing error interrupt status masked.
+    bf_readonly
+        name        =   RTMIS
+        width       =   1
+        lsb         =   6
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the receive timeout interrupt status masked.
+    bf_readonly
+        name        =   TXMIS
+        width       =   1
+        lsb         =   5
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the transmit interrupt status masked.
+    bf_readonly
+        name        =   RXMIS
+        width       =   1
+        lsb         =   4
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the receive interrupt status masked.
+    bf_readonly
+        name        =   DSRMMIS
+        width       =   1
+        lsb         =   3
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem DSR interrupt status masked.
+    bf_readonly
+        name        =   DCDMMIS
+        width       =   1
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem DCD interrupt status masked.
+    bf_readonly
+        name        =   CTSMMIS
+        width       =   1
+        lsb         =   1
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem CTS interrupt status masked.
+    bf_readonly
+        name        =   RIMMIS
+        width       =   1
+        lsb         =   0
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bit holds the modem RI interrupt status masked.
+
+extreg
+    name            =   UARTIEC
+    friendly        =   IEC
+    reg_brief       =   Interrupt Clear
+    offset          =   68
+    enable          =   None
+    bf_reserved
+        name        =   RSVD
+        width       =   21
+        lsb         =   11
+        rw          =   RO
+        reset       =   0x0
+        desc        =   This bitfield is reserved for future use.
+    bf_ext
+        name        =   OEIC
+        width       =   1
+        lsb         =   10
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the overflow interrupt clear.
+    bf_ext
+        name        =   BEIC
+        width       =   1
+        lsb         =   9
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the break error interrupt clear.
+    bf_ext
+        name        =   PEIC
+        width       =   1
+        lsb         =   8
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the parity error interrupt clear.
+    bf_ext
+        name        =   FEIC
+        width       =   1
+        lsb         =   7
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the framing error interrupt clear.
+    bf_ext
+        name        =   RTIC
+        width       =   1
+        lsb         =   6
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the receive timeout interrupt clear.
+    bf_ext
+        name        =   TXIC
+        width       =   1
+        lsb         =   5
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the transmit interrupt clear.
+    bf_ext
+        name        =   RXIC
+        width       =   1
+        lsb         =   4
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the receive interrupt clear.
+    bf_ext
+        name        =   DSRMIC
+        width       =   1
+        lsb         =   3
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the modem DSR interrupt clear.
+    bf_ext
+        name        =   DCDMIC
+        width       =   1
+        lsb         =   2
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the modem DCD interrupt clear.
+    bf_ext
+        name        =   CTSMIC
+        width       =   1
+        lsb         =   1
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the modem CTS interrupt clear.
+    bf_ext
+        name        =   RIMIC
+        width       =   1
+        lsb         =   0
+        rw          =   WO
+        reset       =   0x0
+        desc        =   This bit holds the modem RI interrupt clear.
+

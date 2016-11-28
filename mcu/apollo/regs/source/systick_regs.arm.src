@@ -1,0 +1,139 @@
+# ******************************************************************************
+#                                                                              *
+# Copyright (c) 2013 Ambiq Micro.                                              *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+# File:     systick_regs.arm.src                                                   *
+#                                                                              *
+# Title:    Ambiq Micro MCU register definitions                               *
+#                                                                              *
+# Date:     08/28/2014                                                         *
+#                                                                              *
+#*******************************************************************************
+#                                                                              *
+#   This file contains the register and bitfield definitions for the           *
+#   watchdog timer of the Ambig MCU.   It is expected to be parsed and         *
+#   deconstructed by a Python utility called RSON (Readable Serial             *
+#   Object Notation), and those data structures used to auto-generate          *
+#   things such as C register-access macros, include files, Verilog,           *
+#   documentation, etc.                                                        *
+#                                                                              *
+#   NOTE:                                                                      *
+#   - This file should contain NO TAB characters, only spaces.                 *
+#   - Indentation is required, but the amount of indentation is not critical,  *
+#     only the consistency of indentation.                                     *
+#   - Comment lines always being with a '#' sign.                              *
+#                                                                              *
+# ******************************************************************************
+block_name          =   SYSTICK
+block_rev           =   1
+block_brief         =   ARM System Timer (SysTick) Block Registers.
+
+extreg
+    name            =   SYSTCSR
+    offset          =   0xE000E010
+    reg_brief       =   SysTick Control and Status Register.
+    bf_reserved
+        name        =   RSVD2
+        width       =   15
+        lsb         =   17
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   COUNTFLAG
+        width       =   1
+        lsb         =   16
+        rw          =   RO
+        reset       =   0x0
+        desc        =   "Returns 1 if timer counted to 0 since last time this was read."
+    bf_reserved
+        name        =   RSVD1
+        width       =   14
+        lsb         =   2
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   TICKINT
+        width       =   1
+        lsb         =   1
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enables SysTick exception request. Software can use COUNTFLAG to determine if SysTick has ever counted to zero. 0 = counting down to zero does not assert the SysTick exception request; 1 = counting down to zero asserts the SysTick exception request."
+    bf_ext
+        name        =   ENABLE
+        width       =   1
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Enables the counter. 0 = counter disabled; 1 = counter enabled."
+extreg
+    name            =   SYSTRVR
+    offset          =   0xE000E014
+    reg_brief       =   SysTick Reload Value Register.
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   RELOAD
+        width       =   24
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Value to load into the SYSTCVR register when the counter is enabled and when it reaches 0."
+extreg
+    name            =   SYSTCVR
+    offset          =   0xE000E018
+    reg_brief       =   SysTick Current Value Register.
+    bf_reserved
+        name        =   RSVD
+        width       =   8
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   CURRENT
+        width       =   24
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Reads return the current value of the SysTick counter. A write of any value clears the field to 0, and also clears the SYSTCSR COUNTFLAG bit to 0."
+extreg
+    name            =   SYSTCALIB
+    offset          =   0xE000E01C
+    reg_brief       =   SysTick Calibration Value Register.
+    bf_ext
+        name        =   NOREF
+        width       =   1
+        lsb         =   31
+        rw          =   RO
+        reset       =   0x0
+        desc        =   "Indicates whether the device provides a reference clock to the processor. 0 = reference clock provided; 1 = no reference clock provided. If your device does not provide a reference clock, the SYST_CSR.CLKSOURCE bit reads-as-one and ignores writes."
+    bf_ext
+        name        =   SKEW
+        width       =   1
+        lsb         =   30
+        rw          =   RO
+        reset       =   0x0
+        desc        =   "Indicates whether the TENMS value is exact. 0 = TENMS value is exact; 1 = TENMS value is inexact, or not given. An inexact TENMS value can affect the suitability of SysTick as a software real time clock."
+    bf_reserved
+        name        =   RSVD
+        width       =   6
+        lsb         =   24
+        rw          =   RO
+        reset       =   0x0
+        desc        =   RESERVED.
+    bf_ext
+        name        =   TENMS
+        width       =   24
+        lsb         =   0
+        rw          =   RW
+        reset       =   0x0
+        desc        =   "Reload value for 10ms (100Hz) timing, subject to system clock skew errors. If the value reads as zero, the calibration value is not known."
