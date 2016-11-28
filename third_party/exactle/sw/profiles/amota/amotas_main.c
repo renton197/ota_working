@@ -155,14 +155,16 @@ amotas_send_data(uint8_t *buf, uint16_t len)
 }
 
 static void
-amotas_reply_to_client(eAmotaCommand cmd, eAmotaStatus status)
+amotas_reply_to_client(eAmotaCommand cmd, eAmotaStatus status, uint8_t *data, uint16_t len)
 {
     uint8_t buf[ATT_DEFAULT_PAYLOAD_LEN] = {0};
-    buf[0] = 1;
-    buf[1] = 0;
+    buf[0] = (len + 1) & 0xff;
+    buf[1] = ((len + 1) >> 8) & 0xff;
     buf[2] = cmd;
     buf[3] = status;
-    amotas_send_data(buf, sizeof(buf));
+    if (len > 0)
+        memcpy(buf + 4, data, len);
+    amotas_send_data(buf, len + 4);
 }
 
 static void
@@ -186,10 +188,11 @@ amotas_reset_board(void)
 }
 
 
-static uint8_t
+void
 amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 {
     eAmotaStatus status = AMOTA_STATUS_SUCCESS;
+    uint8_t data[4] = {0};
     WsfTrace("received packet cmd = 0x%x, len = 0x%x", cmd, len);
     switch(cmd)
     {
@@ -197,6 +200,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             if (len < AMOTA_FW_HEADER_SIZE)
             {
                 status = AMOTA_STATUS_INVALID_HEADER_INFO;
+                amotas_reply_to_client(cmd, status, NULL, 0);
                 break;
             }
             BYTES_TO_UINT16(amotasCb.fwHeader.version, buf);
@@ -215,24 +219,36 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             WsfTrace("receivedBytes = 0x%x", amotasCb.fwHeader.receivedBytes);
             WsfTrace("============= fw header end ===============");
 #endif
+            // TODO: need to reply received bytes to client for retransmission
+            data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
+            data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
+            data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
+            data[3] = ((amotasCb.newFwFlashInfo.offset >> 24) & 0xff);
+            amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, data, sizeof(data));
         break;
 
         case AMOTA_CMD_FW_DATA:
             amotas_write2flash(len, buf, amotasCb.newFwFlashInfo.addr + amotasCb.newFwFlashInfo.offset);
             amotasCb.newFwFlashInfo.offset += len;
+            data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
+            data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
+            data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
+            data[3] = ((amotasCb.newFwFlashInfo.offset >> 24) & 0xff);
+            amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, data, sizeof(data));
         break;
 
         case AMOTA_CMD_FW_VERIFY:
+            amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
         break;
 
         case AMOTA_CMD_FW_RESET:
+            amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
             amotas_reset_board();
         break;
 
         default:
         break;
     }
-    return status;
 }
 
 
@@ -269,7 +285,6 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
                        uint16_t offset, uint16_t len, uint8_t *pValue, attsAttr_t *pAttr)
 {
     uint8_t dataIdx = 0;
-    eAmotaStatus status = AMOTA_STATUS_SUCCESS;
     uint32_t calDataCrc = 0;
 #ifdef AMOTA_DEBUG_ON
     uint16_t i = 0;
@@ -284,7 +299,7 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
     if (amotasCb.pkt.offset == 0 && len < AMOTA_HEADER_SIZE_IN_PKT)
     {
         WsfTrace("Invalid packet!!!");
-        amotas_reply_to_client(AMOTA_CMD_FW_HEADER, AMOTA_STATUS_INVALID_PKT_LENGTH);
+        amotas_reply_to_client(AMOTA_CMD_FW_HEADER, AMOTA_STATUS_INVALID_PKT_LENGTH, NULL, 0);
         return ATT_SUCCESS;
     }
 
@@ -304,7 +319,7 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
     if (amotasCb.pkt.offset + len - dataIdx > AMOTA_PACKET_SIZE)
     {
         WsfTrace("not enough buffer size!!!");
-        amotas_reply_to_client(amotasCb.pkt.type, AMOTA_STATUS_INSUFFICIENT_BUFFER);
+        amotas_reply_to_client(amotasCb.pkt.type, AMOTA_STATUS_INSUFFICIENT_BUFFER, NULL, 0);
         return ATT_SUCCESS;
     }
 
@@ -326,16 +341,15 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
 
         if (peerCrc != calDataCrc)
         {
-            amotas_reply_to_client(amotasCb.pkt.type, AMOTA_STATUS_CRC_ERROR);
+            amotas_reply_to_client(amotasCb.pkt.type, AMOTA_STATUS_CRC_ERROR, NULL, 0);
             return ATT_SUCCESS;
         }
 
-        status = (eAmotaStatus) amotas_packet_handler(amotasCb.pkt.type, amotasCb.pkt.len - AMOTA_CRC_SIZE_IN_PKT, amotasCb.pkt.data);
+        amotas_packet_handler(amotasCb.pkt.type, amotasCb.pkt.len - AMOTA_CRC_SIZE_IN_PKT, amotasCb.pkt.data);
         // clear pkt after handled
         amotasCb.pkt.offset = 0;
         amotasCb.pkt.type = AMOTA_CMD_UNKNOWN;
         amotasCb.pkt.len = 0;
-        amotas_reply_to_client(amotasCb.pkt.type, status);
     }
 
     return ATT_SUCCESS;
