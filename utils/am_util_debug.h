@@ -25,6 +25,8 @@ extern "C"
 {
 #endif
 
+#define AM_DEBUG_PRINTF
+
 //*****************************************************************************
 //
 // Debug printf macros.
