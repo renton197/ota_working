@@ -72,10 +72,11 @@ typedef enum
 /* FW header information */
 typedef struct
 {
-    uint16_t    version;
+    uint32_t    version;
     uint32_t    fwLength;
     uint32_t    fwCrc;
     uint32_t    fwStartAddr;
+    uint32_t    fwDataType;
     uint32_t    receivedBytes;
 }
 amotaHeaderInfo_t;
@@ -203,11 +204,12 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
                 amotas_reply_to_client(cmd, status, NULL, 0);
                 break;
             }
-            BYTES_TO_UINT16(amotasCb.fwHeader.version, buf);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwLength, buf + 2);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwCrc, buf + 6);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 10);
-            BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 14);
+            BYTES_TO_UINT32(amotasCb.fwHeader.version, buf);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwLength, buf + 4);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwCrc, buf + 8);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 12);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 16);
+            BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 16);
             amotas_set_fw_addr();
             amotasCb.state = AMOTA_STATE_GETTING_FW;
 #ifdef AMOTA_DEBUG_ON
@@ -216,6 +218,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             WsfTrace("fwLength = 0x%x", amotasCb.fwHeader.fwLength);
             WsfTrace("fwCrc = 0x%x", amotasCb.fwHeader.fwCrc);
             WsfTrace("fwStartAddr = 0x%x", amotasCb.fwHeader.fwStartAddr);
+            WsfTrace("fwDataType = 0x%x", amotasCb.fwHeader.fwDataType);
             WsfTrace("receivedBytes = 0x%x", amotasCb.fwHeader.receivedBytes);
             WsfTrace("============= fw header end ===============");
 #endif
@@ -286,7 +289,7 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
 {
     uint8_t dataIdx = 0;
     uint32_t calDataCrc = 0;
-#ifdef AMOTA_DEBUG_ON
+#if 0
     uint16_t i = 0;
     WsfTrace("============= data arrived start ===============");
     for (i = 0; i < len; i++)
