@@ -3,6 +3,7 @@
 #include <string.h>
 #include "am_mcu_apollo.h"
 #include "am_bootloader.h"
+#include "multi_boot_config.h"
 
 #ifdef BOOTLOADER_DEBUG
 #include "am_util_stdio.h"
@@ -14,6 +15,15 @@
 #endif
 
 uint32_t g_ui32FlashLoadingBuffer[AM_HAL_FLASH_PAGE_SIZE / 4];  //global SRAM buffer to perform flash operation.
+
+
+//*****************************************************************************
+//
+// Flag page information.
+//
+//*****************************************************************************
+am_bootloader_image_t *g_psBootImage = (am_bootloader_image_t *) FLAG_PAGE_LOCATION;
+
 //*****************************************************************************
 //
 //! @brief Load a pre-stored image from internal flash on to its target address
@@ -30,7 +40,8 @@ uint32_t g_ui32FlashLoadingBuffer[AM_HAL_FLASH_PAGE_SIZE / 4];  //global SRAM bu
 //
 //*****************************************************************************
 void
-image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32StorageAddress, uint32_t ui32NumberBytes)
+image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32StorageAddress, 
+                                uint32_t ui32NumberBytes)
 {
     uint32_t i;
     uint32_t ui32CurrentPage, ui32CurrentBlock;
@@ -107,7 +118,8 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
 //
 //*****************************************************************************
 bool
-image_flash_write_from_sram( uint32_t* pui32DstAddr, uint32_t* pui32SrcAddr, uint32_t ui32NumberBytes)
+image_flash_write_from_sram( uint32_t* pui32DstAddr, uint32_t* pui32SrcAddr, 
+                                uint32_t ui32NumberBytes)
 {
     //
     // Check if the destination address is in the flash
@@ -281,6 +293,13 @@ image_get_storage_information_internal(am_bootloader_image_t *psImage,
     // Last page of the internal flash is reserved.
     // (effective LinkAddress shall be equal to or larger than 0x4000)
     //
+    if(device.ui32FlashSize < ((uint32_t)(psImage->pui32LinkAddress) + (uint32_t)(psImage->ui32NumBytes) + AM_HAL_FLASH_PAGE_SIZE))
+    {
+        //image size error
+        *pui32StorageAddressNewImage = 0xFFFFFFFF; 
+        *pui32NumBytesSpaceLeft = 0xFFFFFFFF;
+        return false;
+    }
     ui32SpaceLeft = device.ui32FlashSize - (uint32_t)(psImage->pui32LinkAddress) - (uint32_t)(psImage->ui32NumBytes) - AM_HAL_FLASH_PAGE_SIZE;
     ui32SpaceLeft &= 0xFFFFF800;    //storage starts from page boundries
 

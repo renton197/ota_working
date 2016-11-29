@@ -15,6 +15,7 @@
 //*****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "wsf_types.h"
 #include "wsf_msg.h"
@@ -31,7 +32,6 @@
 
 #include "hci_apollo_config.h"
 
-#include <string.h>
 
 //*****************************************************************************
 //

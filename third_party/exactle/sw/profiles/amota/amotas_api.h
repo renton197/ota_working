@@ -77,6 +77,8 @@ void amotas_start(dmConnId_t connId, uint8_t amotaCccIdx);
 
 void amotas_stop(dmConnId_t connId);
 
+extern void amotas_conn_close(dmConnId_t connId);
+
 #ifdef __cplusplus
 }
 #endif

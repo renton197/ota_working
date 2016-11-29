@@ -17,6 +17,8 @@
 //
 //*****************************************************************************
 #include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "wsf_types.h"
 #include "wsf_assert.h"
 #include "wsf_trace.h"
@@ -29,6 +31,9 @@
 #include "amotas_api.h"
 #include "am_util_debug.h"
 #include "crc32.h"
+
+#include "am_bootloader.h"
+#include "image_boot_handlers.h"
 
 //*****************************************************************************
 //
@@ -174,6 +179,22 @@ amotas_set_fw_addr(void)
     // TODO: get real flash info here
     amotasCb.newFwFlashInfo.addr = 0;
     amotasCb.newFwFlashInfo.offset = 0;
+
+    uint32_t ui32TestSpaceLeft;
+    if(image_get_storage_information_internal(g_psBootImage, 
+                                                amotasCb.fwHeader.fwLength,
+                                                &amotasCb.newFwFlashInfo.addr,
+                                                &ui32TestSpaceLeft))
+    {
+        WsfTrace("storage address = 0x%x, space left in flash = %d bytes", 
+                           amotasCb.newFwFlashInfo.addr, ui32TestSpaceLeft);
+    }
+    else
+    {
+        WsfTrace("target image length = %d bytes, space left in flash = %d bytes", 
+                           amotasCb.fwHeader.fwLength, ui32TestSpaceLeft);
+        WsfTrace("not enough space left");
+    }
 }
 
 static void
@@ -181,6 +202,18 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
 {
     // TODO: write to flash here
     WsfTrace("write to flash addr = 0x%x, len = 0x%x", addr, len);
+
+    //RMA: Add flash operation here
+#if 0   //disabled now for operation safety purpose.
+    if(image_flash_write_from_sram( (uint32_t*)addr, (uint32_t*)buf, len))
+    {
+        WsfTrace("flash write succeeded.");
+    }
+    else
+    {
+        WsfTrace("flash write failed.");
+    }
+#endif
 }
 
 static void

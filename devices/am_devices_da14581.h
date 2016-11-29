@@ -61,6 +61,14 @@ typedef struct
 }
 am_devices_da14581_t;
 
+//*****************************************************************************
+//
+// External Function Declarations
+//
+//*****************************************************************************
+extern void am_devices_da14581_mac_set(const uint8_t *pui8MacAddress);
+extern bool am_devices_da14581_uart_boot(const uint8_t *pui8BinData, uint32_t ui32NumBytes,
+                             uint32_t ui32UartModule);
 #ifdef __cplusplus
 }
 #endif

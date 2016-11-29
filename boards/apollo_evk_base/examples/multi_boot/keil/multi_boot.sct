@@ -13,25 +13,13 @@
 ; This is part of revision ${version} of the AmbiqSuite Development Package.
 ;
 ;******************************************************************************
-LR_1 0x00000000 0x00080000
+LR_1 0x00000000
 {
-    FLASH 0x00000000 0x00008000
+    FLASH 0x00000000 0x00002000
     {
         *.o (RESET, +First)
-        ;*(InRoot$Sections)
-        .ANY (+RO)
-
+        * (+RO)
     }
-    
-    ;ADDER 0x8000    (0x00080000 - 0x00008000)
-    ;{
-        ;binary_counter_0x4000_up.o (USER_SECTION_1)
-    ;}
-    ;ER_IROM2 0x8000  (0x00080000 - 0x00008000)
-    ;{
-        ;*.o (USER_SECTION_1)
-        ;.ANY (USER_SECTION_1)
-    ;}
 
     SRAM 0x10000000 0x00004000
     {
