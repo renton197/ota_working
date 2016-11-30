@@ -97,16 +97,18 @@ def split_otafile(app_filename, fname3c00, splitfile):
     return load_address
 
 # Generate the flag page from OTA like header data.
-def generate_flag_array(app_binarray, load_address, overridegpio, overridepolarity, options, storageaddress):
-    if overridegpio > 255:
-        print("Override gpio out of range %d" % overridegpio)
-        return False
+def generate_flag_array(app_binarray, load_address, overridegpio, overridepolarity, 
+						options, version, versionnew, storageaddress, lengthnew, 
+						storedlengthnew, crc32new):
+    #if overridegpio > 255:
+    #    print("Override gpio out of range %d" % overridegpio)
+    #    return False
     if overridepolarity > 255:
         print("Override polarity out of range: %d" % overridepolarity)
         return False
 
     # Flag page length in bytes. (0x3c00)
-    flag_page_length  =  36 + 8;
+    flag_page_length  =  60;
 
     print("flag_page_length ", flag_page_length);
 
@@ -140,11 +142,12 @@ def generate_flag_array(app_binarray, load_address, overridegpio, overridepolari
     pad_binarray[11] = (app_crc >> 24) & 0x000000ff
 
     # override gpio. default 0
-    print("Override GPIO", hex(overridegpio))
-    pad_binarray[12] = (overridegpio >>  0) & 0x000000ff
-    pad_binarray[13] = (overridegpio >>  8) & 0x000000ff
-    pad_binarray[14] = (overridegpio >> 16) & 0x000000ff
-    pad_binarray[15] = (overridegpio >> 24) & 0x000000ff
+    gpio = int(overridegpio,16)
+    print("Override GPIO", hex(gpio))
+    pad_binarray[12] = (gpio >>  0) & 0x000000ff
+    pad_binarray[13] = (gpio >>  8) & 0x000000ff
+    pad_binarray[14] = (gpio >> 16) & 0x000000ff
+    pad_binarray[15] = (gpio >> 24) & 0x000000ff
 
     # override polarity. default 0
     print("Override Polarity", overridepolarity)
@@ -173,13 +176,53 @@ def generate_flag_array(app_binarray, load_address, overridegpio, overridepolari
     pad_binarray[30] = (op >> 16) & 0x000000ff
     pad_binarray[31] = (op >> 24) & 0x000000ff
 	
+    # rma: software version of the current image
+    ver = int(version,16)
+    print("Software version of current image", hex(ver))
+    pad_binarray[32] = (ver >>  0) & 0x000000ff
+    pad_binarray[33] = (ver >>  8) & 0x000000ff
+    pad_binarray[34] = (ver >> 16) & 0x000000ff
+    pad_binarray[35] = (ver >> 24) & 0x000000ff
+	
+    # rma: software version of the current image
+    vernew = int(versionnew,16)
+    print("Software version of new image", hex(vernew))
+    pad_binarray[36] = (vernew >>  0) & 0x000000ff
+    pad_binarray[37] = (vernew >>  8) & 0x000000ff
+    pad_binarray[38] = (vernew >> 16) & 0x000000ff
+    pad_binarray[39] = (vernew >> 24) & 0x000000ff
+	
     # rma: storage address
     saddr = int(storageaddress,16)
     print("Image Storage Address", hex(saddr))
-    pad_binarray[32] = (saddr >>  0) & 0x000000ff
-    pad_binarray[33] = (saddr >>  8) & 0x000000ff
-    pad_binarray[34] = (saddr >> 16) & 0x000000ff
-    pad_binarray[35] = (saddr >> 24) & 0x000000ff
+    pad_binarray[40] = (saddr >>  0) & 0x000000ff
+    pad_binarray[41] = (saddr >>  8) & 0x000000ff
+    pad_binarray[42] = (saddr >> 16) & 0x000000ff
+    pad_binarray[43] = (saddr >> 24) & 0x000000ff
+	
+	# rma: length of new image in bytes
+    length = int(lengthnew,16)
+    print("Length of the new image", hex(length))
+    pad_binarray[44] = (length >>  0) & 0x000000ff
+    pad_binarray[45] = (length >>  8) & 0x000000ff
+    pad_binarray[46] = (length >> 16) & 0x000000ff
+    pad_binarray[47] = (length >> 24) & 0x000000ff
+	
+	# rma: length of new image already stored/received in bytes
+    slength = int(storedlengthnew,16)
+    print("Length of the new image stored", hex(slength))
+    pad_binarray[48] = (slength >>  0) & 0x000000ff
+    pad_binarray[49] = (slength >>  8) & 0x000000ff
+    pad_binarray[50] = (slength >> 16) & 0x000000ff
+    pad_binarray[51] = (slength >> 24) & 0x000000ff
+	
+	# rma: length of new image already stored/received in bytes
+    crcnew = int(crc32new,16)
+    print("Length of the new imag", hex(crcnew))
+    pad_binarray[52] = (crcnew >>  0) & 0x000000ff
+    pad_binarray[53] = (crcnew >>  8) & 0x000000ff
+    pad_binarray[54] = (crcnew >> 16) & 0x000000ff
+    pad_binarray[55] = (crcnew >> 24) & 0x000000ff
 	
     return pad_binarray
 
@@ -189,7 +232,9 @@ def generate_flag_array(app_binarray, load_address, overridegpio, overridepolari
 # Read in the binary files and output the merged binary
 #
 #******************************************************************************
-def generate_flag_page(app_filename, load_address, fname3c00, overridegpio, overridepolarity, options, storageaddress):
+def generate_flag_page(app_filename, load_address, fname3c00, overridegpio, overridepolarity, 
+                       options, version, versionnew, storageaddress, lengthnew, 
+					   storedlengthnew, crc32new):
 
     # Open the file, and read it into an array of integers.
     with open(app_filename, mode = 'rb') as f_app:
@@ -197,9 +242,9 @@ def generate_flag_page(app_filename, load_address, fname3c00, overridegpio, over
         f_app.close()
 
     pad_binarray = generate_flag_array(app_binarray, load_address,
-                    overridegpio, overridepolarity, options, storageaddress)
+                    overridegpio, overridepolarity, options, version, versionnew, 
+					storageaddress, lengthnew, storedlengthnew, crc32new)
     if not pad_binarray:
-        print("Error creating binary flag array file %s." % fname3c00);
         return False
 
     print("Creating binary flag array file %s." % fname3c00);
@@ -361,7 +406,7 @@ def parse_arguments():
 
     parser.add_argument('--imgbin', dest='imgbin', default='golden_master.bin',
                         help='Master binary file to output (golden_master.bin).')
-    parser.add_argument('--override-gpio', dest='overridegpio', default=0, type = int,
+    parser.add_argument('--override-gpio', dest='overridegpio', default='0xffffffff',
                         help = 'Override GPIO number. (Can be used to force a new image load)\n(-1 to disable)')
 
     parser.add_argument('--override-polarity', dest='overridepolarity', default=0, type=int,
@@ -369,10 +414,25 @@ def parse_arguments():
 	#rma: add arg options					
     parser.add_argument('--boot-options', dest='options', default='0xffffffff',
                         help = 'Indicate the presence of an available new image.')						
+	#rma: add arg version					
+    parser.add_argument('--version', dest='version', default='0x0',
+                        help = 'Software version of the current image.')
+	#rma: add arg version-new					
+    parser.add_argument('--version-new', dest='versionnew', default='0x0',
+                        help = 'Software version of the new image.')										
 	#rma: add arg storage address					
-    parser.add_argument('--storage-address', dest='storageaddress', default='0xffffffff',
+    parser.add_argument('--storage-address', dest='storageaddress', default='0xffffffff', 
                         help = 'Storage address of the new image.')
-
+	#rma: add arg length-new					
+    parser.add_argument('--length-new', dest='lengthnew', default='0x0', 
+                        help = 'Total length of the new image in bytes.')
+	#rma: add arg length-stored			
+    parser.add_argument('--length-stored', dest='storedlengthnew', default='0x0', 
+                        help = 'Stored length of the new image in bytes.')
+	#rma: add arg crc-new		
+    parser.add_argument('--crc-new', dest='crc32new', default='0x0',
+                        help = 'Stored CRC value of the new image.')						
+						
     parser.add_argument('-r', dest='remotehost', default = 'localhost',
                         help = 'Host where openocd is running.')
 
@@ -398,14 +458,16 @@ def main():
     # Read the arguments.
     args = parse_arguments()
 
-    # Open a connection to OpenOCD, and wait for it to prompt us.
+    #if args.commands == 'install' or args.commands == 'copytoFC00' or args.commands == 'copyto3C00'	\
+    #    or args.commands == 'installota' or args.commands == 'bootloader':
+	# Open a connection to OpenOCD, and wait for it to prompt us.
     try:
         ocd = telnetlib.Telnet(host=args.remotehost, port=args.port)
     except Exception as e:
         print("Telnet error({0}): {1}".format(e.errno, e.strerror))
         print("Connection to OpenOCD at %s:%d failed." % (args.remotehost, args.port))
         exit(1)
-        
+		
     read_to_prompt()
 
     # Read the command and run it
@@ -413,7 +475,10 @@ def main():
         if command =='install':
             # generate flag page array to write to 0x3c00.
             retval = generate_flag_page(args.binfile, args.load_address, args.fname3c00,
-                args.overridegpio, args.overridepolarity, args.options, args.storageaddress)
+                args.overridegpio, args.overridepolarity, args.options, args.version, 
+				args.versionnew, args.storageaddress, args.lengthnew, args.storedlengthnew, 
+				args.crc32new)
+				
             # Put the execute only bin in flash, program 0x3c00 with yoda_local.
             if retval:
                 program_flash(args.binfile, args.load_address)
@@ -421,7 +486,9 @@ def main():
         elif command =='gen3C00':
             # generate flag page array to write to 0x3c00.
             retval = generate_flag_page(args.binfile, args.load_address, args.fname3c00,
-                args.overridegpio, args.overridepolarity, args.options, args.storageaddress)
+                args.overridegpio, args.overridepolarity, args.options, args.version, 
+				args.versionnew, args.storageaddress, args.lengthnew, args.storedlengthnew, 
+				args.crc32new)
         elif command == 'copytoFC00':
             send_ocd_command("halt")
             send_ocd_command("reset halt")

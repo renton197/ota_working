@@ -10,16 +10,26 @@
 # == For Debug Purpose Only == 
 # 1. Start an OpenOCD connection before running this program.
 
-
 bfile=bin/exactle_fit_amota.bin
 
 if [ -f "$bfile" ]; then
 # Remove old flag image.
 rm -f yoda_local.OTA
 # generate flash flag page at 0x3c00
-python copy_example_to_flash_rma.py -b "$bfile" -l 0x4000 --override-gpio 0 --override-polarity 0 gen3C00
+python copy_example_to_flash_rma.py 		-b 					"$bfile"		\
+											-l 					0x4000			\
+											--override-gpio 	0xffffffff 		\
+											--override-polarity 0 				\
+											--boot-options 		0xffffffff		\
+											--version			0				\
+											--version-new		0				\
+											--storage-address	0xffffffff		\
+											--length-new		0				\
+											--length-stored		0				\
+											--crc-new			0				\
+											gen3C00
 # load flash flag page to 0x3C00.
-python copy_example_to_flash_rma.py copyto3C00 
+python copy_example_to_flash_rma.py copyto3C00
 else
 	echo "Error: $bfile not found."
 	echo "Usage: $0 <filename>"
