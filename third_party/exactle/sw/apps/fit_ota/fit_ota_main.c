@@ -110,6 +110,19 @@ static const appUpdateCfg_t fitUpdateCfg =
   5                                       /*! Number of update attempts before giving up */
 };
 
+/*! configurable parameters for AMOTA connection parameter update */
+static const appUpdateCfg_t otaUpdateCfg =
+{
+  6000,                                   /*! Connection idle period in ms before attempting
+                                              connection parameter update; set to zero to disable */
+  8,                                      /*! 10ms */
+  15,                                     /*! 18.75ms */
+  0,                                      /*! Connection latency */
+  600,                                    /*! Supervision timeout in 10ms units */
+  5                                       /*! Number of update attempts before giving up */
+};
+
+
 /*! heart rate measurement configuration */
 static const hrpsCfg_t fitHrpsCfg =
 {
@@ -524,6 +537,10 @@ static void fitProcMsg(fitMsg_t *pMsg)
       uiEvent = APP_UI_CONN_CLOSE;
       break;
 
+    case DM_CONN_UPDATE_IND:
+      amotas_proc_msg(&pMsg->hdr);
+      break;
+
     case DM_SEC_PAIR_CMPL_IND:
       uiEvent = APP_UI_SEC_PAIR_CMPL;
       break;
@@ -576,7 +593,7 @@ void FitHandlerInit(wsfHandlerId_t handlerId)
   pAppAdvCfg = (appAdvCfg_t *) &fitAdvCfg;
   pAppSlaveCfg = (appSlaveCfg_t *) &fitSlaveCfg;
   pAppSecCfg = (appSecCfg_t *) &fitSecCfg;
-  pAppUpdateCfg = (appUpdateCfg_t *) &fitUpdateCfg;
+  pAppUpdateCfg = (appUpdateCfg_t *) &otaUpdateCfg;
 
   /* Initialize application framework */
   AppSlaveInit();

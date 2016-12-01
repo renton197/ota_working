@@ -131,7 +131,29 @@ amotasCb;
 static void
 amotas_conn_open(dmEvt_t *pMsg)
 {
+    hciLeConnCmplEvt_t *evt = (hciLeConnCmplEvt_t*) pMsg;
     amotasCb.txReady = TRUE;
+
+    WsfTrace("connection opened");
+    WsfTrace("handle = 0x%x", evt->handle);
+    WsfTrace("role = 0x%x", evt->role);
+    WsfTrace("addr = %02x%02x%02x%02x%02x%02x", evt->peerAddr[0], evt->peerAddr[1],
+        evt->peerAddr[2], evt->peerAddr[3], evt->peerAddr[4], evt->peerAddr[5]);
+    WsfTrace("connInterval = 0x%x", evt->connInterval);
+    WsfTrace("connLatency = 0x%x", evt->connLatency);
+    WsfTrace("supTimeout = 0x%x", evt->supTimeout);
+}
+
+static void
+amotas_conn_update(dmEvt_t *pMsg)
+{
+    hciLeConnUpdateCmplEvt_t *evt = (hciLeConnUpdateCmplEvt_t*) pMsg;
+
+    WsfTrace("connection update status = 0x%x", evt->status);
+    WsfTrace("handle = 0x%x", evt->handle);
+    WsfTrace("connInterval = 0x%x", evt->connInterval);
+    WsfTrace("connLatency = 0x%x", evt->connLatency);
+    WsfTrace("supTimeout = 0x%x", evt->supTimeout);
 }
 
 static amotasConn_t*
@@ -195,6 +217,7 @@ amotas_set_fw_addr(void)
                            amotasCb.fwHeader.fwLength, ui32TestSpaceLeft);
         WsfTrace("not enough space left");
     }
+
 }
 
 static void
@@ -422,6 +445,9 @@ void amotas_proc_msg(wsfMsgHdr_t *pMsg)
     {
         case DM_CONN_OPEN_IND:
             amotas_conn_open((dmEvt_t *) pMsg);
+        break;
+        case DM_CONN_UPDATE_IND:
+            amotas_conn_update((dmEvt_t *) pMsg);
         break;
         
         default:
