@@ -54,13 +54,16 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         //
         // Load data from internal flash to SRAM buffer to avoid operation from same bank
         // Always operate in unit of page size
-        memcpy((uint8_t*)g_ui32FlashLoadingBuffer, (uint8_t*)(pui32StorageAddress + i*AM_HAL_FLASH_PAGE_SIZE / 4), AM_HAL_FLASH_PAGE_SIZE);
+        memcpy((uint8_t*)g_ui32FlashLoadingBuffer, (uint8_t*)(pui32StorageAddress 
+                            + i*AM_HAL_FLASH_PAGE_SIZE / 4), AM_HAL_FLASH_PAGE_SIZE);
 
         //
         // Figure out what page and block we're working on.
         //
-        ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)(pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4));
-        ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4));
+        ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)(pui32TargetAddress 
+                                            + i * AM_HAL_FLASH_PAGE_SIZE / 4));
+        ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress 
+                                            + i * AM_HAL_FLASH_PAGE_SIZE / 4));
 
         am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
                                     ui32CurrentBlock, ui32CurrentPage);
@@ -69,7 +72,8 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         // Program the flash page with the data.
         //
         am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, g_ui32FlashLoadingBuffer,
-                                  (pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4), AM_HAL_FLASH_PAGE_SIZE / 4);
+                                (pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4), 
+                                AM_HAL_FLASH_PAGE_SIZE / 4);
     }
 
     //
@@ -81,13 +85,16 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         //
         // Load data from internal flash to SRAM buffer to avoid operation from same bank
         // Always operate in unit of page size
-        memcpy((uint8_t*)g_ui32FlashLoadingBuffer, (uint8_t*)(pui32StorageAddress + (ui32NumberBytes - ui32RemainderBytes) / 4), ui32RemainderBytes);
+        memcpy((uint8_t*)g_ui32FlashLoadingBuffer, (uint8_t*)(pui32StorageAddress 
+                + (ui32NumberBytes - ui32RemainderBytes) / 4), ui32RemainderBytes);
 
         //
         // Figure out what page and block we're working on.
         //
-        ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)(pui32TargetAddress + (ui32NumberBytes - ui32RemainderBytes) / 4));
-        ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress + (ui32NumberBytes - ui32RemainderBytes) / 4));
+        ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)(pui32TargetAddress 
+                                    + (ui32NumberBytes - ui32RemainderBytes) / 4));
+        ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress 
+                                    + (ui32NumberBytes - ui32RemainderBytes) / 4));
 
         am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
                                     ui32CurrentBlock, ui32CurrentPage);
@@ -96,7 +103,8 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         // Program the flash page with the data.
         //
         am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, g_ui32FlashLoadingBuffer,
-                                  (pui32TargetAddress + (ui32NumberBytes - ui32RemainderBytes) / 4), ui32RemainderBytes / 4);
+                    (pui32TargetAddress + (ui32NumberBytes - ui32RemainderBytes) / 4), 
+                    ui32RemainderBytes / 4);
     }
 }
 
@@ -293,14 +301,16 @@ image_get_storage_information_internal(am_bootloader_image_t *psImage,
     // Last page of the internal flash is reserved.
     // (effective LinkAddress shall be equal to or larger than 0x4000)
     //
-    if(device.ui32FlashSize < ((uint32_t)(psImage->pui32LinkAddress) + (uint32_t)(psImage->ui32NumBytes) + AM_HAL_FLASH_PAGE_SIZE))
+    if(device.ui32FlashSize < ((uint32_t)(psImage->pui32LinkAddress) 
+        + (uint32_t)(psImage->ui32NumBytes) + AM_HAL_FLASH_PAGE_SIZE))
     {
         //image size error
         *pui32StorageAddressNewImage = 0xFFFFFFFF; 
         *pui32NumBytesSpaceLeft = 0xFFFFFFFF;
         return false;
     }
-    ui32SpaceLeft = device.ui32FlashSize - (uint32_t)(psImage->pui32LinkAddress) - (uint32_t)(psImage->ui32NumBytes) - AM_HAL_FLASH_PAGE_SIZE;
+    ui32SpaceLeft = device.ui32FlashSize - (uint32_t)(psImage->pui32LinkAddress) 
+                    - (uint32_t)(psImage->ui32NumBytes) - AM_HAL_FLASH_PAGE_SIZE;
     ui32SpaceLeft &= 0xFFFFF800;    //storage starts from page boundries
 
     if(ui32NumBytesNewImage > ui32SpaceLeft) 

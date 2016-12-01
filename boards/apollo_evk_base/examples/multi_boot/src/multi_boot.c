@@ -84,7 +84,7 @@ am_bootloader_image_t g_sImage = {0, 0, 0, 0, 0, 0, 0, 0};  //RMA: added element
 // Flag page information.
 //
 //*****************************************************************************
-am_bootloader_image_t *g_psBootImage = (am_bootloader_image_t *) FLAG_PAGE_LOCATION;
+//am_bootloader_image_t *g_psBootImage = (am_bootloader_image_t *) FLAG_PAGE_LOCATION;
 
 void setup_ios_interface(void);
 void setup_serial(int32_t i32Module, uint32_t ui32BaudRate);
@@ -202,6 +202,7 @@ main(void)
     }
 #endif
 
+#ifdef MULTI_BOOT_OTA_DEBUG
     //
     // (Delete me!) -- RMA
     // Update the flash flag page for debug purpose only
@@ -219,7 +220,9 @@ main(void)
     FlagImage.bEncrypted = false;
     
     am_bootloader_flag_page_update(&FlagImage, (uint32_t *)g_psBootImage);
+#endif //MULTI_BOOT_OTA_DEBUG
 
+#ifdef MULTI_BOOT_OTA_DEBUG
     //
     // (Delete me!) -- RMA
     // Interface test here
@@ -233,7 +236,9 @@ main(void)
                                                         502768, //32768,
                                                         &ui32TestStoreAddress,
                                                         &ui32TestSpaceLeft);
+#endif //MULTI_BOOT_OTA_DEBUG
 
+#ifdef MULTI_BOOT_OTA_DEBUG
     //
     // (Delete me!) -- RMA
     // Interface test here
@@ -244,6 +249,8 @@ main(void)
         g_TestArray[i] = i+1;
     }
     bResult = image_flash_write_from_sram(0x40000, (uint32_t)g_TestArray, 32*4);
+
+#endif //MULTI_BOOT_OTA_DEBUG
 
     //
     // Check the flag page to see if there's a valid image ready. We do this

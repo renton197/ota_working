@@ -137,7 +137,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -378,6 +378,11 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
+              <FileName>image_boot_handlers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../src/image_boot_handlers.c</FilePath>
+            </File>
+            <File>
               <FileName>ios_boot_handlers.c</FileName>
               <FileType>1</FileType>
               <FilePath>../src/ios_boot_handlers.c</FilePath>
@@ -391,11 +396,6 @@
               <FileName>uart_boot_handlers.c</FileName>
               <FileType>1</FileType>
               <FilePath>../src/uart_boot_handlers.c</FilePath>
-            </File>
-            <File>
-              <FileName>image_boot_handlers.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\image_boot_handlers.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -446,21 +446,6 @@
               <FileName>libam_bsp.lib</FileName>
               <FileType>4</FileType>
               <FilePath>../../../bsp/keil/bin/libam_bsp.lib</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>binaries</GroupName>
-          <Files>
-            <File>
-              <FileName>binary_counter_0x4000_up.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\binary_counter_0x4000_up.c</FilePath>
-            </File>
-            <File>
-              <FileName>binary_counter_0x8000_down.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\binary_counter_0x8000_down.c</FilePath>
             </File>
           </Files>
         </Group>
