@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>AM_PACKAGE_BGA HCI_TR_UART AM_PART_APOLLO keil</Define>
               <Undefine></Undefine>
-              <IncludePath>../../../../../devices;../../../../../mcu/apollo;../../../../../third_party/exactle/sw/apps/app;../../../../../third_party/exactle/sw/apps/app/include;../../../../../third_party/exactle/sw/apps/fit_ota;../../../../../third_party/exactle/sw/hci/ambiq;../../../../../third_party/exactle/sw/hci/include;../../../../../third_party/exactle/sw/profiles/bas;../../../../../third_party/exactle/sw/profiles/hrps;../../../../../third_party/exactle/sw/services;../../../../../third_party/exactle/sw/stack/cfg;../../../../../third_party/exactle/sw/stack/hci;../../../../../third_party/exactle/sw/stack/include;../../../../../third_party/exactle/sw/util;../../../../../third_party/exactle/sw/wsf/ambiq;../../../../../third_party/exactle/sw/wsf/include;../../../../../utils;../../../bsp;../src;../../../../../third_party/exactle/sw/profiles/amota</IncludePath>
+              <IncludePath>../../../../../devices;../../../../../mcu/apollo;../../../../../third_party/exactle/sw/apps/app;../../../../../third_party/exactle/sw/apps/app/include;../../../../../third_party/exactle/sw/apps/fit_ota;../../../../../third_party/exactle/sw/hci/ambiq;../../../../../third_party/exactle/sw/hci/include;../../../../../third_party/exactle/sw/profiles/bas;../../../../../third_party/exactle/sw/profiles/hrps;../../../../../third_party/exactle/sw/services;../../../../../third_party/exactle/sw/stack/cfg;../../../../../third_party/exactle/sw/stack/hci;../../../../../third_party/exactle/sw/stack/include;../../../../../third_party/exactle/sw/util;../../../../../third_party/exactle/sw/wsf/ambiq;../../../../../third_party/exactle/sw/wsf/include;../../../../../utils;../../../bsp;../src;../../../../../third_party/exactle/sw/profiles/amota;..\..\..\..\..\bootloader;..\..\..\..\apollo_evk_base\examples\multi_boot\src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -793,6 +793,16 @@
               <FileName>amotas_main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\third_party\exactle\sw\profiles\amota\amotas_main.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>multiboot</GroupName>
+          <Files>
+            <File>
+              <FileName>image_boot_handlers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\apollo_evk_base\examples\multi_boot\src\image_boot_handlers.c</FilePath>
             </File>
           </Files>
         </Group>
