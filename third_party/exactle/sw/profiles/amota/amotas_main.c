@@ -104,11 +104,11 @@ typedef struct
 }
 amotasConn_t;
 
-/* Connection control block */
+
 typedef struct
 {
-    uint32_t    addr;               /* Connection ID */
-    uint32_t    offset;          /* amotas notify ready to be sent on this channel */
+    uint32_t    addr;
+    uint32_t    offset;
 }
 amotasNewFwFlashInfo_t;
 
@@ -239,6 +239,13 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
 #endif
 }
 
+static bool_t
+amotas_verify_firmware_crc(void)
+{
+    // read back the whole firmware image from flash and calculate CRC
+    return TRUE;
+}
+
 static void
 amotas_reset_board(void)
 {
@@ -278,7 +285,6 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             WsfTrace("receivedBytes = 0x%x", amotasCb.fwHeader.receivedBytes);
             WsfTrace("============= fw header end ===============");
 #endif
-            // TODO: need to reply received bytes to client for retransmission
             data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
             data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
             data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
@@ -297,7 +303,15 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         break;
 
         case AMOTA_CMD_FW_VERIFY:
-            amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
+            if (amotas_verify_firmware_crc())
+            {
+                amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
+                amotasCb.state = AMOTA_STATE_VERIFY;
+            }
+            else
+            {
+                amotas_reply_to_client(cmd, AMOTA_STATUS_CRC_ERROR, NULL, 0);
+            }
         break;
 
         case AMOTA_CMD_FW_RESET:
