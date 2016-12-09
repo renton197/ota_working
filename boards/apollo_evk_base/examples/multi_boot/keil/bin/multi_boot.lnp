@@ -1,16 +1,14 @@
 --cpu Cortex-M4.fp
+".\bin\image_boot_handlers.o"
 ".\bin\ios_boot_handlers.o"
 ".\bin\multi_boot.o"
 ".\bin\uart_boot_handlers.o"
-".\bin\image_boot_handlers.o"
 ".\bin\am_util_delay.o"
 ".\bin\am_util_stdio.o"
 ".\bin\am_bootloader.o"
 ".\bin\startup_keil.o"
 "../../../../../mcu/apollo/hal/keil/bin/libam_hal.lib"
 "../../../bsp/keil/bin/libam_bsp.lib"
-".\bin\binary_counter_0x4000_up.o"
-".\bin\binary_counter_0x8000_down.o"
 --strict --scatter ".\multi_boot.sct"
 ../../../../../mcu/apollo/hal/keil/bin/libam_hal.lib(am_hal_global.o) --keep=am_hal_global.o(.data) --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

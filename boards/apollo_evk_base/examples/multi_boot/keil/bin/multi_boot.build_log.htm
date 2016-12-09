@@ -17,31 +17,29 @@ Library Manager: ArmAr.exe V5.06 update 2 (build 183)
 Hex Converter:   FromElf.exe V5.06 update 2 (build 183)
 CPU DLL:         SARMCM3.DLL V5.20
 Dialog DLL:      DCM.DLL V1.13.7.0
-Target DLL:      UL2CM3.DLL V1.157.18.0
+Target DLL:      Segger\JL2CM3.dll V2.99.20.0
 Dialog DLL:      TCM.DLL V1.14.9.0
  
 <h2>Project:</h2>
-C:\__Work\_events2016\1030_OTA_support\bootloader_b0\boards\apollo_evk_base\examples\multi_boot\keil\multi_boot.uvprojx
-Project File Date:  11/22/2016
+C:\__Work\_events2016\1030_OTA_support\github\1209_integration_test\ota_working\boards\apollo_evk_base\examples\multi_boot\keil\multi_boot.uvprojx
+Project File Date:  12/09/2016
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 2 (build 183)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'multi_boot'
+compiling multi_boot.c...
+compiling image_boot_handlers.c...
+compiling ios_boot_handlers.c...
 compiling startup_keil.s...
-compiling am_bootloader.c...
-../../../../../bootloader/am_bootloader.c(322): warning:  #177-D: variable "ui32StorageAddress" was declared but never referenced
-      uint32_t ui32ResetVector, ui32StackPointer, ui32LinkAddress, ui32StorageAddress;
-../../../../../bootloader/am_bootloader.c: 1 warning, 0 errors
+compiling uart_boot_handlers.c...
 linking...
-Program Size: Code=5796 RO-data=6228 RW-data=164 ZI-data=5020  
+Program Size: Code=5728 RO-data=1060 RW-data=164 ZI-data=5172  
 After Build - User command #1: fromelf --bin --output bin\multi_boot.bin bin\multi_boot.axf
-Error: Q0147E: Failed to create Directory bin\multi_boot.bin\FLASH: File exists
-Finished: 0 information, 0 warning and 1 error messages.
 After Build - User command #2: fromelf -cedrst --output bin\multi_boot.txt bin\multi_boot.axf
-".\bin\multi_boot.axf" - 0 Error(s), 1 Warning(s).
+".\bin\multi_boot.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
-  C:\__Work\_events2016\1030_OTA_support\bootloader_b0\boards\apollo_evk_base\examples\multi_boot\keil\RTE
+  C:\__Work\_events2016\1030_OTA_support\github\1209_integration_test\ota_working\boards\apollo_evk_base\examples\multi_boot\keil\RTE
   C:\Keil_v5\ARM\PACK\AmbiqMicro\Apollo_DFP\0.8.0\Device\Include
 
 <h2>Collection of Component Files used:</h2>

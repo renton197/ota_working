@@ -3,8 +3,6 @@ bin/am_bsp.o: .././am_bsp.c ../../../../mcu/apollo/am_mcu_apollo.h \
  ../../../../mcu/apollo/regs/am_reg_base_addresses.h \
  ../../../../mcu/apollo/regs/am_reg_clkgen.h \
  ../../../../mcu/apollo/regs/am_reg_ctimer.h \
- ../../../../mcu/apollo/regs/am_reg_flashctrl.h \
- ../../../../mcu/apollo/regs/am_reg_mcuctrlpriv.h \
  ../../../../mcu/apollo/regs/am_reg_gpio.h \
  ../../../../mcu/apollo/regs/am_reg_iomstr.h \
  ../../../../mcu/apollo/regs/am_reg_ioslave.h \
@@ -20,7 +18,6 @@ bin/am_bsp.o: .././am_bsp.c ../../../../mcu/apollo/am_mcu_apollo.h \
  ../../../../mcu/apollo/regs/am_reg_uart.h \
  ../../../../mcu/apollo/regs/am_reg_vcomp.h \
  ../../../../mcu/apollo/regs/am_reg_wdt.h \
- ../../../../mcu/apollo/am_rtos_abstraction.h \
  ../../../../mcu/apollo/hal/am_hal_adc.h \
  ../../../../mcu/apollo/hal/am_hal_cachectrl.h \
  ../../../../mcu/apollo/hal/am_hal_clkgen.h \
@@ -58,18 +55,7 @@ bin/am_bsp.o: .././am_bsp.c ../../../../mcu/apollo/am_mcu_apollo.h \
  ../../../../devices/am_devices_lis3mdl.h \
  ../../../../devices/am_devices_button.h \
  ../../../../devices/am_devices_bmi160.h \
- ../../../../devices/am_devices_led.h \
- ../../../../devices/am_devices_da14580.h \
- ../../../../devices/am_devices_display.h \
- ../../../../devices/am_devices_display_ls013b4dn04.h \
- ../../../../devices/am_devices_display_qg9696tswhg04.h \
- ../../../../devices/am_devices_display_st7735.h \
- ../../../../devices/am_devices_i2ciomhc.h \
- ../../../../devices/am_devices_i2cioshc.h \
- ../../../../devices/am_devices_mcp79410.h \
- ../../../../devices/am_devices_p5qpcm.h \
- ../../../../devices/am_devices_spiscm.h \
- ../../../../devices/am_devices_spiscs.h .././am_bsp_gpio.h
+ ../../../../devices/am_devices_led.h .././am_bsp_gpio.h
 
 ../../../../mcu/apollo/am_mcu_apollo.h:
 
@@ -80,10 +66,6 @@ bin/am_bsp.o: .././am_bsp.c ../../../../mcu/apollo/am_mcu_apollo.h \
 ../../../../mcu/apollo/regs/am_reg_clkgen.h:
 
 ../../../../mcu/apollo/regs/am_reg_ctimer.h:
-
-../../../../mcu/apollo/regs/am_reg_flashctrl.h:
-
-../../../../mcu/apollo/regs/am_reg_mcuctrlpriv.h:
 
 ../../../../mcu/apollo/regs/am_reg_gpio.h:
 
@@ -114,8 +96,6 @@ bin/am_bsp.o: .././am_bsp.c ../../../../mcu/apollo/am_mcu_apollo.h \
 ../../../../mcu/apollo/regs/am_reg_vcomp.h:
 
 ../../../../mcu/apollo/regs/am_reg_wdt.h:
-
-../../../../mcu/apollo/am_rtos_abstraction.h:
 
 ../../../../mcu/apollo/hal/am_hal_adc.h:
 
@@ -194,27 +174,5 @@ bin/am_bsp.o: .././am_bsp.c ../../../../mcu/apollo/am_mcu_apollo.h \
 ../../../../devices/am_devices_bmi160.h:
 
 ../../../../devices/am_devices_led.h:
-
-../../../../devices/am_devices_da14580.h:
-
-../../../../devices/am_devices_display.h:
-
-../../../../devices/am_devices_display_ls013b4dn04.h:
-
-../../../../devices/am_devices_display_qg9696tswhg04.h:
-
-../../../../devices/am_devices_display_st7735.h:
-
-../../../../devices/am_devices_i2ciomhc.h:
-
-../../../../devices/am_devices_i2cioshc.h:
-
-../../../../devices/am_devices_mcp79410.h:
-
-../../../../devices/am_devices_p5qpcm.h:
-
-../../../../devices/am_devices_spiscm.h:
-
-../../../../devices/am_devices_spiscs.h:
 
 .././am_bsp_gpio.h:

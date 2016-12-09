@@ -8,8 +8,6 @@
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_base_addresses.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_clkgen.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_ctimer.h
-.\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_flashctrl.h
-.\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_mcuctrlpriv.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_gpio.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_iomstr.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_ioslave.h
@@ -25,7 +23,6 @@
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_uart.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_vcomp.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/regs/am_reg_wdt.h
-.\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/am_rtos_abstraction.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/hal/am_hal_adc.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/hal/am_hal_cachectrl.h
 .\bin\uart_boot_handlers.o: ../../../../../mcu/apollo/hal/am_hal_clkgen.h
@@ -65,17 +62,6 @@
 .\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_button.h
 .\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_bmi160.h
 .\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_led.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_da14580.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_display.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_display_ls013b4dn04.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_display_qg9696tswhg04.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_display_st7735.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_i2ciomhc.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_i2cioshc.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_mcp79410.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_p5qpcm.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_spiscm.h
-.\bin\uart_boot_handlers.o: ../../../../../devices/am_devices_spiscs.h
 .\bin\uart_boot_handlers.o: ../../../bsp/am_bsp_gpio.h
 .\bin\uart_boot_handlers.o: ../../../../../utils/am_util.h
 .\bin\uart_boot_handlers.o: ../../../../../utils/am_util_cmdline.h
@@ -90,9 +76,6 @@
 .\bin\uart_boot_handlers.o: ../../../../../utils/am_util_tap_detect.h
 .\bin\uart_boot_handlers.o: ../../../../../utils/am_util_time.h
 .\bin\uart_boot_handlers.o: ../../../../../utils/am_util_stxetx.h
-.\bin\uart_boot_handlers.o: ../../../../../utils/am_util_aes.h
-.\bin\uart_boot_handlers.o: ../../../../../utils/am_util_draw_2d1bpp.h
-.\bin\uart_boot_handlers.o: ../../../../../utils/am_util_fonts.h
 .\bin\uart_boot_handlers.o: ../../../../../bootloader/am_bootloader.h
 .\bin\uart_boot_handlers.o: ../src/multi_boot.h
 .\bin\uart_boot_handlers.o: ../../../../../bootloader/am_bootloader.h

@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\bin\multi_boot.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\bin\multi_boot.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Tue Nov 22 18:41:29 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Fri Dec 09 15:30:01 2016
 <BR><P>
-<H3>Maximum Stack Usage =        136 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        120 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 __rt_entry_main &rArr; main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
 <P>
@@ -248,7 +248,7 @@ Global Symbols
 <P><STRONG><a name="[88]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[25]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 136 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 120 + Unknown Stack Size
 <LI>Call Chain = __rt_entry_main &rArr; main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -297,10 +297,10 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[22]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_setup_stackheap
 </UL>
 
-<P><STRONG><a name="[56]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
+<P><STRONG><a name="[57]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_memcpy4
 </UL>
-<BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load_from_image
+<BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
 </UL>
 
 <P><STRONG><a name="[8c]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text), UNUSED)
@@ -349,15 +349,15 @@ Global Symbols
 
 <P><STRONG><a name="[95]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[96]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size 48 bytes, indicate_semi.o(.text), UNUSED)
+<P><STRONG><a name="[96]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size 72 bytes, indicate_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[30]"></a>am_bootloader_boot_from_storage</STRONG> (Thumb, 112 bytes, Stack size 48 bytes, am_bootloader.o(i.am_bootloader_boot_from_storage))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
+<P><STRONG><a name="[30]"></a>am_bootloader_boot_from_storage</STRONG> (Thumb, 112 bytes, Stack size 72 bytes, am_bootloader.o(i.am_bootloader_boot_from_storage))
+<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_new_image_check
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_fast_crc32
-<LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load_from_image
 <LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
 </UL>
 <BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
 </UL>
@@ -378,7 +378,6 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 <LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
-<LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
 
@@ -391,7 +390,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[38]"></a>am_bootloader_image_check</STRONG> (Thumb, 468 bytes, Stack size 8 bytes, am_bootloader.o(i.am_bootloader_image_check))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flash_check
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
@@ -408,7 +407,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[57]"></a>am_bootloader_partial_crc32</STRONG> (Thumb, 40 bytes, Stack size 20 bytes, am_bootloader.o(i.am_bootloader_partial_crc32))
+<P><STRONG><a name="[56]"></a>am_bootloader_partial_crc32</STRONG> (Thumb, 40 bytes, Stack size 20 bytes, am_bootloader.o(i.am_bootloader_partial_crc32))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = am_bootloader_partial_crc32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
@@ -453,17 +452,17 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[35]"></a>am_hal_flash_page_erase</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_flash.o(i.am_hal_flash_page_erase))
-<BR><BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load_from_image
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<BR><BR>[Called By]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
 <LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
 </UL>
 
 <P><STRONG><a name="[36]"></a>am_hal_flash_program_main</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_flash.o(i.am_hal_flash_program_main))
-<BR><BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flash_load_from_image
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<BR><BR>[Called By]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
 <LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
 </UL>
 
 <P><STRONG><a name="[43]"></a>am_hal_gpio_int_clear</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_gpio.o(i.am_hal_gpio_int_clear))
@@ -649,18 +648,18 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[32]"></a>flash_load_from_image</STRONG> (Thumb, 172 bytes, Stack size 32 bytes, image_boot_handlers.o(i.flash_load_from_image))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = flash_load_from_image &rArr; __aeabi_memcpy4
+<P><STRONG><a name="[32]"></a>image_load_from_internal_flash</STRONG> (Thumb, 172 bytes, Stack size 32 bytes, image_boot_handlers.o(i.image_load_from_internal_flash))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = image_load_from_internal_flash &rArr; __aeabi_memcpy4
 </UL>
 <BR>[Calls]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
-<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 324 bytes, Stack size 40 bytes, multi_boot.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
+<P><STRONG><a name="[26]"></a>main</STRONG> (Thumb, 264 bytes, Stack size 0 bytes, multi_boot.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; am_bootloader_new_image_check &rArr; am_bootloader_fast_crc32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
 <LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_start
@@ -675,7 +674,6 @@ Global Symbols
 <LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_run
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
 <LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_enable
-<LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 <LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cleanup_ios_interface
 </UL>
@@ -728,9 +726,9 @@ Local Symbols
 <P><STRONG><a name="[4b]"></a>image_data_packet_read</STRONG> (Thumb, 194 bytes, Stack size 24 bytes, ios_boot_handlers.o(i.image_data_packet_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = image_data_packet_read &rArr; am_bootloader_partial_crc32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
+<LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
@@ -742,9 +740,9 @@ Local Symbols
 <P><STRONG><a name="[53]"></a>image_data_packet_read</STRONG> (Thumb, 216 bytes, Stack size 32 bytes, uart_boot_handlers.o(i.image_data_packet_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = image_data_packet_read &rArr; am_bootloader_partial_crc32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
+<LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
 <LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 </UL>

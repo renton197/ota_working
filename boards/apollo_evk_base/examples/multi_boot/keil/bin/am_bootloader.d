@@ -8,8 +8,6 @@
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_base_addresses.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_clkgen.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_ctimer.h
-.\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_flashctrl.h
-.\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_mcuctrlpriv.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_gpio.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_iomstr.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_ioslave.h
@@ -25,7 +23,6 @@
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_uart.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_vcomp.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/regs/am_reg_wdt.h
-.\bin\am_bootloader.o: ../../../../../mcu/apollo/am_rtos_abstraction.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/hal/am_hal_adc.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/hal/am_hal_cachectrl.h
 .\bin\am_bootloader.o: ../../../../../mcu/apollo/hal/am_hal_clkgen.h
