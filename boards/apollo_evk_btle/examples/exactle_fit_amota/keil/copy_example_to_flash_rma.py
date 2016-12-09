@@ -406,6 +406,7 @@ def parse_arguments():
 
     parser.add_argument('--imgbin', dest='imgbin', default='golden_master.bin',
                         help='Master binary file to output (golden_master.bin).')
+ 
     parser.add_argument('--override-gpio', dest='overridegpio', default='0xffffffff',
                         help = 'Override GPIO number. (Can be used to force a new image load)\n(-1 to disable)')
 
@@ -413,7 +414,7 @@ def parse_arguments():
                         help = 'Polarity for the override pin.')
 	#rma: add arg options					
     parser.add_argument('--boot-options', dest='options', default='0xffffffff',
-                        help = 'Indicate the presence of an available new image.')						
+                        help = 'Indicate the presence of an available new image. (1 = new image in internal flash; 2 = new image in external flash; other = no new image)')						
 	#rma: add arg version					
     parser.add_argument('--version', dest='version', default='0x0',
                         help = 'Software version of the current image.')

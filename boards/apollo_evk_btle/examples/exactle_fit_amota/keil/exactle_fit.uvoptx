@@ -26,7 +26,7 @@
     <ToolsetNumber>0x4</ToolsetNumber>
     <ToolsetName>ARM-ADS</ToolsetName>
     <TargetOption>
-      <CLKADS>24000000</CLKADS>
+      <CLKADS>12000000</CLKADS>
       <OPTTT>
         <gFlags>1</gFlags>
         <BeepAtEnd>1</BeepAtEnd>
@@ -88,8 +88,8 @@
         <sRmem>1</sRmem>
         <sRfunc>1</sRfunc>
         <sRbox>1</sRbox>
-        <tLdApp>0</tLdApp>
-        <tGomain>0</tGomain>
+        <tLdApp>1</tLdApp>
+        <tGomain>1</tGomain>
         <tRbreak>1</tRbreak>
         <tRwatch>1</tRwatch>
         <tRmem>1</tRmem>
@@ -132,12 +132,11 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U4294967295 -O462 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8000 -TDT0 -TDC1F -TIEFFFFFFFF -TIP9 -TB1 -TFE0 -FO7 -FD10000000 -FC4000 -FN1 -FF0Apollo.FLM -FS00 -FL080000 -FP0($$Device:Apollo_512_BGA$Flash\Apollo.FLM)</Name>
+          <Name>-U4294967295 -O462 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8000 -TDT0 -TDC1F -TIEFFFFFFFF -TIP9 -TB1 -TFE0 -FO7 -FD10000000 -FC4000 -FN1 -FF0Apollo.FLM -FS00 -FL080000 -FP0($$Device:Apollo 512 BGA$Flash\Apollo.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -147,7 +146,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>-UV0236LFE -O462 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8002 -TDT0 -TDC1F -TIE1 -TIP8 -FO7 -FD10000000 -FC4000 -FN1 -FF0Apollo.FLM -FS00 -FL080000 -FP0($$Device:Apollo_512_BGA$Flash\Apollo.FLM)</Name>
+          <Name>-UV0236LFE -O462 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8002 -TDT0 -TDC1F -TIE1 -TIP8 -FO7  -FN1 -FC2000 -FD10000000 -FF0Apollo -FL010000 -FS00 -FP0($$Device:Apollo)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
@@ -189,7 +188,7 @@
         <aLa>0</aLa>
         <aPa1>0</aPa1>
         <AscS4>0</AscS4>
-        <aSer4>1</aSer4>
+        <aSer4>0</aSer4>
         <StkLoc>0</StkLoc>
         <TrcWin>0</TrcWin>
         <newCpu>0</newCpu>
@@ -938,7 +937,7 @@
 
   <Group>
     <GroupName>src</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -946,7 +945,7 @@
       <GroupNumber>13</GroupNumber>
       <FileNumber>54</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\src\exactle_fit_amota.c</PathWithFileName>
@@ -1142,7 +1141,7 @@
 
   <Group>
     <GroupName>multiboot</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1155,6 +1154,18 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\..\..\apollo_evk_base\examples\multi_boot\src\image_boot_handlers.c</PathWithFileName>
       <FilenameWithoutPath>image_boot_handlers.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>19</GroupNumber>
+      <FileNumber>68</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\..\..\..\..\bootloader\am_bootloader.c</PathWithFileName>
+      <FilenameWithoutPath>am_bootloader.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -319,7 +319,7 @@ am_bootloader_flash_check(am_bootloader_image_t *psImage)
 bool
 am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32StorageType)
 {
-    uint32_t ui32ResetVector, ui32StackPointer, ui32LinkAddress, ui32StorageAddress;
+    uint32_t ui32ResetVector, ui32StackPointer, ui32LinkAddress;//, ui32StorageAddress;
 
     ui32LinkAddress = (uint32_t) psImage->pui32LinkAddress;
     DPRINTF(("Entering %s 0x%08x\r\n", __func__, (uintptr_t)psImage));
@@ -341,8 +341,8 @@ am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32Stora
     {
 //        ui32StackPointer = psImage->pui32LinkAddress[0];
 //        ui32ResetVector = psImage->pui32LinkAddress[1];
-        ui32StackPointer = psImage->pui32StorageAddress[0];
-        ui32ResetVector = psImage->pui32StorageAddress[1];
+        ui32StackPointer = psImage->pui32StorageAddressNewImage[0];
+        ui32ResetVector = psImage->pui32StorageAddressNewImage[1];
     }
     else
     {
@@ -380,7 +380,7 @@ am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32Stora
             // Run a CRC on the image to make sure it matches the stored checksum
             // value.
             //
-            if(am_bootloader_fast_crc32(psImage->pui32StorageAddress, psImage->ui32NumBytes) !=
+            if(am_bootloader_fast_crc32(psImage->pui32StorageAddressNewImage, psImage->ui32NumBytes) !=
                psImage->ui32CRC)
             {
                 DPRINTF(("Bad CRC 0x%08x\r\n", psImage->ui32CRC));
@@ -417,7 +417,7 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         //
         // Load image to target link address in the internal flash
         //
-        flash_load_from_image(psImage->pui32LinkAddress, psImage->pui32StorageAddress, psImage->ui32NumBytes);
+        image_load_from_internal_flash(psImage->pui32LinkAddress, psImage->pui32StorageAddressNewImage, psImage->ui32NumBytes);
         //
         // Verify the flash operation result with a fast CRC check before we jump 
         // into the new image and run
@@ -441,7 +441,7 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         FlagImage.pui32ResetVector = psImage->pui32ResetVector;
         FlagImage.bEncrypted = psImage->bEncrypted;
         FlagImage.ui32Options = BOOT_NO_NEW_IMAGE;
-        FlagImage.pui32StorageAddress = (uint32_t*)0xFFFFFFFF;
+        FlagImage.pui32StorageAddressNewImage = (uint32_t*)0xFFFFFFFF;
         
         am_bootloader_flag_page_update(&FlagImage, (uint32_t *)psImage);
     }

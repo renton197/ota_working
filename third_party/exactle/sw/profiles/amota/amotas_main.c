@@ -32,6 +32,7 @@
 #include "am_util_debug.h"
 #include "crc32.h"
 
+#include "am_mcu_apollo.h"
 #include "am_bootloader.h"
 #include "image_boot_handlers.h"
 
@@ -203,10 +204,13 @@ amotas_set_fw_addr(void)
     amotasCb.newFwFlashInfo.offset = 0;
 
     uint32_t ui32TestSpaceLeft;
-    if(image_get_storage_information_internal(g_psBootImage, 
+    bool bResult;
+
+    bResult = image_get_storage_information_internal(g_psBootImage, 
                                                 amotasCb.fwHeader.fwLength,
                                                 &amotasCb.newFwFlashInfo.addr,
-                                                &ui32TestSpaceLeft))
+                                                &ui32TestSpaceLeft);
+    if(bResult == true)
     {
         WsfTrace("storage address = 0x%x, space left in flash = %d bytes", 
                            amotasCb.newFwFlashInfo.addr, ui32TestSpaceLeft);
@@ -226,8 +230,19 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
     // TODO: write to flash here
     WsfTrace("write to flash addr = 0x%x, len = 0x%x", addr, len);
 
+    //
+    // Check the target flash address to ensure we do not operation the wrong address
+    //
+    if((uint32_t)g_psBootImage->pui32StorageAddressNewImage > addr)
+    {
+        //
+        // application is trying to write to wrong address 
+        //
+        return;
+    }
+
+
     //RMA: Add flash operation here
-#if 0   //disabled now for operation safety purpose.
     if(image_flash_write_from_sram( (uint32_t*)addr, (uint32_t*)buf, len))
     {
         WsfTrace("flash write succeeded.");
@@ -236,19 +251,28 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
     {
         WsfTrace("flash write failed.");
     }
-#endif
 }
 
 static bool_t
 amotas_verify_firmware_crc(void)
 {
+    
     // read back the whole firmware image from flash and calculate CRC
-    return TRUE;
+    bool bResult = false;
+    uint32_t ui32CRC = 0;
+    ui32CRC = am_bootloader_fast_crc32(&amotasCb.fwHeader.fwStartAddr,  
+                                                                        amotasCb.fwHeader.fwLength);
+
+    return (ui32CRC == amotasCb.fwHeader.fwCrc);
 }
 
 static void
 amotas_reset_board(void)
 {
+    //
+    // Perform a POI reset
+    //
+    am_hal_reset_poi();
 }
 
 
