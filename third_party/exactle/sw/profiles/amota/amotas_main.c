@@ -78,6 +78,7 @@ typedef enum
 /* FW header information */
 typedef struct
 {
+    uint32_t    encrypted;
     uint32_t    version;
     uint32_t    fwLength;
     uint32_t    fwCrc;
@@ -258,7 +259,6 @@ amotas_verify_firmware_crc(void)
 {
     
     // read back the whole firmware image from flash and calculate CRC
-    bool bResult = false;
     uint32_t ui32CRC = 0;
     ui32CRC = am_bootloader_fast_crc32(&amotasCb.fwHeader.fwStartAddr,  
                                                                         amotasCb.fwHeader.fwLength);
@@ -291,16 +291,18 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
                 amotas_reply_to_client(cmd, status, NULL, 0);
                 break;
             }
-            BYTES_TO_UINT32(amotasCb.fwHeader.version, buf);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwLength, buf + 4);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwCrc, buf + 8);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 12);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 16);
-            BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 16);
+            BYTES_TO_UINT32(amotasCb.fwHeader.encrypted, buf);
+            BYTES_TO_UINT32(amotasCb.fwHeader.version, buf + 4);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwLength, buf + 8);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwCrc, buf + 12);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 16);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 20);
+            BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 24);
             amotas_set_fw_addr();
             amotasCb.state = AMOTA_STATE_GETTING_FW;
 #ifdef AMOTA_DEBUG_ON
             WsfTrace("============= fw header start ===============");
+            WsfTrace("encrypted = 0x%x", amotasCb.fwHeader.encrypted);
             WsfTrace("version = 0x%x", amotasCb.fwHeader.version);
             WsfTrace("fwLength = 0x%x", amotasCb.fwHeader.fwLength);
             WsfTrace("fwCrc = 0x%x", amotasCb.fwHeader.fwCrc);
@@ -329,11 +331,13 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         case AMOTA_CMD_FW_VERIFY:
             if (amotas_verify_firmware_crc())
             {
+                WsfTrace("crc verify success");
                 amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
                 amotasCb.state = AMOTA_STATE_VERIFY;
             }
             else
             {
+                WsfTrace("crc verify failed");
                 amotas_reply_to_client(cmd, AMOTA_STATUS_CRC_ERROR, NULL, 0);
             }
         break;

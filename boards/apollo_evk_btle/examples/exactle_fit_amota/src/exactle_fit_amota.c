@@ -380,7 +380,7 @@ main(void)
     am_hal_itm_enable();
     am_bsp_debug_printf_enable();
     am_util_stdio_terminal_clear();
-    am_util_stdio_printf("Hello World!\n\n");
+    am_util_stdio_printf("Ambiq OTA Demo B\r\n");
     // mike--
 
     //

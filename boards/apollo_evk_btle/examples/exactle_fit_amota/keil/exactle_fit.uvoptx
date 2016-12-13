@@ -132,7 +132,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U4294967295 -O462 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8000 -TDT0 -TDC1F -TIEFFFFFFFF -TIP9 -TB1 -TFE0 -FO7 -FD10000000 -FC4000 -FN1 -FF0Apollo.FLM -FS00 -FL080000 -FP0($$Device:Apollo 512 BGA$Flash\Apollo.FLM)</Name>
+          <Name>-U4294967295 -O494 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8000 -TDT0 -TDC1F -TIEFFFFFFFF -TIP9 -TB1 -TFE0 -FO7 -FD10000000 -FC4000 -FN1 -FF0Apollo -FS00 -FL080000 -FP0($$Device:Apollo_512_BGA$Flash\Apollo.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -142,7 +142,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>-UV0236LFE -O462 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8002 -TDT0 -TDC1F -TIE1 -TIP8 -FO7  -FN1 -FC2000 -FD10000000 -FF0Apollo -FL010000 -FS00 -FP0($$Device:Apollo)</Name>
+          <Name>-UV0236LFE -O462 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8002 -TDT0 -TDC1F -TIE1 -TIP8 -FO7  -FN1 -FC2000 -FD10000000 -FF0Apollo -FL010000 -FS00 -FP0($$Device:Apollo_512_BGA$Flash\Apollo.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
