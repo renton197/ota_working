@@ -10,7 +10,7 @@
       <TargetName>exactle_fit</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060300::V5.06 update 3 (build 300)::ARMCC</pCCUsed>
+      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>Apollo_512_BGA</Device>
@@ -330,10 +330,9 @@
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
-            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>AM_PACKAGE_BGA HCI_TR_UART AM_PART_APOLLO keil</Define>
+              <Define>AM_PACKAGE_BGA HCI_TR_UART AM_PART_APOLLO keil AM_DEBUG_PRINTF</Define>
               <Undefine></Undefine>
               <IncludePath>../../../../../devices;../../../../../mcu/apollo;../../../../../third_party/exactle/sw/apps/app;../../../../../third_party/exactle/sw/apps/app/include;../../../../../third_party/exactle/sw/apps/fit_ota;../../../../../third_party/exactle/sw/hci/ambiq;../../../../../third_party/exactle/sw/hci/include;../../../../../third_party/exactle/sw/profiles/bas;../../../../../third_party/exactle/sw/profiles/hrps;../../../../../third_party/exactle/sw/services;../../../../../third_party/exactle/sw/stack/cfg;../../../../../third_party/exactle/sw/stack/hci;../../../../../third_party/exactle/sw/stack/include;../../../../../third_party/exactle/sw/util;../../../../../third_party/exactle/sw/wsf/ambiq;../../../../../third_party/exactle/sw/wsf/include;../../../../../utils;../../../bsp;../src;../../../../../third_party/exactle/sw/profiles/amota;..\..\..\..\..\bootloader;..\..\..\..\apollo_evk_base\examples\multi_boot\src</IncludePath>
             </VariousControls>
@@ -348,7 +347,6 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -708,6 +706,11 @@
               <FileName>exactle_fit_amota.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\exactle_fit_amota.c</FilePath>
+            </File>
+            <File>
+              <FileName>binary_counter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\binary_counter.c</FilePath>
             </File>
           </Files>
         </Group>
