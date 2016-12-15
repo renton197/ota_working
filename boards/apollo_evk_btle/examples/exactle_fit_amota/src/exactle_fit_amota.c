@@ -81,6 +81,10 @@
 #include "fit_api.h"
 #include "app_ui.h"
 
+// RMA++, for debug purpose only
+#include "binary_counter.h"
+// RMA--, for debug purpose only
+
 //*****************************************************************************
 //
 // Forward declarations.
@@ -124,6 +128,14 @@ static wsfBufPoolDesc_t g_psPoolDescriptors[WSF_BUF_POOLS] =
 //
 //*****************************************************************************
 uint32_t g_ui32LastTime = 0;
+
+//*****************************************************************************
+//
+// Interrupt flag for the stack timers.
+//
+//*****************************************************************************
+bool g_bCounterTimerFlag = false;
+
 
 //*****************************************************************************
 //
@@ -320,7 +332,33 @@ am_ctimer_isr(void)
     // Check and clear any active CTIMER interrupts.
     //
     ui32Status = am_hal_ctimer_int_status_get(true);
-    am_hal_ctimer_int_clear(ui32Status);
+
+    //
+    // RMA++, for debug purpose only
+    // Increment count and set limit based on the number of LEDs available.
+    //
+    if((ui32Status & AM_HAL_CTIMER_INT_TIMERA1) == AM_HAL_CTIMER_INT_TIMERA1)
+    {
+        am_hal_ctimer_int_clear(AM_HAL_CTIMER_INT_TIMERA1);
+        if (++g_ui32TimerCount >= (1 << AM_BSP_NUM_LEDS))
+        {
+            //
+            // Reset the global.
+            //
+            g_ui32TimerCount = 0;
+        }
+
+        //
+        // counter timer interrupt occurred, set flag
+        //
+        g_bCounterTimerFlag = true;
+    }
+    else
+    {
+        am_hal_ctimer_int_clear(ui32Status);
+
+    }
+    //RMA--, for debug purpose only
 }
 
 //*****************************************************************************
@@ -398,41 +436,80 @@ main(void)
     //
     FitStart();
 
+    // 
+    // RMA++
+    // Adding initilization for binary_counter for debug purpose only
+    //
+    binary_counter_init();
+    // RMA--
+
     while (TRUE)
     {
-        //
-        // Calculate the elapsed time from our free-running timer, and update
-        // the software timers in the WSF scheduler.
-        //
-        update_scheduler_timers();
-        wsfOsDispatcher();
-
-        //
-        // Enable an interrupt to wake us up next time we have a scheduled event.
-        //
-        set_next_wakeup();
-
-        am_hal_interrupt_master_disable();
-
-        //
-        // Check to see if the WSF routines are ready to go to sleep.
-        //
-        if (wsfOsReadyToSleep())
+        //RMA++
+        if(g_bCounterTimerFlag == true)
         {
+            g_bCounterTimerFlag = false;
+            
             //
-            // Attempt to shut down the UART. If we can shut it down
-            // successfully, we can go to deep sleep. Otherwise, we'll need to
-            // stay awake to finish processing the current packet.
+            // Set the LEDs for binary counter.
+            // use this for "add" version
             //
-            if (HciDrvUartSafeShutdown())
+            am_devices_led_array_out(am_bsp_psLEDs, AM_BSP_NUM_LEDS,
+                             g_ui32TimerCount);
+
+            // use this for "sub" version
+//            am_devices_led_array_out(am_bsp_psLEDs, AM_BSP_NUM_LEDS,
+//                             (g_ui32TimerCount^0xffffffff));
+
+            //
+            // Go to deep sleep.
+            //
+            am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
+
+        }
+        else
+        {
+        // RMA--
+            //
+            // Calculate the elapsed time from our free-running timer, and update
+            // the software timers in the WSF scheduler.
+            //
+            update_scheduler_timers();
+            wsfOsDispatcher();
+
+            //
+            // Enable an interrupt to wake us up next time we have a scheduled event.
+            //
+            set_next_wakeup();
+
+
+            am_hal_interrupt_master_disable();
+
+            //
+            // Check to see if the WSF routines are ready to go to sleep.
+            //
+            if (wsfOsReadyToSleep())
             {
                 //
-                // Go to deep sleep.
+                // Attempt to shut down the UART. If we can shut it down
+                // successfully, we can go to deep sleep. Otherwise, we'll need to
+                // stay awake to finish processing the current packet.
                 //
-                am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
+                if (HciDrvUartSafeShutdown())
+                {
+                    //
+                    // Go to deep sleep.
+                    //
+                    am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
+                }
             }
-        }
 
-        am_hal_interrupt_master_enable();
+            am_hal_interrupt_master_enable();
+
+        //RMA++
+        }
+        //RMA--
+
+
     }
 }

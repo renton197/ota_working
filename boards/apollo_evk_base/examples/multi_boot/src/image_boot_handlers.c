@@ -45,6 +45,7 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
 {
     uint32_t i;
     uint32_t ui32CurrentPage, ui32CurrentBlock;
+    uint32_t ui32Critical;
 
     //
     // Loop through the data, copying it into the global buffer and load to flash.
@@ -65,15 +66,23 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress 
                                             + i * AM_HAL_FLASH_PAGE_SIZE / 4));
 
+        //
+        // Start a critical section.
+        //
+        ui32Critical = am_hal_interrupt_master_disable();
         am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
                                     ui32CurrentBlock, ui32CurrentPage);
-
+            
         //
         // Program the flash page with the data.
         //
         am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, g_ui32FlashLoadingBuffer,
                                 (pui32TargetAddress + i * AM_HAL_FLASH_PAGE_SIZE / 4), 
                                 AM_HAL_FLASH_PAGE_SIZE / 4);
+        //
+        // Exit the critical section.
+        //
+        am_hal_interrupt_master_set(ui32Critical);
     }
 
     //
@@ -96,6 +105,10 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)(pui32TargetAddress 
                                     + (ui32NumberBytes - ui32RemainderBytes) / 4));
 
+        //
+        // Start a critical section.
+        //
+        ui32Critical = am_hal_interrupt_master_disable();
         am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
                                     ui32CurrentBlock, ui32CurrentPage);
 
@@ -105,6 +118,10 @@ image_load_from_internal_flash( uint32_t* pui32TargetAddress, uint32_t* pui32Sto
         am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, g_ui32FlashLoadingBuffer,
                     (pui32TargetAddress + (ui32NumberBytes - ui32RemainderBytes) / 4), 
                     ui32RemainderBytes / 4);
+        //
+        // Exit the critical section.
+        //
+        am_hal_interrupt_master_set(ui32Critical);
     }
 }
 
@@ -129,6 +146,9 @@ bool
 image_flash_write_from_sram( uint32_t* pui32DstAddr, uint32_t* pui32SrcAddr, 
                                 uint32_t ui32NumberBytes)
 {
+    uint32_t ui32Critical;
+    int16_t i16Result = 0;
+
     //
     // Check if the destination address is in the flash
     //
@@ -202,13 +222,25 @@ image_flash_write_from_sram( uint32_t* pui32DstAddr, uint32_t* pui32SrcAddr,
                 ui32CurrentPage++;
             }
 
-            if(am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
-                                        ui32CurrentBlock, ui32CurrentPage))
+            //
+            // Start a critical section.
+            //
+            ui32Critical = am_hal_interrupt_master_disable();
+            i16Result = am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
+                                        ui32CurrentBlock, ui32CurrentPage);
+            //
+            // Exit the critical section.
+            //
+            am_hal_interrupt_master_set(ui32Critical);
+
+            if(i16Result != 0)
             {   
                 // flash operation failed.
                 // flash helpers return non-zero for false, zero for success
                 return false;
             }
+
+            
         }
         else
         {
@@ -237,26 +269,67 @@ image_flash_write_from_sram( uint32_t* pui32DstAddr, uint32_t* pui32SrcAddr,
         uint32_t ui32CurrentPage, ui32CurrentBlock;
         ui32CurrentPage =  AM_HAL_FLASH_ADDR2PAGE((uint32_t)pui32DstAddr);
         ui32CurrentBlock = AM_HAL_FLASH_ADDR2INST((uint32_t)pui32DstAddr);
-        if(am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
-                                        ui32CurrentBlock, ui32CurrentPage))
+
+        //
+        // Start a critical section.
+        //
+        ui32Critical = am_hal_interrupt_master_disable();
+        i16Result = am_hal_flash_page_erase(AM_HAL_FLASH_PROGRAM_KEY,
+                                        ui32CurrentBlock, ui32CurrentPage);
+        //
+        // Exit the critical section.
+        //
+        am_hal_interrupt_master_set(ui32Critical);
+
+        if(i16Result != 0)
         {   
             // flash operation failed.
             // flash helpers return non-zero for false, zero for success
             return false;
         }
+
     }
 
     //
     // Program the flash page with the data.
     //
-    if(am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, pui32SrcAddr, pui32DstAddr, 
-                                ui32NumberBytes / 4))
+
+    //
+    // Start a critical section.
+    //
+    ui32Critical = am_hal_interrupt_master_disable();
+    i16Result = am_hal_flash_program_main(AM_HAL_FLASH_PROGRAM_KEY, pui32SrcAddr, 
+                                            pui32DstAddr, ui32NumberBytes / 4);
+    //
+    // Exit the critical section.
+    //
+    am_hal_interrupt_master_set(ui32Critical);
+    
+    if(i16Result != 0)
     {
         // flash helpers return non-zero for false, zero for success
         return false;
     }
     else
     {
+        //
+        // Check whether the content written into flash matches source content in SRAM 
+        //
+        uint32_t i;
+        for(i = 0; i < ui32NumberBytes / 4; i++)
+        {
+            if(pui32SrcAddr[i] == pui32DstAddr[i])
+            {
+                //keep checking
+            }
+            else
+            {   
+                //
+                // Content mismatch, return false status
+                //
+                return false;
+            }
+        }
         return true;
     }
 }

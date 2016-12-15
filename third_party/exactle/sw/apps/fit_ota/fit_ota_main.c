@@ -79,7 +79,7 @@ typedef union
 static const appAdvCfg_t fitAdvCfg =
 {
   {60000,     0,     0},                  /*! Advertising durations in ms */
-  {  800,     0,     0}                   /*! Advertising intervals in 0.625 ms units */
+  {  800,   800,     0}                   /*! Advertising intervals in 0.625 ms units */
 };
 
 /*! configurable parameters for slave */

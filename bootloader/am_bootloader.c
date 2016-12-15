@@ -587,7 +587,7 @@ am_bootloader_flag_page_update(am_bootloader_image_t *psImage,
                                uint32_t *pui32FlagPage)
 {
     uint32_t ui32Block, ui32Page;
-
+    uint32_t ui32Critical;
     DPRINTF(("Image to use: 0x%08x\r\n", (uintptr_t)psImage));
     DPRINTF(("Flag page address: 0x%08x\r\n", (uintptr_t)pui32FlagPage));
     //
@@ -598,6 +598,10 @@ am_bootloader_flag_page_update(am_bootloader_image_t *psImage,
     ui32Block = AM_HAL_FLASH_ADDR2INST((uint32_t)pui32FlagPage);
     DPRINTF(("Flag page in block %d\r\n", ui32Block));
 
+    //
+    // Start a critical section.
+    //
+    ui32Critical = am_hal_interrupt_master_disable();
     //
     // Erase the page.
     //
@@ -611,6 +615,10 @@ am_bootloader_flag_page_update(am_bootloader_image_t *psImage,
                               (uint32_t *) psImage,
                               pui32FlagPage,
                               sizeof(am_bootloader_image_t) / 4);
+    //
+    // Exit the critical section.
+    //
+    am_hal_interrupt_master_set(ui32Critical);
     DPRINTF(("Done. %d\r\n", rc));
     return rc;
 }

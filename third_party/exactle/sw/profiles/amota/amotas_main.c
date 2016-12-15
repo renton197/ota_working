@@ -33,6 +33,7 @@
 #include "crc32.h"
 
 #include "am_mcu_apollo.h"
+#include "am_util.h"
 #include "am_bootloader.h"
 #include "image_boot_handlers.h"
 
@@ -94,7 +95,7 @@ typedef struct
     uint16_t    offset;
     uint16_t    len;                        // data plus checksum
     eAmotaCommand type;
-    uint8_t     data[AMOTA_PACKET_SIZE];
+    uint8_t     data[AMOTA_PACKET_SIZE]  __attribute__((aligned(4)));   //--RMA
 }
 amotaPacket_t;
 
@@ -228,13 +229,12 @@ amotas_set_fw_addr(void)
 static void
 amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
 {
-    // TODO: write to flash here
     WsfTrace("write to flash addr = 0x%x, len = 0x%x", addr, len);
 
     //
     // Check the target flash address to ensure we do not operation the wrong address
     //
-    if((uint32_t)g_psBootImage->pui32StorageAddressNewImage > addr)
+    if((uint32_t)amotasCb.newFwFlashInfo.addr > addr)
     {
         //
         // application is trying to write to wrong address 
@@ -259,11 +259,37 @@ amotas_verify_firmware_crc(void)
 {
     
     // read back the whole firmware image from flash and calculate CRC
+    bool bResult = false;
     uint32_t ui32CRC = 0;
-    ui32CRC = am_bootloader_fast_crc32(&amotasCb.fwHeader.fwStartAddr,  
-                                                                        amotasCb.fwHeader.fwLength);
+    ui32CRC = am_bootloader_fast_crc32((uint32_t *)amotasCb.newFwFlashInfo.addr,  
+                                         amotasCb.fwHeader.fwLength);
 
     return (ui32CRC == amotasCb.fwHeader.fwCrc);
+}
+
+static void
+amotas_update_flag_page(void)
+{
+    //
+    // Update flash flag page here
+    //
+    am_bootloader_image_t FlagImage;
+    FlagImage.pui32LinkAddress = (uint32_t*)(amotasCb.fwHeader.fwStartAddr);
+    FlagImage.ui32NumBytes = amotasCb.fwHeader.fwLength;
+    FlagImage.ui32CRC = amotasCb.fwHeader.fwCrc;
+
+    //override pin is not used here.
+    FlagImage.ui32OverrideGPIO = 0xffffffff;        
+    FlagImage.ui32OverridePolarity = 0x00000000;
+
+    FlagImage.pui32StackPointer = (uint32_t*)(((uint32_t*)amotasCb.newFwFlashInfo.addr)[0]);
+    FlagImage.pui32ResetVector = (uint32_t*)(((uint32_t*)amotasCb.newFwFlashInfo.addr)[1]);
+    FlagImage.ui32Options = BOOT_NEW_IMAGE_INTERNAL_FLASH;
+    FlagImage.pui32StorageAddressNewImage = (uint32_t*)amotasCb.newFwFlashInfo.addr;
+    FlagImage.bEncrypted = false;
+
+    am_bootloader_flag_page_update(&FlagImage, (uint32_t *)g_psBootImage);
+    
 }
 
 static void
@@ -281,7 +307,9 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 {
     eAmotaStatus status = AMOTA_STATUS_SUCCESS;
     uint8_t data[4] = {0};
+
     WsfTrace("received packet cmd = 0x%x, len = 0x%x", cmd, len);
+
     switch(cmd)
     {
         case AMOTA_CMD_FW_HEADER:
@@ -310,7 +338,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             WsfTrace("fwDataType = 0x%x", amotasCb.fwHeader.fwDataType);
             WsfTrace("receivedBytes = 0x%x", amotasCb.fwHeader.receivedBytes);
             WsfTrace("============= fw header end ===============");
-#endif
+#endif // AMOTA_DEBUG_ON
             data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
             data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
             data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
@@ -332,8 +360,14 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             if (amotas_verify_firmware_crc())
             {
                 WsfTrace("crc verify success");
+
                 amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
                 amotasCb.state = AMOTA_STATE_VERIFY;
+
+                //
+                // Update flash flag page here
+                //
+                amotas_update_flag_page();
             }
             else
             {
@@ -343,7 +377,16 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         break;
 
         case AMOTA_CMD_FW_RESET:
+            // RMA++
+            WsfTrace("Apollo will reset itself in 100ms.");
+            // RMA--
             amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
+            
+            //
+            // Delay here to let packet go through the RF before we reset
+            //
+            am_util_delay_ms(100);
+
             amotas_reset_board();
         break;
 

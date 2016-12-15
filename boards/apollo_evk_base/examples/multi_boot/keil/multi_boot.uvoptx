@@ -147,7 +147,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>-UV0010M9E -O16846 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8002 -TDT0 -TDC1F -TIE1 -TIP8 -FO7 -FD10000000 -FC2000 -FN1 -FF0Apollo.FLM -FS00 -FL080000 -FP0($$Device:Apollo 512 BGA$Flash\Apollo.FLM)</Name>
+          <Name>-UV0010M9E -O16846 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO1 -TC3000000 -TP21 -TDS8002 -TDT0 -TDC1F -TIE1 -TIP8 -FO7 512 BGA$Flash\Apollo.FLM) -FN1 -FC2000 -FD10000000 -FF0Apollo -FL010000 -FS00 -FP0($$Device:Apollo_512_BGA$Flash\Apollo.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>

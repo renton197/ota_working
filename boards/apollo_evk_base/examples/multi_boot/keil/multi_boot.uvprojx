@@ -13,16 +13,16 @@
       <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
-          <Device>Apollo 512 BGA</Device>
+          <Device>Apollo_512_BGA</Device>
           <Vendor>Ambiq Micro</Vendor>
-          <PackID>AmbiqMicro.Apollo_DFP.0.8.0</PackID>
-          <PackURL>http://www.ambiqmicro.com/sites/default/files/</PackURL>
+          <PackID>AmbiqMicro.Apollo_DFP.0.9.2</PackID>
+          <PackURL>http://s3.asia.ambiqmicro.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000,0x10000) IROM(0x00000000,0x80000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD10000000 -FC2000 -FN1 -FF0Apollo -FS00 -FL010000 -FP0($$Device:Apollo 512 BGA$Flash\Apollo.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD10000000 -FC2000 -FN1 -FF0Apollo -FS00 -FL010000 -FP0($$Device:Apollo_512_BGA$Flash\Apollo.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:Apollo</RegisterFile>
+          <RegisterFile>$$Device:Apollo_512_BGA$Device\Include\Apollo.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -32,14 +32,14 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:Apollo 512 BGA$SVD\Apollo.svd</SFDFile>
+          <SFDFile>$$Device:Apollo_512_BGA$SVD\Apollo.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
           <LibPath></LibPath>
-          <RegisterFilePath>512 BGA$Device\Include\Apollo.h\</RegisterFilePath>
-          <DBRegisterFilePath>512 BGA$Device\Include\Apollo.h\</DBRegisterFilePath>
+          <RegisterFilePath></RegisterFilePath>
+          <DBRegisterFilePath></DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
