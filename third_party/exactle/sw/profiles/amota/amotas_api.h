@@ -73,7 +73,7 @@ void amotas_proc_msg(wsfMsgHdr_t *pMsg);
 uint8_t amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
                        uint16_t offset, uint16_t len, uint8_t *pValue, attsAttr_t *pAttr);
 
-void amotas_start(dmConnId_t connId, uint8_t amotaCccIdx);
+void amotas_start(dmConnId_t connId, uint8_t timerEvt, uint8_t amotaCccIdx);
 
 void amotas_stop(dmConnId_t connId);
 

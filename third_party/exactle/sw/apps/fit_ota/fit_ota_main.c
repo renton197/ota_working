@@ -55,7 +55,8 @@
 enum
 {
   FIT_HR_TIMER_IND = FIT_MSG_START,       /*! Heart rate measurement timer expired */
-  FIT_BATT_TIMER_IND                      /*! Battery measurement timer expired */
+  FIT_BATT_TIMER_IND,                     /*! Battery measurement timer expired */
+  FIT_AMOTA_TIMER_IND                     /*! AMOTA reset timer expired */
 };
 
 /**************************************************************************************************
@@ -347,7 +348,7 @@ static void fitProcCccState(fitMsg_t *pMsg)
     if (pMsg->ccc.value == ATT_CLIENT_CFG_NOTIFY)
     {
       // notify enabled
-      amotas_start((dmConnId_t) pMsg->ccc.hdr.param, FIT_AMOTAS_TX_CCC_IDX);
+      amotas_start((dmConnId_t) pMsg->ccc.hdr.param, FIT_AMOTA_TIMER_IND, FIT_AMOTAS_TX_CCC_IDX);
     }
     else
     {
@@ -501,6 +502,10 @@ static void fitProcMsg(fitMsg_t *pMsg)
 
     case FIT_BATT_TIMER_IND:
       BasProcMsg(&pMsg->hdr);
+      break;
+
+    case FIT_AMOTA_TIMER_IND:
+      amotas_proc_msg(&pMsg->hdr);
       break;
 
     case ATTS_HANDLE_VALUE_CNF:

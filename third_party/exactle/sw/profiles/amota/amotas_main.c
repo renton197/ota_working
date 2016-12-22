@@ -127,6 +127,7 @@ static struct
     amotaHeaderInfo_t       fwHeader;
     amotaPacket_t           pkt;
     amotasNewFwFlashInfo_t  newFwFlashInfo;
+    wsfTimer_t              resetTimer;           /* reset timer after OTA update done */
 }
 amotasCb;
 
@@ -159,6 +160,23 @@ amotas_conn_update(dmEvt_t *pMsg)
     WsfTrace("supTimeout = 0x%x", evt->supTimeout);
 }
 
+static void
+amotas_reset_board(void)
+{
+    //
+    // Perform a POI reset
+    //
+    am_hal_reset_poi();
+}
+
+void
+amotas_reset_timer_expired(wsfMsgHdr_t *pMsg)
+{
+    WsfTrace("amotas_reset_board");
+    amotas_reset_board();
+}
+
+
 static amotasConn_t*
 amotas_find_next2send(void)
 {
@@ -182,7 +200,11 @@ amotas_send_data(uint8_t *buf, uint16_t len)
     amotasConn_t *pConn = amotas_find_next2send();
     /* send notification */
     if (pConn)
+    {
+        WsfTrace("Send to connId = %d", pConn->connId);
         AttsHandleValueNtf(pConn->connId, AMOTAS_TX_HDL, len, buf);
+    } else
+        WsfTrace("Invalid Conn");
 }
 
 static void
@@ -259,7 +281,6 @@ amotas_verify_firmware_crc(void)
 {
     
     // read back the whole firmware image from flash and calculate CRC
-    bool bResult = false;
     uint32_t ui32CRC = 0;
     ui32CRC = am_bootloader_fast_crc32((uint32_t *)amotasCb.newFwFlashInfo.addr,  
                                          amotasCb.fwHeader.fwLength);
@@ -292,16 +313,6 @@ amotas_update_flag_page(void)
     
 }
 
-static void
-amotas_reset_board(void)
-{
-    //
-    // Perform a POI reset
-    //
-    am_hal_reset_poi();
-}
-
-
 void
 amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 {
@@ -326,8 +337,17 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 16);
             BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 20);
             BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 24);
-            amotas_set_fw_addr();
-            amotasCb.state = AMOTA_STATE_GETTING_FW;
+            if (amotasCb.state == AMOTA_STATE_GETTING_FW)
+            {
+                WsfTrace("OTA process start from offset = 0x%x", amotasCb.newFwFlashInfo.offset);
+                WsfTrace("beginning of flash addr = 0x%x", amotasCb.newFwFlashInfo.addr);
+            }
+            else
+            {
+                WsfTrace("OTA process start from beginning");
+                amotas_set_fw_addr();
+                amotasCb.state = AMOTA_STATE_GETTING_FW;
+            }
 #ifdef AMOTA_DEBUG_ON
             WsfTrace("============= fw header start ===============");
             WsfTrace("encrypted = 0x%x", amotasCb.fwHeader.encrypted);
@@ -378,16 +398,14 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 
         case AMOTA_CMD_FW_RESET:
             // RMA++
-            WsfTrace("Apollo will reset itself in 100ms.");
+            WsfTrace("Apollo will reset itself in 500ms.");
             // RMA--
             amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
             
             //
             // Delay here to let packet go through the RF before we reset
             //
-            am_util_delay_ms(100);
-
-            amotas_reset_board();
+            WsfTimerStartMs(&amotasCb.resetTimer, 500);
         break;
 
         default:
@@ -413,6 +431,7 @@ amotas_init(wsfHandlerId_t handlerId, AmotasCfg_t *pCfg)
     amotasCb.appHandlerId = handlerId;
     amotasCb.txReady = FALSE;
     amotasCb.state = AMOTA_STATE_INIT;
+    amotasCb.resetTimer.handlerId = handlerId;
     for (int i = 0; i < DM_CONN_MAX; i++)
         amotasCb.conn[i].connId = DM_CONN_ID_NONE;
 }
@@ -422,6 +441,11 @@ amotas_conn_close(dmConnId_t connId)
 {
     /* clear connection */
     amotasCb.conn[connId - 1].connId = DM_CONN_ID_NONE;
+    amotasCb.conn[connId - 1].amotaToSend = FALSE;
+
+    amotasCb.pkt.offset = 0;
+    amotasCb.pkt.len = 0;
+    amotasCb.pkt.type = AMOTA_CMD_UNKNOWN;
 }
 
 uint8_t
@@ -500,11 +524,13 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
 }
 
 void
-amotas_start(dmConnId_t connId, uint8_t amotaCccIdx)
+amotas_start(dmConnId_t connId, uint8_t timerEvt, uint8_t amotaCccIdx)
 {
     /* set conn id */
     amotasCb.conn[connId - 1].connId = connId;
     amotasCb.conn[connId - 1].amotaToSend = TRUE;
+
+    amotasCb.resetTimer.msg.event = timerEvt;
 }
 
 void
@@ -526,17 +552,17 @@ amotas_stop(dmConnId_t connId)
 //
 void amotas_proc_msg(wsfMsgHdr_t *pMsg)
 {
-    switch(pMsg->event)
+    if (pMsg->event == DM_CONN_OPEN_IND)
     {
-        case DM_CONN_OPEN_IND:
-            amotas_conn_open((dmEvt_t *) pMsg);
-        break;
-        case DM_CONN_UPDATE_IND:
-            amotas_conn_update((dmEvt_t *) pMsg);
-        break;
-        
-        default:
-            break;
+        amotas_conn_open((dmEvt_t *) pMsg);
+    }
+    else if (pMsg->event == DM_CONN_UPDATE_IND)
+    {
+        amotas_conn_update((dmEvt_t *) pMsg);
+    }
+    else if (pMsg->event == amotasCb.resetTimer.msg.event)
+    {
+        amotas_reset_timer_expired(pMsg);
     }
 }
 
