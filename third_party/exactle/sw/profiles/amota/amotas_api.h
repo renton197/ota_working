@@ -31,7 +31,7 @@ extern "C"
 // Macro definitions
 //
 //*****************************************************************************
-#define AMOTA_PACKET_SIZE           512 + 16    // Bytes
+#define AMOTA_PACKET_SIZE           (512 + 16)    // Bytes
 #define AMOTA_LENGTH_SIZE_IN_PKT    2
 #define AMOTA_CMD_SIZE_IN_PKT       1
 #define AMOTA_CRC_SIZE_IN_PKT       4

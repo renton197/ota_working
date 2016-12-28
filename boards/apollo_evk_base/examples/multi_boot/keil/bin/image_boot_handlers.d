@@ -49,8 +49,6 @@
 .\bin\image_boot_handlers.o: ../../../../../mcu/apollo/hal/am_hal_uart.h
 .\bin\image_boot_handlers.o: ../../../../../mcu/apollo/hal/am_hal_vcomp.h
 .\bin\image_boot_handlers.o: ../../../../../mcu/apollo/hal/am_hal_wdt.h
-.\bin\image_boot_handlers.o: ../../../../../bootloader/am_bootloader.h
-.\bin\image_boot_handlers.o: ../src/multi_boot_config.h
 .\bin\image_boot_handlers.o: ../../../bsp/am_bsp.h
 .\bin\image_boot_handlers.o: ../../../../../devices/am_devices.h
 .\bin\image_boot_handlers.o: ../../../../../devices/am_devices_adxl362.h
@@ -66,6 +64,8 @@
 .\bin\image_boot_handlers.o: ../../../../../devices/am_devices_bmi160.h
 .\bin\image_boot_handlers.o: ../../../../../devices/am_devices_led.h
 .\bin\image_boot_handlers.o: ../../../bsp/am_bsp_gpio.h
+.\bin\image_boot_handlers.o: ../../../../../bootloader/am_bootloader.h
+.\bin\image_boot_handlers.o: ../src/multi_boot_config.h
 .\bin\image_boot_handlers.o: ../../../../../utils/am_util.h
 .\bin\image_boot_handlers.o: ../../../../../utils/am_util_cmdline.h
 .\bin\image_boot_handlers.o: ../../../../../utils/am_util_delay.h

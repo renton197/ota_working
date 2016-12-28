@@ -757,6 +757,11 @@
               <FileType>1</FileType>
               <FilePath>../../../../../devices/am_devices_led.c</FilePath>
             </File>
+            <File>
+              <FileName>am_devices_spiflash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\devices\am_devices_spiflash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

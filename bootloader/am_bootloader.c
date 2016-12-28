@@ -16,7 +16,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "am_mcu_apollo.h"
+#include "am_devices.h"
+#include "am_bsp.h"
 #include "am_bootloader.h"
+#include "image_boot_handlers.h"
 
 #ifdef BOOTLOADER_DEBUG
 #include "am_util_stdio.h"
@@ -428,51 +431,59 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
             DPRINTF(("Bad CRC 0x%08x\r\n", psImage->ui32CRC));
             return;
         }
-        //
-        // Update the flash flag page
-        //
-        am_bootloader_image_t FlagImage;
-        FlagImage.pui32LinkAddress = psImage->pui32LinkAddress;
-        FlagImage.ui32NumBytes = psImage->ui32NumBytes;
-        FlagImage.ui32CRC = psImage->ui32CRC;
-        FlagImage.ui32OverrideGPIO = psImage->ui32OverrideGPIO;
-        FlagImage.ui32OverridePolarity = psImage->ui32OverridePolarity;
-        FlagImage.pui32StackPointer = psImage->pui32StackPointer;
-        FlagImage.pui32ResetVector = psImage->pui32ResetVector;
-        FlagImage.bEncrypted = psImage->bEncrypted;
-        FlagImage.ui32Options = BOOT_NO_NEW_IMAGE;
-        FlagImage.pui32StorageAddressNewImage = (uint32_t*)0xFFFFFFFF;
-        
-        am_bootloader_flag_page_update(&FlagImage, (uint32_t *)psImage);
     }
     else if(psImage->ui32Options == BOOT_NEW_IMAGE_EXTERNAL_FLASH)
     {
         //
         // Enable serial interface
+        // initialize spi interface with external flash
         //
+        am_hal_iom_config(AM_BSP_FLASH_IOM, &g_sIOMConfig);
 
+        //
+        // configure pins for iom interface
+        //
+        configure_spiflash_pins();
+
+        //
+        // Initialize the spiflash driver with the IOM information for the second
+        // flash device.
+        //
+        am_devices_spiflash_init(&g_sSpiFlash);
+    
         //
         // Verify image stored in the external flash
         //
+        // how?
 
         //
         // Load image to target link address in the internal flash
         //
-
+        image_load_from_external_flash(psImage->pui32LinkAddress, (uint32_t)(psImage->pui32StorageAddressNewImage), psImage->ui32NumBytes);
+        
         //
         // Verify the flash operation result
         //
-
-        //
-        // Update the flash flag page
-        //
     
     }
-    else
-    {
-        // Something wrong with the Options flag in the page
-        // Erase it or report error?
-    }
+
+    //
+    // Update the flash flag page
+    //
+    am_bootloader_image_t FlagImage;
+    FlagImage.pui32LinkAddress = psImage->pui32LinkAddress;
+    FlagImage.ui32NumBytes = psImage->ui32NumBytes;
+    FlagImage.ui32CRC = psImage->ui32CRC;
+    FlagImage.ui32OverrideGPIO = psImage->ui32OverrideGPIO;
+    FlagImage.ui32OverridePolarity = psImage->ui32OverridePolarity;
+    FlagImage.pui32StackPointer = psImage->pui32StackPointer;
+    FlagImage.pui32ResetVector = psImage->pui32ResetVector;
+    FlagImage.bEncrypted = psImage->bEncrypted;
+    FlagImage.ui32Options = BOOT_NO_NEW_IMAGE;
+    FlagImage.pui32StorageAddressNewImage = (uint32_t*)0xFFFFFFFF;
+    
+    am_bootloader_flag_page_update(&FlagImage, (uint32_t *)psImage);
+
 }
 //*****************************************************************************
 //
@@ -549,7 +560,8 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
     if(psImage->ui32Options != BOOT_NO_NEW_IMAGE)
     {
         //double check the value
-        if((psImage->ui32Options == BOOT_NEW_IMAGE_INTERNAL_FLASH)||(psImage->ui32Options == BOOT_NEW_IMAGE_EXTERNAL_FLASH))
+        if((psImage->ui32Options == BOOT_NEW_IMAGE_INTERNAL_FLASH)
+            ||(psImage->ui32Options == BOOT_NEW_IMAGE_EXTERNAL_FLASH))
         {
             //
             //There is a new image available to boot from
@@ -559,7 +571,7 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
             //
             // Run the new image loaded
             //
-            am_bootloader_image_run(psImage);
+//            am_bootloader_image_run(psImage); //-- RMA, run this in main()
         }
     }
 

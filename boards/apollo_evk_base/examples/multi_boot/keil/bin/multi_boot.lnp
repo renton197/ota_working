@@ -5,6 +5,7 @@
 ".\bin\uart_boot_handlers.o"
 ".\bin\am_util_delay.o"
 ".\bin\am_util_stdio.o"
+".\bin\am_devices_spiflash.o"
 ".\bin\am_bootloader.o"
 ".\bin\startup_keil.o"
 "../../../../../mcu/apollo/hal/keil/bin/libam_hal.lib"

@@ -47,6 +47,15 @@ extern "C"
 
 //*****************************************************************************
 //
+// Global definitions for the flash size information
+//
+//*****************************************************************************
+#define AM_DEVICES_SPIFLASH_PAGE_SIZE       0x100    //256 bytes, minimum program unit
+#define AM_DEVICES_SPIFLASH_SUBSECTOR_SIZE  0x1000   //4096 bytes
+#define AM_DEVICES_SPIFLASH_SECTOR_SIZE     0x10000  //65536 bytes
+
+//*****************************************************************************
+//
 // Function pointers for SPI write and read.
 //
 //*****************************************************************************
