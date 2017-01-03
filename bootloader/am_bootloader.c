@@ -413,9 +413,7 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         if(!am_bootloader_new_image_check(psImage, BOOT_NEW_IMAGE_INTERNAL_FLASH))
         {
             // Invalid image
-            // TODO: we probably need to modify the boot option
-            // to prevent the device from trying to boot with the image forever.
-            return; //shall we reset the device?
+            return;
         }
         //
         // Load image to target link address in the internal flash
@@ -454,7 +452,6 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         //
         // Verify image stored in the external flash
         //
-        // how?
 
         //
         // Load image to target link address in the internal flash

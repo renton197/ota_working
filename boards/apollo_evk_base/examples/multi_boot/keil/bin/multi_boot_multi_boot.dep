@@ -384,7 +384,7 @@ I (../../../../../mcu/apollo/hal/am_hal_uart.h)(0x58637335)
 I (../../../../../mcu/apollo/hal/am_hal_vcomp.h)(0x58637335)
 I (../../../../../mcu/apollo/hal/am_hal_wdt.h)(0x58637335)
 I (..\..\..\..\..\devices\am_devices_spiflash.h)(0x5863751C)
-F (../../../../../bootloader/am_bootloader.c)(0x58637510)(--c99 -c --cpu Cortex-M4.fp -g -O0 -Otime --apcs=interwork --split_sections -I ../src -I ../../../bsp -I ../../../../.. -I ../../../../../utils -I ../../../../../devices -I ../../../../../bootloader -I ../../../../../mcu/apollo-I C:\__Work\_events2016\1030_OTA_support\github\1228\ota_working\boards\apollo_evk_base\examples\multi_boot\keil\RTE-I C:\Keil_v5\ARM\PACK\AmbiqMicro\Apollo_DFP\0.9.2\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DAPOLLO_512 -DAM_PACKAGE_BGA -DAM_PART_APOLLO -Dkeil-o .\bin\am_bootloader.o --omf_browse .\bin\am_bootloader.crf --depend .\bin\am_bootloader.d)
+F (../../../../../bootloader/am_bootloader.c)(0x58660174)(--c99 -c --cpu Cortex-M4.fp -g -O0 -Otime --apcs=interwork --split_sections -I ../src -I ../../../bsp -I ../../../../.. -I ../../../../../utils -I ../../../../../devices -I ../../../../../bootloader -I ../../../../../mcu/apollo-I C:\__Work\_events2016\1030_OTA_support\github\1228\ota_working\boards\apollo_evk_base\examples\multi_boot\keil\RTE-I C:\Keil_v5\ARM\PACK\AmbiqMicro\Apollo_DFP\0.9.2\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DAPOLLO_512 -DAM_PACKAGE_BGA -DAM_PART_APOLLO -Dkeil-o .\bin\am_bootloader.o --omf_browse .\bin\am_bootloader.crf --depend .\bin\am_bootloader.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
 I (../../../../../mcu/apollo/am_mcu_apollo.h)(0x58637335)
@@ -450,7 +450,7 @@ I (../../../../../devices/am_devices_led.h)(0x58637335)
 I (../../../bsp/am_bsp.h)(0x5863745C)
 I (../../../bsp/am_bsp_gpio.h)(0x58637462)
 I (../../../../../bootloader/am_bootloader.h)(0x58637335)
-I (../src/image_boot_handlers.h)(0x58639A7F)
+I (../src/image_boot_handlers.h)(0x5863A493)
 F (../keil/startup_keil.s)(0x58637334)(--c99 -c --cpu Cortex-M4.fp -g -O0 -Otime --apcs=interwork --split_sections -I ../src -I ../../../bsp -I ../../../../.. -I ../../../../../utils -I ../../../../../devices -I ../../../../../bootloader -I ../../../../../mcu/apollo-I C:\__Work\_events2016\1030_OTA_support\github\1228\ota_working\boards\apollo_evk_base\examples\multi_boot\keil\RTE-I C:\Keil_v5\ARM\PACK\AmbiqMicro\Apollo_DFP\0.9.2\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520" -DAPOLLO_512 -DAM_PACKAGE_BGA -DAM_PART_APOLLO -Dkeil-o .\bin\startup_keil.o --omf_browse .\bin\startup_keil.crf --depend .\bin\startup_keil.d)
 F (../../../../../mcu/apollo/hal/keil/bin/libam_hal.lib)(0x58637336)()
 F (../../../bsp/keil/bin/libam_bsp.lib)(0x58637334)()
