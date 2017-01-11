@@ -591,6 +591,9 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 {
     eAmotaStatus status = AMOTA_STATUS_SUCCESS;
     uint8_t data[4] = {0};
+    uint32_t ver, fwCrc;
+    ver = fwCrc = 0;
+    bool_t resumeTransfer = FALSE;
 
     WsfTrace("received packet cmd = 0x%x, len = 0x%x", cmd, len);
 
@@ -603,6 +606,15 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
                 amotas_reply_to_client(cmd, status, NULL, 0);
                 break;
             }
+
+            if (amotasCb.state == AMOTA_STATE_GETTING_FW)
+            {
+                BYTES_TO_UINT32(ver, buf + 4);
+                BYTES_TO_UINT32(fwCrc, buf + 12);
+                if (ver == amotasCb.fwHeader.version && fwCrc == amotasCb.fwHeader.fwCrc)
+                    resumeTransfer = TRUE;
+            }
+
             BYTES_TO_UINT32(amotasCb.fwHeader.encrypted, buf);
             BYTES_TO_UINT32(amotasCb.fwHeader.version, buf + 4);
             BYTES_TO_UINT32(amotasCb.fwHeader.fwLength, buf + 8);
@@ -614,7 +626,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             //fixme, need to be removed.
 //            amotasCb.fwHeader.fwStartAddr += 0x1000000;
 
-            if (amotasCb.state == AMOTA_STATE_GETTING_FW)
+            if (resumeTransfer)
             {
                 WsfTrace("OTA process start from offset = 0x%x", amotasCb.newFwFlashInfo.offset);
                 WsfTrace("beginning of flash addr = 0x%x", amotasCb.newFwFlashInfo.addr);
