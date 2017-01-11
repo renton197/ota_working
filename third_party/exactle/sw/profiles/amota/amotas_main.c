@@ -711,12 +711,12 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         break;
 
         case AMOTA_CMD_FW_VERIFY:
+            amotasCb.state = AMOTA_STATE_VERIFY;
             if (amotas_verify_firmware_crc())
             {
                 WsfTrace("crc verify success");
 
                 amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
-                amotasCb.state = AMOTA_STATE_VERIFY;
 
                 //
                 // Update flash flag page here
@@ -844,6 +844,12 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
         if (peerCrc != calDataCrc)
         {
             amotas_reply_to_client(amotasCb.pkt.type, AMOTA_STATUS_CRC_ERROR, NULL, 0);
+
+            // clear pkt
+            amotasCb.pkt.offset = 0;
+            amotasCb.pkt.type = AMOTA_CMD_UNKNOWN;
+            amotasCb.pkt.len = 0;
+
             return ATT_SUCCESS;
         }
 
