@@ -62,7 +62,7 @@ def process(boot_loader_filename, app_filename,  output, bin_type, load_address,
         flag_type = int(flagtype, 16)
         
         # check flash flag storage type
-        if flagtype == 0
+        if flagtype == 0:
             # flag stored before application (usually 0x3c00)
         
             # this is where we will write the flash flag page info

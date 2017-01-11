@@ -250,10 +250,9 @@ amotas_set_fw_addr(void)
     amotasCb.newFwFlashInfo.offset = 0;
 
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
         //storage in internal flash
         uint32_t ui32TestSpaceLeft;
@@ -286,7 +285,7 @@ amotas_set_fw_addr(void)
         }
 
     }
-    else
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
     {
         //storage in external flash
 
@@ -317,6 +316,10 @@ amotas_set_fw_addr(void)
         amotasCb.newFwFlashInfo.addr = AMOTA_SPI_FLASH_STORAGE_START_ADDRESS;
 
         bResult = true;
+    }
+    else
+    {
+        // reserved state
     }
     return bResult;
 }
@@ -437,12 +440,11 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
     WsfTrace("write to flash addr = 0x%x, len = 0x%x", addr, len);
 
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
-        //write to internal flash
+        // write to internal flash
 
         //
         // Check the target flash address to ensure we do not operation the wrong address
@@ -466,10 +468,14 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
             WsfTrace("flash write failed.");
         }
     }
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
+    {
+        // write to external flash
+        bResult = amotas_write2external_flash(len, buf, addr - amotasCb.newFwFlashInfo.addr, false);
+    }
     else
     {
-        //write to external flash
-        bResult = amotas_write2external_flash(len, buf, addr - amotasCb.newFwFlashInfo.addr, false);
+        // reserved state
     }
 
     return bResult;
@@ -482,16 +488,15 @@ amotas_verify_firmware_crc(void)
     uint32_t ui32CRC = 0;
     
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
         // check crc in internal flash
         ui32CRC = am_bootloader_fast_crc32((uint32_t *)amotasCb.newFwFlashInfo.addr,  
                                              amotasCb.fwHeader.fwLength);
     }
-    else
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
     {
         //
         // Check crc in external flash
@@ -530,7 +535,10 @@ amotas_verify_firmware_crc(void)
         am_hal_iom_disable(AM_BSP_FLASH_IOM);
 
     }
-
+    else
+    {
+        // reserved state
+    }
 
     return (ui32CRC == amotasCb.fwHeader.fwCrc);
 }
@@ -542,8 +550,7 @@ amotas_update_flag_page(void)
     // Update flash flag page here
     //
     am_bootloader_image_t FlagImage;
-    // fixme, we don't need this for final release
-    FlagImage.pui32LinkAddress = (uint32_t*)(amotasCb.fwHeader.fwStartAddr & 0xfeffffff);   //--RMA debug only
+    FlagImage.pui32LinkAddress = (uint32_t*)amotasCb.fwHeader.fwStartAddr;
     FlagImage.ui32NumBytes = amotasCb.fwHeader.fwLength;
     FlagImage.ui32CRC = amotasCb.fwHeader.fwCrc;
 
@@ -553,10 +560,9 @@ amotas_update_flag_page(void)
 
    
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
         FlagImage.pui32StackPointer = (uint32_t*)(((uint32_t*)amotasCb.newFwFlashInfo.addr)[0]);
         FlagImage.pui32ResetVector = (uint32_t*)(((uint32_t*)amotasCb.newFwFlashInfo.addr)[1]);
@@ -564,7 +570,7 @@ amotas_update_flag_page(void)
         FlagImage.ui32Options = BOOT_NEW_IMAGE_INTERNAL_FLASH;
         FlagImage.pui32StorageAddressNewImage = (uint32_t*)amotasCb.newFwFlashInfo.addr;
     }
-    else
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
     {
         //
         // Set up IOM1 SPI pins and turn on the IOM for this operation.
@@ -589,6 +595,10 @@ amotas_update_flag_page(void)
  
         FlagImage.ui32Options = BOOT_NEW_IMAGE_EXTERNAL_FLASH;
         FlagImage.pui32StorageAddressNewImage = AMOTA_SPI_FLASH_STORAGE_START_ADDRESS;  // always address 0 in external flash
+    }
+    else
+    {
+        // reserved state
     }
 
     FlagImage.bEncrypted = false;
@@ -636,9 +646,6 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 20);
             BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 24);
             BYTES_TO_UINT32(amotasCb.fwHeader.storageType, buf + 28);
-
-            //fixme, need to be removed.
-//            amotasCb.fwHeader.fwStartAddr += 0x1000000;
 
             if (resumeTransfer)
             {
@@ -694,11 +701,9 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
                 amotasCb.newFwFlashInfo.offset += len;
     
                 //
-                // fixme
                 // Trigger a write operation to the flash
-                // RMA: this may be implemented by other means. 
                 //
-                if((amotasCb.newFwFlashInfo.offset == amotasCb.fwHeader.fwLength)&&(amotasCb.fwHeader.fwStartAddr > 0x1000000))
+                if((amotasCb.newFwFlashInfo.offset == amotasCb.fwHeader.fwLength)&&(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL))
                 {
                     amotas_write2external_flash(0, NULL, amotasCb.newFwFlashInfo.offset, true);
                 }

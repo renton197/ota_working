@@ -28,7 +28,7 @@ def crc32(L):
 #
 #******************************************************************************
 #def process(boot_loader_filename, app_filename,  output):
-def process(load_address, app_filename, app_ver, bin_type, output):
+def process(load_address, app_filename, app_ver, bin_type, str_type, output):
 
     # Open the file, and read it into an array of integers.
     with open(app_filename, mode = 'rb') as f_app:
@@ -111,11 +111,15 @@ def process(load_address, app_filename, app_ver, bin_type, output):
     pad_binarray[38]  = (bintype >> 16) & 0x000000ff;
     pad_binarray[39]  = (bintype >> 24) & 0x000000ff;
 	
-    # rma: storage type here, fixed to 0
-    pad_binarray[40] = 0
-    pad_binarray[41] = 0
-    pad_binarray[42] = 0
-    pad_binarray[43] = 0
+    # rma: storage type here, 0 = internal, 1 = external
+    print("str_type",int(str_type,16), "(",str_type,")")
+    strtype = int(str_type,16)
+    if strtype != 0:
+        strtype = 1
+    pad_binarray[40] = (strtype >>  0) & 0x000000ff;
+    pad_binarray[41] = (strtype >>  8) & 0x000000ff;
+    pad_binarray[42] = (strtype >> 16) & 0x000000ff;
+    pad_binarray[43] = (strtype >> 24) & 0x000000ff;
 	
 	# rma: word RFU
     pad_binarray[44] = 0xff
@@ -151,7 +155,7 @@ def parse_arguments():
                                                     
     #rma: add arg binary type        	
     parser.add_argument('--storage-type', dest='str_type', default='0x0',
-                        help = 'Binary type to be tranferred OTA.')
+                        help = 'Storage type to for the image OTA.')
 
     parser.add_argument('-o', dest = 'output', default = 'binary_array',
                         help = 'Output filename (without the extension)')
@@ -169,7 +173,7 @@ def main():
     # Read the arguments.
     args = parse_arguments()
 
-    process(args.loadaddress, args.appbin, args.app_ver, args.bin_type, args.output)
+    process(args.loadaddress, args.appbin, args.app_ver, args.bin_type, args.str_type, args.output)
 
 if __name__ == '__main__':
     main()

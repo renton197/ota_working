@@ -39,6 +39,9 @@ extern "C"
 
 #define AMOTA_FW_HEADER_SIZE        18
 
+#define AMOTA_FW_STORAGE_INTERNAL   0
+#define AMOTA_FW_STORAGE_EXTERNAL   1
+
 /*! Configurable parameters */
 typedef struct
 {

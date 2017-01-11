@@ -43,7 +43,7 @@ extern am_bootloader_image_t *g_psBootImage;
 // flag page.
 //
 //*****************************************************************************
-#define USE_LAST_PAGE_FOR_FLAG              0//1
+#define USE_LAST_PAGE_FOR_FLAG              0//1 //
 
 //*****************************************************************************
 //
