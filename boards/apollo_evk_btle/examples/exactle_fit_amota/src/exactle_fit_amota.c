@@ -75,6 +75,7 @@
 #include "am_mcu_apollo.h"
 #include "am_util.h"
 #include "am_bsp.h"
+#include "multi_boot_config.h"
 
 #include "hci_apollo_config.h"
 
@@ -410,6 +411,31 @@ main(void)
     am_hal_mcuctrl_bucks_enable();
     am_hal_vcomp_disable();
     am_hal_mcuctrl_bandgap_disable();
+
+    //
+    // If the user selected to use the last page of flash as the flag page, we
+    // need to configure for that now.
+    //
+#if USE_LAST_PAGE_FOR_FLAG
+    am_hal_mcuctrl_device_t device;
+
+    //
+    // Read the MCU registers to find our flash size.
+    //
+    am_hal_mcuctrl_device_info_get(&device);
+
+    //
+    // Set the boot image location based on the flash size.
+    //
+    if(device.ui32FlashSize != 0)
+    {
+        g_psBootImage = (am_bootloader_image_t *)(device.ui32FlashSize - AM_HAL_FLASH_PAGE_SIZE);
+    }
+    else
+    {
+        g_psBootImage = (am_bootloader_image_t *)(AM_HAL_FLASH_TOTAL_SIZE - AM_HAL_FLASH_PAGE_SIZE);
+    }
+#endif
 
     // mike++
     // init debug session

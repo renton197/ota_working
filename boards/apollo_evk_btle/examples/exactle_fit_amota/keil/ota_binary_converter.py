@@ -148,6 +148,10 @@ def parse_arguments():
     #rma: add arg binary type        	
     parser.add_argument('--binary-type', dest='bin_type', default='0x0',
                         help = 'Binary type to be tranferred OTA.')
+                                                    
+    #rma: add arg binary type        	
+    parser.add_argument('--storage-type', dest='str_type', default='0x0',
+                        help = 'Binary type to be tranferred OTA.')
 
     parser.add_argument('-o', dest = 'output', default = 'binary_array',
                         help = 'Output filename (without the extension)')

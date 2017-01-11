@@ -40,6 +40,8 @@
 #include "am_bootloader.h"
 #include "image_boot_handlers.h"
 
+#include "multi_boot_config.h"
+
 //*****************************************************************************
 //
 // Macro definitions
@@ -137,6 +139,16 @@ static struct
 }
 amotasCb;
 
+// data structure for external spi flash operation
+typedef struct
+{
+    uint8_t     writeBuffer[AM_DEVICES_SPIFLASH_PAGE_SIZE]   __attribute__((aligned(4)));   //--RMA
+    uint16_t    bufferIndex;
+}amotasSpiFlashOp_t;
+
+amotasSpiFlashOp_t amotasSpiFlash = {
+    .bufferIndex = 0,
+};
 
 static void
 amotas_conn_open(dmEvt_t *pMsg)
@@ -307,15 +319,7 @@ amotas_set_fw_addr(void)
     }
     return bResult;
 }
-typedef struct
-{
-    uint8_t     writeBuffer[AM_DEVICES_SPIFLASH_PAGE_SIZE]   __attribute__((aligned(4)));   //--RMA
-    uint16_t    bufferIndex;
-}amotasSpiFlashOp_t;
 
-amotasSpiFlashOp_t amotasSpiFlash = {
-    .bufferIndex = 0,
-};
 static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t addr, bool lastPktFlag)
 {
     uint16_t ui16BytesRemaining = len;

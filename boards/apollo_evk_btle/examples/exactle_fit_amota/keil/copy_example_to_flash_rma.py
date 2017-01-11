@@ -373,7 +373,7 @@ def program_flash(filename, address="0x0000"):
 
 
 def parse_arguments():
-    commandhelp = 'Command to execute [install|installota|gen3c00|copytoFC00|bootloader]'
+    commandhelp = 'Command to execute [install|installota|gen3c00|copytoFC00|copytoaddr|bootloader]'
     parser = argparse.ArgumentParser(description =
                      'Load example to flash launched by bootloader on reset.')
 
@@ -432,7 +432,10 @@ def parse_arguments():
                         help = 'Stored length of the new image in bytes.')
 	#rma: add arg crc-new		
     parser.add_argument('--crc-new', dest='crc32new', default='0x0',
-                        help = 'Stored CRC value of the new image.')						
+                        help = 'Stored CRC value of the new image.')			
+	#rma: add arg flag page address	
+    parser.add_argument('--flag-addr', dest='flagaddr', default='0x7F800',
+                        help = 'User specified flash flag page address, 0x7F800 as default (last page of a 512KB flash device).')	                        
 						
     parser.add_argument('-r', dest='remotehost', default = 'localhost',
                         help = 'Host where openocd is running.')
@@ -505,6 +508,15 @@ def main():
             #send_ocd_command("flash write_image erase %s 0x3C00" % args.fname3c00)
             #send_ocd_command("verify_image %s 0x3C00" % args.fname3c00)
             #send_ocd_command("reset")			
+        elif command == 'copytoaddr':
+            flag_address = int(args.flagaddr,16)
+            program_flash(args.fname3c00, flag_address)
+            #send_ocd_command("halt")
+            #send_ocd_command("reset halt")
+            #send_ocd_command("dump_image %s.copyto 0x3c00 44" % args.fname3c00)
+            #send_ocd_command("flash write_image erase %s 0x3C00" % args.fname3c00)
+            #send_ocd_command("verify_image %s 0x3C00" % args.fname3c00)
+            #send_ocd_command("reset")	
         elif command =='installota':
             # Split the ota file then write the components.
             splitbinfile = args.binfile + ".bin"

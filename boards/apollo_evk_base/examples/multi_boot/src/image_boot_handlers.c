@@ -643,10 +643,12 @@ image_get_storage_information_internal(am_bootloader_image_t *psImage,
     // Last page of the internal flash is reserved.
     // (effective LinkAddress shall be equal to or larger than 0x4000)
     //
-    if(device.ui32FlashSize < ((uint32_t)(psImage->pui32LinkAddress) 
+    if((device.ui32FlashSize < ((uint32_t)(psImage->pui32LinkAddress) 
         + (uint32_t)(psImage->ui32NumBytes) + AM_HAL_FLASH_PAGE_SIZE))
+        ||((uint32_t)(psImage->pui32LinkAddress) > device.ui32FlashSize)
+        ||((uint32_t)(psImage->ui32NumBytes) > device.ui32FlashSize))
     {
-        //image size error
+        //image size error, or flash flag page info error
         *pui32StorageAddressNewImage = 0xFFFFFFFF; 
         *pui32NumBytesSpaceLeft = 0xFFFFFFFF;
         return false;
@@ -654,6 +656,22 @@ image_get_storage_information_internal(am_bootloader_image_t *psImage,
     ui32SpaceLeft = device.ui32FlashSize - (uint32_t)(psImage->pui32LinkAddress) 
                     - (uint32_t)(psImage->ui32NumBytes) - AM_HAL_FLASH_PAGE_SIZE;
     ui32SpaceLeft &= 0xFFFFF800;    //storage starts from page boundries
+
+#if USE_LAST_PAGE_FOR_FLAG
+    if(ui32SpaceLeft > AM_HAL_FLASH_PAGE_SIZE)
+    {
+        ui32SpaceLeft -= AM_HAL_FLASH_PAGE_SIZE;
+    }
+    else
+    {
+        //
+        // Not enought space left in the internal flash to store the new image
+        //
+        *pui32NumBytesSpaceLeft = ui32SpaceLeft;
+        *pui32StorageAddressNewImage = 0xFFFFFFFF;  
+        return false;
+    }
+#endif 
 
     if(ui32NumBytesNewImage > ui32SpaceLeft) 
     {

@@ -84,7 +84,6 @@ am_bootloader_image_t g_sImage = {0, 0, 0, 0, 0, 0, 0, 0};  //RMA: added element
 // Flag page information.
 //
 //*****************************************************************************
-//am_bootloader_image_t *g_psBootImage = (am_bootloader_image_t *) FLAG_PAGE_LOCATION;
 
 void setup_ios_interface(void);
 void setup_serial(int32_t i32Module, uint32_t ui32BaudRate);
