@@ -114,9 +114,9 @@ static const appUpdateCfg_t fitUpdateCfg =
 /*! configurable parameters for AMOTA connection parameter update */
 static const appUpdateCfg_t otaUpdateCfg =
 {
-  6000,                                   /*! Connection idle period in ms before attempting
+  3000,                                   /*! Connection idle period in ms before attempting
                                               connection parameter update; set to zero to disable */
-  8,                                      /*! 10ms */
+  6,                                      /*! 7.5ms */
   15,                                     /*! 18.75ms */
   0,                                      /*! Connection latency */
   600,                                    /*! Supervision timeout in 10ms units */
