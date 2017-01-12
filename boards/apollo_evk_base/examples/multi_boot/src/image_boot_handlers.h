@@ -46,6 +46,7 @@ extern void image_spiflash_erase(uint32_t ui32DstAddr, uint32_t ui32NumberBytes)
 
 extern am_devices_spiflash_t g_sSpiFlash;
 extern am_hal_iom_config_t g_sIOMConfig;
+extern uint32_t g_ui32FlashLoadingBuffer[];
 
 #ifdef __cplusplus
 }

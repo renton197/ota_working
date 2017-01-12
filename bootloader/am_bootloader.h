@@ -67,27 +67,27 @@ typedef struct
     // Reset vector location.
     uint32_t *pui32ResetVector;
 
-    // Boot Options. -- RMA
+    // Boot Options.
     uint32_t ui32Options;
 
-    // Version Informatin of the Current Image -- RMA
+    // Version Informatin of the Current Image
     uint32_t ui32Version;
 
-    // Version Informatin of the New Image -- RMA
+    // Version Informatin of the New Image
     // Only used to confirm the image being received.
     uint32_t ui32VersionNewImage;
 
-    // Starting address where the new image was stored. -- RMA
+    // Starting address where the new image was stored
     uint32_t *pui32StorageAddressNewImage;
 
-    // Length of the new image being received in bytes. -- RMA
+    // Length of the new image being received in bytes
     // Only used to confirm the image being received.
     uint32_t ui32TotalNumBytesNewImage;
 
-    // Bytes already received and stored. -- RMA
+    // Bytes already received and stored
     uint32_t ui32StoredNumBytesNewImage;
 
-    // CRC-32 Value for the new image being received. -- RMA
+    // CRC-32 Value for the new image being received
     // Only used to confirm the image being received.
     uint32_t ui32CRCNewImage;
 

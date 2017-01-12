@@ -82,9 +82,7 @@
 #include "fit_api.h"
 #include "app_ui.h"
 
-// RMA++, for debug purpose only
 #include "binary_counter.h"
-// RMA--, for debug purpose only
 
 //*****************************************************************************
 //
@@ -335,7 +333,6 @@ am_ctimer_isr(void)
     ui32Status = am_hal_ctimer_int_status_get(true);
 
     //
-    // RMA++, for debug purpose only
     // Increment count and set limit based on the number of LEDs available.
     //
     if((ui32Status & AM_HAL_CTIMER_INT_TIMERA1) == AM_HAL_CTIMER_INT_TIMERA1)
@@ -359,7 +356,6 @@ am_ctimer_isr(void)
         am_hal_ctimer_int_clear(ui32Status);
 
     }
-    //RMA--, for debug purpose only
 }
 
 //*****************************************************************************
@@ -437,7 +433,6 @@ main(void)
     }
 #endif
 
-    // mike++
     // init debug session
     am_util_stdio_printf_init((am_util_stdio_print_char_t) am_bsp_itm_string_print);
     am_bsp_pin_enable(ITM_SWO);
@@ -445,7 +440,6 @@ main(void)
     am_bsp_debug_printf_enable();
     am_util_stdio_terminal_clear();
     am_util_stdio_printf("Ambiq OTA Demo B\r\n");
-    // mike--
 
     //
     // Boot the radio.
@@ -463,15 +457,12 @@ main(void)
     FitStart();
 
     // 
-    // RMA++
     // Adding initilization for binary_counter for debug purpose only
     //
     binary_counter_init();
-    // RMA--
 
     while (TRUE)
     {
-        //RMA++
         if(g_bCounterTimerFlag == true)
         {
             g_bCounterTimerFlag = false;
@@ -495,7 +486,6 @@ main(void)
         }
         else
         {
-        // RMA--
             //
             // Calculate the elapsed time from our free-running timer, and update
             // the software timers in the WSF scheduler.
@@ -532,10 +522,6 @@ main(void)
 
             am_hal_interrupt_master_enable();
 
-        //RMA++
         }
-        //RMA--
-
-
     }
 }

@@ -30,9 +30,6 @@
 #define DPRINTF(x)
 #endif
 
-extern void flash_load_from_image( uint32_t* pui32TargetAddress, 
-                                    uint32_t* pui32StorageAddress, 
-                                    uint32_t NumberBytes);
 //*****************************************************************************
 //
 // CRC-32 table
@@ -402,7 +399,7 @@ am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32Stora
     return true;
 }
 
-//RMA: boot from stored new image
+// boot from stored new image
 void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
 {
     if(psImage->ui32Options == BOOT_NEW_IMAGE_INTERNAL_FLASH)
@@ -419,6 +416,7 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         // Load image to target link address in the internal flash
         //
         image_load_from_internal_flash(psImage->pui32LinkAddress, psImage->pui32StorageAddressNewImage, psImage->ui32NumBytes);
+        
         //
         // Verify the flash operation result with a fast CRC check before we jump 
         // into the new image and run
@@ -450,8 +448,46 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         am_devices_spiflash_init(&g_sSpiFlash);
     
         //
-        // Verify image stored in the external flash
+        // Verify image stored in the external flash by checking CRC
+        // Set up IOM1 SPI pins and turn on the IOM for this operation.
         //
+        am_bsp_iom_spi_pins_enable(AM_BSP_FLASH_IOM);
+        am_hal_iom_enable(AM_BSP_FLASH_IOM);
+
+        //
+        // Read from spi flash and calculate CRC32 using global buffer
+        //
+        uint32_t ui32CRC = 0;
+        for(uint16_t i = 0; i < (psImage->ui32NumBytes / AM_HAL_FLASH_PAGE_SIZE); i++)
+        {
+            am_devices_spiflash_read((uint8_t*)g_ui32FlashLoadingBuffer, 
+                ((uint32_t)(psImage->pui32StorageAddressNewImage) + i*AM_HAL_FLASH_PAGE_SIZE), 
+                AM_HAL_FLASH_PAGE_SIZE);
+
+            am_bootloader_partial_crc32((uint8_t*)g_ui32FlashLoadingBuffer, AM_HAL_FLASH_PAGE_SIZE, &ui32CRC);
+        }
+
+        uint32_t ui32Remainder = psImage->ui32NumBytes % AM_HAL_FLASH_PAGE_SIZE;
+        if(ui32Remainder)
+        {
+            am_devices_spiflash_read((uint8_t*)g_ui32FlashLoadingBuffer, 
+                ((uint32_t)(psImage->pui32StorageAddressNewImage) + psImage->ui32NumBytes - ui32Remainder), ui32Remainder);
+
+            am_bootloader_partial_crc32(g_ui32FlashLoadingBuffer, ui32Remainder, &ui32CRC);
+        }
+
+        //
+        // Disable IOM SPI pins and turn off the IOM for this operation.
+        //
+        am_bsp_iom_spi_pins_disable(AM_BSP_FLASH_IOM);
+        am_hal_iom_disable(AM_BSP_FLASH_IOM);
+
+        if(ui32CRC != psImage->ui32CRC)
+        {
+            // image stored invalid
+            DPRINTF(("Invalid image in external flash."));
+            return;
+        }
 
         //
         // Load image to target link address in the internal flash
@@ -461,7 +497,12 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         //
         // Verify the flash operation result
         //
-    
+        if(am_bootloader_fast_crc32(psImage->pui32LinkAddress, psImage->ui32NumBytes) !=
+               psImage->ui32CRC)
+        {
+            DPRINTF(("Bad CRC 0x%08x\r\n", psImage->ui32CRC));
+            return;
+        }
     }
 
     //
@@ -552,7 +593,7 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
     }
 
     //
-    // RMA:Check boot option to see whether there is a new image available to boot
+    // Check boot option to see whether there is a new image available to boot
     // 
     if(psImage->ui32Options != BOOT_NO_NEW_IMAGE)
     {
@@ -561,14 +602,9 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
             ||(psImage->ui32Options == BOOT_NEW_IMAGE_EXTERNAL_FLASH))
         {
             //
-            //There is a new image available to boot from
+            // There is a new image available to boot from
             //
             am_bootloader_boot_from_storage(psImage);
-
-            //
-            // Run the new image loaded
-            //
-//            am_bootloader_image_run(psImage); //-- RMA, run this in main()
         }
     }
 

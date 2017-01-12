@@ -77,7 +77,7 @@ extern volatile bool g_bIOSActive;
 // Image structure to hold data about the downloaded boot image.
 //
 //*****************************************************************************
-am_bootloader_image_t g_sImage = {0, 0, 0, 0, 0, 0, 0, 0};  //RMA: added elements
+am_bootloader_image_t g_sImage = {0, 0, 0, 0, 0, 0, 0, 0};
 
 //*****************************************************************************
 //
@@ -176,6 +176,15 @@ main(void)
     am_hal_gpio_out_bit_set(INTERRUPT_PIN);
     am_hal_gpio_pin_config(INTERRUPT_PIN, AM_HAL_PIN_OUTPUT);
 
+#ifdef BOOTLOADER_DEBUG
+    // init debug session
+    am_util_stdio_printf_init((am_util_stdio_print_char_t) am_bsp_itm_string_print);
+    am_bsp_pin_enable(ITM_SWO);
+    am_hal_itm_enable();
+    am_bsp_debug_printf_enable();
+    am_util_stdio_terminal_clear();
+    am_util_stdio_printf("Ambiq OTA Demo Boot\r\n");
+#endif
     //
     // If the user selected to use the last page of flash as the flag page, we
     // need to configure for that now.
@@ -200,56 +209,6 @@ main(void)
         g_psBootImage = (am_bootloader_image_t *)(AM_HAL_FLASH_TOTAL_SIZE - AM_HAL_FLASH_PAGE_SIZE);
     }
 #endif
-
-#ifdef MULTI_BOOT_OTA_DEBUG
-    //
-    // (Delete me!) -- RMA
-    // Update the flash flag page for debug purpose only
-    //
-    am_bootloader_image_t FlagImage;
-    FlagImage.pui32LinkAddress = (uint32_t*)0x00004000;
-    FlagImage.ui32NumBytes = 0x00001430;
-    FlagImage.ui32CRC = 0xb84e1fa0;
-    FlagImage.ui32OverrideGPIO = 0xffffffff;
-    FlagImage.ui32OverridePolarity = 0x00000000;
-    FlagImage.pui32StackPointer = (uint32_t*)0x100003a0;
-    FlagImage.pui32ResetVector = (uint32_t*)0x00004071;
-    FlagImage.ui32Options = BOOT_NO_NEW_IMAGE;//BOOT_NEW_IMAGE_INTERNAL_FLASH;
-    FlagImage.pui32StorageAddressNewImage = (uint32_t*)0x00008000;
-    FlagImage.bEncrypted = false;
-    
-    am_bootloader_flag_page_update(&FlagImage, (uint32_t *)g_psBootImage);
-#endif //MULTI_BOOT_OTA_DEBUG
-
-#ifdef MULTI_BOOT_OTA_DEBUG
-    //
-    // (Delete me!) -- RMA
-    // Interface test here
-    // (available space: 499712 bytes, returns false for test length of 502768
-    // and true for test length of 32768)
-    //
-    volatile uint32_t ui32TestStoreAddress = 0;
-    volatile uint32_t ui32TestSpaceLeft = 0;
-    volatile bool bResult;
-    bResult = image_get_storage_information_internal(g_psBootImage, 
-                                                        502768, //32768,
-                                                        &ui32TestStoreAddress,
-                                                        &ui32TestSpaceLeft);
-#endif //MULTI_BOOT_OTA_DEBUG
-
-#ifdef MULTI_BOOT_OTA_DEBUG
-    //
-    // (Delete me!) -- RMA
-    // Interface test here
-    // do not operation cross flash block (0/1), which flash write api does not support
-    //
-    for(uint16_t i = 0; i < 32*4; i++)
-    {
-        g_TestArray[i] = i+1;
-    }
-    bResult = image_flash_write_from_sram(0x40000, (uint32_t)g_TestArray, 32*4);
-
-#endif //MULTI_BOOT_OTA_DEBUG
 
     //
     // Check the flag page to see if there's a valid image ready. We do this

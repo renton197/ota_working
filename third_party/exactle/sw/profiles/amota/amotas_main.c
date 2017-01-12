@@ -457,7 +457,6 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
             return false;
         }
 
-        //RMA: Add flash operation here
         bResult = image_flash_write_from_sram( (uint32_t*)addr, (uint32_t*)buf, len);
         if(bResult == true)
         {
@@ -736,9 +735,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         break;
 
         case AMOTA_CMD_FW_RESET:
-            // RMA++
             WsfTrace("Apollo will reset itself in 500ms.");
-            // RMA--
             amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
             
             //

@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\bin\multi_boot.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\bin\multi_boot.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Wed Jan 11 20:11:33 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060183: Last Updated: Thu Jan 12 15:03:08 2017
 <BR><P>
-<H3>Maximum Stack Usage =        360 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        368 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 __rt_entry_main &rArr; main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 <P>
@@ -18,7 +18,7 @@ Mutually Recursive functions
  <LI><a href="#[7]">am_usagefault_isr</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[7]">am_usagefault_isr</a><BR>
  <LI><a href="#[14]">am_adc_isr</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[14]">am_adc_isr</a><BR>
  <LI><a href="#[2d]">am_util_delay_cycles</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[2d]">am_util_delay_cycles</a><BR>
- <LI><a href="#[4f]">am_hal_debug_error</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[4f]">am_hal_debug_error</a><BR>
+ <LI><a href="#[54]">am_hal_debug_error</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[54]">am_hal_debug_error</a><BR>
  <LI><a href="#[1b]">am_memmanage_isr</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[1b]">am_memmanage_isr</a><BR>
 </UL>
 <P>
@@ -250,7 +250,7 @@ Global Symbols
 <P><STRONG><a name="[9c]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[26]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 360 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 368 + Unknown Stack Size
 <LI>Call Chain = __rt_entry_main &rArr; main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
 <BR>[Calls]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -277,7 +277,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_cycles
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_cycles
-<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
+<LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
 </UL>
 
 <P><STRONG><a name="[6c]"></a>am_bootloader_image_run</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, am_bootloader.o(.emb_text))
@@ -288,25 +288,25 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[3a]"></a>am_hal_interrupt_master_disable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, am_hal_interrupt.o(.emb_text))
-<BR><BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<P><STRONG><a name="[40]"></a>am_hal_interrupt_master_disable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, am_hal_interrupt.o(.emb_text))
+<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
 <LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
 <LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_sleeping_queue_flush
-<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
 </UL>
 
-<P><STRONG><a name="[3d]"></a>am_hal_interrupt_master_set</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_interrupt.o(.emb_text))
-<BR><BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<P><STRONG><a name="[43]"></a>am_hal_interrupt_master_set</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_interrupt.o(.emb_text))
+<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
 <LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_sleeping_queue_flush
-<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
 </UL>
 
 <P><STRONG><a name="[2f]"></a>__user_initial_stackheap</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, startup_keil.o(.text))
@@ -367,54 +367,60 @@ Global Symbols
 
 <P><STRONG><a name="[a9]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[31]"></a>am_bootloader_boot_from_storage</STRONG> (Thumb, 142 bytes, Stack size 72 bytes, am_bootloader.o(i.am_bootloader_boot_from_storage))
-<BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
+<P><STRONG><a name="[31]"></a>am_bootloader_boot_from_storage</STRONG> (Thumb, 276 bytes, Stack size 80 bytes, am_bootloader.o(i.am_bootloader_boot_from_storage))
+<BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
 <BR>[Calls]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_config
 <LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_new_image_check
 <LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_fast_crc32
 <LI><a href="#[37]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_init
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_disable
+<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
+<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_enable
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_disable
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;configure_spiflash_pins
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
+<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
 </UL>
 
 <P><STRONG><a name="[34]"></a>am_bootloader_fast_crc32</STRONG> (Thumb, 38 bytes, Stack size 16 bytes, am_bootloader.o(i.am_bootloader_fast_crc32))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = am_bootloader_fast_crc32
 </UL>
 <BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_new_image_check
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flash_check
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flash_check
 <LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[39]"></a>am_bootloader_flag_page_update</STRONG> (Thumb, 60 bytes, Stack size 32 bytes, am_bootloader.o(i.am_bootloader_flag_page_update))
+<P><STRONG><a name="[3f]"></a>am_bootloader_flag_page_update</STRONG> (Thumb, 60 bytes, Stack size 32 bytes, am_bootloader.o(i.am_bootloader_flag_page_update))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = am_bootloader_flag_page_update
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
+<BR>[Calls]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
 </UL>
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 <LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 <LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
 
-<P><STRONG><a name="[3e]"></a>am_bootloader_flash_check</STRONG> (Thumb, 96 bytes, Stack size 20 bytes, am_bootloader.o(i.am_bootloader_flash_check))
+<P><STRONG><a name="[44]"></a>am_bootloader_flash_check</STRONG> (Thumb, 96 bytes, Stack size 20 bytes, am_bootloader.o(i.am_bootloader_flash_check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = am_bootloader_flash_check &rArr; am_bootloader_fast_crc32
 </UL>
 <BR>[Calls]<UL><LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_fast_crc32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
+<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
 </UL>
 
-<P><STRONG><a name="[3f]"></a>am_bootloader_image_check</STRONG> (Thumb, 462 bytes, Stack size 8 bytes, am_bootloader.o(i.am_bootloader_image_check))
-<BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
+<P><STRONG><a name="[45]"></a>am_bootloader_image_check</STRONG> (Thumb, 462 bytes, Stack size 8 bytes, am_bootloader.o(i.am_bootloader_image_check))
+<BR><BR>[Stack]<UL><LI>Max Depth = 368<LI>Call Chain = am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flash_check
+<BR>[Calls]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flash_check
 <LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 <BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -428,31 +434,34 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[68]"></a>am_bootloader_partial_crc32</STRONG> (Thumb, 40 bytes, Stack size 20 bytes, am_bootloader.o(i.am_bootloader_partial_crc32))
+<P><STRONG><a name="[3b]"></a>am_bootloader_partial_crc32</STRONG> (Thumb, 40 bytes, Stack size 20 bytes, am_bootloader.o(i.am_bootloader_partial_crc32))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = am_bootloader_partial_crc32
 </UL>
-<BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
+<LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
 </UL>
 
-<P><STRONG><a name="[69]"></a>am_bsp_iom_spi_pins_disable</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, am_bsp.o(i.am_bsp_iom_spi_pins_disable))
-<BR><BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<P><STRONG><a name="[3c]"></a>am_bsp_iom_spi_pins_disable</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, am_bsp.o(i.am_bsp_iom_spi_pins_disable))
+<BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 </UL>
 
-<P><STRONG><a name="[67]"></a>am_bsp_iom_spi_pins_enable</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, am_bsp.o(i.am_bsp_iom_spi_pins_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<P><STRONG><a name="[38]"></a>am_bsp_iom_spi_pins_enable</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, am_bsp.o(i.am_bsp_iom_spi_pins_enable))
+<BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 <LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;configure_spiflash_pins
 </UL>
 
-<P><STRONG><a name="[40]"></a>am_bsp_low_power_init</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, am_bsp.o(i.am_bsp_low_power_init))
+<P><STRONG><a name="[46]"></a>am_bsp_low_power_init</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, am_bsp.o(i.am_bsp_low_power_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = am_bsp_low_power_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_vcomp_disable
-<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_rtc_osc_select
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_rtc_osc_disable
-<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_mcuctrl_bucks_enable
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_mcuctrl_bandgap_disable
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_osc_stop
+<BR>[Calls]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_vcomp_disable
+<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_rtc_osc_select
+<LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_rtc_osc_disable
+<LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_mcuctrl_bucks_enable
+<LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_mcuctrl_bandgap_disable
+<LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_osc_stop
 </UL>
 <BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -461,73 +470,74 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[47]"></a>am_devices_spiflash_read</STRONG> (Thumb, 150 bytes, Stack size 120 bytes, am_devices_spiflash.o(i.am_devices_spiflash_read))
+<P><STRONG><a name="[3a]"></a>am_devices_spiflash_read</STRONG> (Thumb, 150 bytes, Stack size 120 bytes, am_devices_spiflash.o(i.am_devices_spiflash_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 240<LI>Call Chain = am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
-<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
+<BR>[Calls]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
 </UL>
-<BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 </UL>
 
 <P><STRONG><a name="[15]"></a>am_gpio_isr</STRONG> (Thumb, 186 bytes, Stack size 24 bytes, multi_boot.o(i.am_gpio_isr))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = am_gpio_isr &rArr; setup_serial &rArr; am_hal_uart_config
 </UL>
-<BR>[Calls]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
-<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_char_transmit_polled
-<LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_count
-<LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_disable
-<LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_clear
+<BR>[Calls]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_char_transmit_polled
+<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_count
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_disable
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_clear
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_keil.o(RESET)
 </UL>
-<P><STRONG><a name="[44]"></a>am_hal_clkgen_osc_stop</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_clkgen.o(i.am_hal_clkgen_osc_stop))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<P><STRONG><a name="[4a]"></a>am_hal_clkgen_osc_stop</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_clkgen.o(i.am_hal_clkgen_osc_stop))
+<BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 </UL>
 
-<P><STRONG><a name="[58]"></a>am_hal_clkgen_sysclk_get</STRONG> (Thumb, 64 bytes, Stack size 0 bytes, am_hal_clkgen.o(i.am_hal_clkgen_sysclk_get))
-<BR><BR>[Called By]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_config
-<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
+<P><STRONG><a name="[5c]"></a>am_hal_clkgen_sysclk_get</STRONG> (Thumb, 64 bytes, Stack size 0 bytes, am_hal_clkgen.o(i.am_hal_clkgen_sysclk_get))
+<BR><BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_config
+<LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
 </UL>
 
 <P><STRONG><a name="[6d]"></a>am_hal_clkgen_sysclk_select</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, am_hal_clkgen.o(i.am_hal_clkgen_sysclk_select))
 <BR><BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[4f]"></a>am_hal_debug_error</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, am_hal_debug.o(i.am_hal_debug_error))
-<BR><BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<P><STRONG><a name="[54]"></a>am_hal_debug_error</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, am_hal_debug.o(i.am_hal_debug_error))
+<BR><BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
-<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
-<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write_nb
-<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_write
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_read
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write_nb
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_write
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_read
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
 
-<P><STRONG><a name="[3b]"></a>am_hal_flash_page_erase</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_flash.o(i.am_hal_flash_page_erase))
-<BR><BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<P><STRONG><a name="[41]"></a>am_hal_flash_page_erase</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_flash.o(i.am_hal_flash_page_erase))
+<BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 </UL>
 
-<P><STRONG><a name="[3c]"></a>am_hal_flash_program_main</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_flash.o(i.am_hal_flash_program_main))
-<BR><BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<P><STRONG><a name="[42]"></a>am_hal_flash_program_main</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_flash.o(i.am_hal_flash_program_main))
+<BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
 <LI><a href="#[33]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_internal_flash
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 </UL>
 
-<P><STRONG><a name="[4c]"></a>am_hal_gpio_int_clear</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_gpio.o(i.am_hal_gpio_int_clear))
+<P><STRONG><a name="[51]"></a>am_hal_gpio_int_clear</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_gpio.o(i.am_hal_gpio_int_clear))
 <BR><BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[15]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_gpio_isr
 </UL>
 
-<P><STRONG><a name="[4b]"></a>am_hal_gpio_int_disable</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, am_hal_gpio.o(i.am_hal_gpio_int_disable))
+<P><STRONG><a name="[50]"></a>am_hal_gpio_int_disable</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, am_hal_gpio.o(i.am_hal_gpio_int_disable))
 <BR><BR>[Called By]<UL><LI><a href="#[15]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_gpio_isr
 </UL>
 
@@ -536,7 +546,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[74]"></a>am_hal_interrupt_enable</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, am_hal_interrupt.o(i.am_hal_interrupt_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 <LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 </UL>
@@ -545,88 +555,90 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[6a]"></a>am_hal_iom_disable</STRONG> (Thumb, 118 bytes, Stack size 0 bytes, am_hal_iom.o(i.am_hal_iom_disable))
-<BR><BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<P><STRONG><a name="[3d]"></a>am_hal_iom_disable</STRONG> (Thumb, 118 bytes, Stack size 0 bytes, am_hal_iom.o(i.am_hal_iom_disable))
+<BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
 </UL>
 
-<P><STRONG><a name="[54]"></a>am_hal_iom_enable</STRONG> (Thumb, 96 bytes, Stack size 0 bytes, am_hal_iom.o(i.am_hal_iom_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
-<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
-<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
+<P><STRONG><a name="[39]"></a>am_hal_iom_enable</STRONG> (Thumb, 96 bytes, Stack size 0 bytes, am_hal_iom.o(i.am_hal_iom_enable))
+<BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
+<LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_load_from_external_flash
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
 </UL>
 
-<P><STRONG><a name="[50]"></a>am_hal_iom_fifo_read</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, am_hal_iom.o(i.am_hal_iom_fifo_read))
+<P><STRONG><a name="[55]"></a>am_hal_iom_fifo_read</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, am_hal_iom.o(i.am_hal_iom_fifo_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = am_hal_iom_fifo_read
 </UL>
-<BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
+<BR>[Called By]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
 </UL>
 
-<P><STRONG><a name="[51]"></a>am_hal_iom_fifo_write</STRONG> (Thumb, 140 bytes, Stack size 16 bytes, am_hal_iom.o(i.am_hal_iom_fifo_write))
+<P><STRONG><a name="[56]"></a>am_hal_iom_fifo_write</STRONG> (Thumb, 140 bytes, Stack size 16 bytes, am_hal_iom.o(i.am_hal_iom_fifo_write))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
-<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write_nb
+<BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write_nb
 </UL>
 
-<P><STRONG><a name="[52]"></a>am_hal_iom_queue_spi_read</STRONG> (Thumb, 220 bytes, Stack size 64 bytes, am_hal_iom.o(i.am_hal_iom_queue_spi_read))
+<P><STRONG><a name="[57]"></a>am_hal_iom_queue_spi_read</STRONG> (Thumb, 220 bytes, Stack size 64 bytes, am_hal_iom.o(i.am_hal_iom_queue_spi_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = am_hal_iom_queue_spi_read &rArr; am_hal_queue_item_add
 </UL>
-<BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
+<BR>[Called By]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_read
 </UL>
 
 <P><STRONG><a name="[19]"></a>am_hal_iom_sleeping_queue_flush</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, am_hal_iom.o(i.am_hal_iom_sleeping_queue_flush))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = am_hal_iom_sleeping_queue_flush
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
-<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_sysctrl_sleep
+<BR>[Calls]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_sysctrl_sleep
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> am_hal_iom.o(.data)
 </UL>
-<P><STRONG><a name="[49]"></a>am_hal_iom_spi_read</STRONG> (Thumb, 234 bytes, Stack size 32 bytes, am_hal_iom.o(i.am_hal_iom_spi_read))
+<P><STRONG><a name="[4e]"></a>am_hal_iom_spi_read</STRONG> (Thumb, 234 bytes, Stack size 32 bytes, am_hal_iom.o(i.am_hal_iom_spi_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = am_hal_iom_spi_read &rArr; am_hal_iom_queue_spi_read &rArr; am_hal_queue_item_add
 </UL>
-<BR>[Calls]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
-<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_read
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Calls]<UL><LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_read
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
+<BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
 </UL>
 
-<P><STRONG><a name="[48]"></a>am_hal_iom_spi_write</STRONG> (Thumb, 322 bytes, Stack size 72 bytes, am_hal_iom.o(i.am_hal_iom_spi_write))
+<P><STRONG><a name="[4d]"></a>am_hal_iom_spi_write</STRONG> (Thumb, 322 bytes, Stack size 72 bytes, am_hal_iom.o(i.am_hal_iom_spi_write))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
-<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write_nb
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_write
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_queue_item_add
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write_nb
+<LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_write
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
+<BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
 </UL>
 
-<P><STRONG><a name="[56]"></a>am_hal_iom_spi_write_nb</STRONG> (Thumb, 146 bytes, Stack size 32 bytes, am_hal_iom.o(i.am_hal_iom_spi_write_nb))
+<P><STRONG><a name="[5a]"></a>am_hal_iom_spi_write_nb</STRONG> (Thumb, 146 bytes, Stack size 32 bytes, am_hal_iom.o(i.am_hal_iom_spi_write_nb))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_write
-<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
+<BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_fifo_write
+<LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_debug_error
 </UL>
-<BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
 </UL>
 
-<P><STRONG><a name="[5a]"></a>am_hal_ios_access_int_clear</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_access_int_clear))
+<P><STRONG><a name="[5e]"></a>am_hal_ios_access_int_clear</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_access_int_clear))
 <BR><BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 <LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
@@ -635,7 +647,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 </UL>
 
-<P><STRONG><a name="[59]"></a>am_hal_ios_access_int_status_get</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_access_int_status_get))
+<P><STRONG><a name="[5d]"></a>am_hal_ios_access_int_status_get</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_access_int_status_get))
 <BR><BR>[Called By]<UL><LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
 
@@ -645,13 +657,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 </UL>
 
-<P><STRONG><a name="[60]"></a>am_hal_ios_fifo_service</STRONG> (Thumb, 142 bytes, Stack size 4 bytes, am_hal_ios.o(i.am_hal_ios_fifo_service))
+<P><STRONG><a name="[64]"></a>am_hal_ios_fifo_service</STRONG> (Thumb, 142 bytes, Stack size 4 bytes, am_hal_ios.o(i.am_hal_ios_fifo_service))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = am_hal_ios_fifo_service
 </UL>
 <BR>[Called By]<UL><LI><a href="#[10]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_ios_isr
 </UL>
 
-<P><STRONG><a name="[5f]"></a>am_hal_ios_int_clear</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_int_clear))
+<P><STRONG><a name="[63]"></a>am_hal_ios_int_clear</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_int_clear))
 <BR><BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 <LI><a href="#[10]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_ios_isr
 </UL>
@@ -660,46 +672,46 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 </UL>
 
-<P><STRONG><a name="[5e]"></a>am_hal_ios_int_status_get</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_int_status_get))
+<P><STRONG><a name="[62]"></a>am_hal_ios_int_status_get</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, am_hal_ios.o(i.am_hal_ios_int_status_get))
 <BR><BR>[Called By]<UL><LI><a href="#[10]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_ios_isr
 </UL>
 
-<P><STRONG><a name="[46]"></a>am_hal_mcuctrl_bandgap_disable</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_mcuctrl.o(i.am_hal_mcuctrl_bandgap_disable))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<P><STRONG><a name="[4c]"></a>am_hal_mcuctrl_bandgap_disable</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_mcuctrl.o(i.am_hal_mcuctrl_bandgap_disable))
+<BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 </UL>
 
-<P><STRONG><a name="[41]"></a>am_hal_mcuctrl_bucks_enable</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, am_hal_mcuctrl.o(i.am_hal_mcuctrl_bucks_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<P><STRONG><a name="[47]"></a>am_hal_mcuctrl_bucks_enable</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, am_hal_mcuctrl.o(i.am_hal_mcuctrl_bucks_enable))
+<BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 </UL>
 
-<P><STRONG><a name="[53]"></a>am_hal_queue_item_add</STRONG> (Thumb, 158 bytes, Stack size 24 bytes, am_hal_queue.o(i.am_hal_queue_item_add))
+<P><STRONG><a name="[58]"></a>am_hal_queue_item_add</STRONG> (Thumb, 158 bytes, Stack size 24 bytes, am_hal_queue.o(i.am_hal_queue_item_add))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = am_hal_queue_item_add
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<BR>[Calls]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
 </UL>
-<BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
-<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
+<BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_spi_write
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_queue_spi_read
 </UL>
 
-<P><STRONG><a name="[5d]"></a>am_hal_reset_poi</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_reset.o(i.am_hal_reset_poi))
+<P><STRONG><a name="[61]"></a>am_hal_reset_poi</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_reset.o(i.am_hal_reset_poi))
 <BR><BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 <LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
 
-<P><STRONG><a name="[45]"></a>am_hal_rtc_osc_disable</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, am_hal_rtc.o(i.am_hal_rtc_osc_disable))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<P><STRONG><a name="[4b]"></a>am_hal_rtc_osc_disable</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, am_hal_rtc.o(i.am_hal_rtc_osc_disable))
+<BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 </UL>
 
-<P><STRONG><a name="[43]"></a>am_hal_rtc_osc_select</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, am_hal_rtc.o(i.am_hal_rtc_osc_select))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<P><STRONG><a name="[49]"></a>am_hal_rtc_osc_select</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, am_hal_rtc.o(i.am_hal_rtc_osc_select))
+<BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 </UL>
 
-<P><STRONG><a name="[55]"></a>am_hal_sysctrl_sleep</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, am_hal_sysctrl.o(i.am_hal_sysctrl_sleep))
+<P><STRONG><a name="[59]"></a>am_hal_sysctrl_sleep</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, am_hal_sysctrl.o(i.am_hal_sysctrl_sleep))
 <BR><BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_sleeping_queue_flush
 </UL>
 
-<P><STRONG><a name="[4a]"></a>am_hal_systick_count</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, am_hal_systick.o(i.am_hal_systick_count))
+<P><STRONG><a name="[4f]"></a>am_hal_systick_count</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, am_hal_systick.o(i.am_hal_systick_count))
 <BR><BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[15]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_gpio_isr
 </UL>
@@ -712,89 +724,89 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[4e]"></a>am_hal_uart_char_transmit_polled</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_char_transmit_polled))
+<P><STRONG><a name="[53]"></a>am_hal_uart_char_transmit_polled</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_char_transmit_polled))
 <BR><BR>[Called By]<UL><LI><a href="#[15]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_gpio_isr
 </UL>
 
 <P><STRONG><a name="[78]"></a>am_hal_uart_clock_enable</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_clock_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
-<P><STRONG><a name="[57]"></a>am_hal_uart_config</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, am_hal_uart.o(i.am_hal_uart_config))
+<P><STRONG><a name="[5b]"></a>am_hal_uart_config</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, am_hal_uart.o(i.am_hal_uart_config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = am_hal_uart_config
 </UL>
-<BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_sysclk_get
+<BR>[Calls]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_sysclk_get
 </UL>
-<BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
 <P><STRONG><a name="[79]"></a>am_hal_uart_disable</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_disable))
-<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
 <P><STRONG><a name="[7b]"></a>am_hal_uart_enable</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
 <P><STRONG><a name="[7a]"></a>am_hal_uart_fifo_config</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_fifo_config))
-<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
-<P><STRONG><a name="[62]"></a>am_hal_uart_int_clear</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_int_clear))
+<P><STRONG><a name="[66]"></a>am_hal_uart_int_clear</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_int_clear))
 <BR><BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
-<LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
 <P><STRONG><a name="[7c]"></a>am_hal_uart_int_enable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_int_enable))
-<BR><BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
+<BR><BR>[Called By]<UL><LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_serial
 </UL>
 
-<P><STRONG><a name="[61]"></a>am_hal_uart_int_status_get</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_int_status_get))
+<P><STRONG><a name="[65]"></a>am_hal_uart_int_status_get</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, am_hal_uart.o(i.am_hal_uart_int_status_get))
 <BR><BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 </UL>
 
-<P><STRONG><a name="[42]"></a>am_hal_vcomp_disable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, am_hal_vcomp.o(i.am_hal_vcomp_disable))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<P><STRONG><a name="[48]"></a>am_hal_vcomp_disable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, am_hal_vcomp.o(i.am_hal_vcomp_disable))
+<BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 </UL>
 
 <P><STRONG><a name="[11]"></a>am_ioslave_acc_isr</STRONG> (Thumb, 256 bytes, Stack size 16 bytes, ios_boot_handlers.o(i.am_ioslave_acc_isr))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = am_ioslave_acc_isr &rArr; image_data_packet_read &rArr; am_bootloader_partial_crc32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_reset_poi
-<LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_status_get
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_clear
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
-<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_start_packet_read
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_reset_poi
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_status_get
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_clear
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_start_packet_read
+<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_keil.o(RESET)
 </UL>
 <P><STRONG><a name="[10]"></a>am_ioslave_ios_isr</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, ios_boot_handlers.o(i.am_ioslave_ios_isr))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = am_ioslave_ios_isr &rArr; am_hal_ios_fifo_service
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_status_get
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_clear
-<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_fifo_service
+<BR>[Calls]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_status_get
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_clear
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_fifo_service
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_keil.o(RESET)
 </UL>
 <P><STRONG><a name="[17]"></a>am_uart_isr</STRONG> (Thumb, 488 bytes, Stack size 32 bytes, uart_boot_handlers.o(i.am_uart_isr))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = am_uart_isr &rArr; image_data_packet_read &rArr; am_bootloader_partial_crc32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_status_get
-<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_clear
-<LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ser_out
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_start_packet_read
-<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
-<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_reset_poi
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
+<BR>[Calls]<UL><LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_status_get
+<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_clear
+<LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ser_out
+<LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_start_packet_read
+<LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;image_data_packet_read
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_reset_poi
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_flag_page_update
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_keil.o(RESET)
 </UL>
-<P><STRONG><a name="[66]"></a>am_util_delay_ms</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, am_util_delay.o(i.am_util_delay_ms))
+<P><STRONG><a name="[6a]"></a>am_util_delay_ms</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, am_util_delay.o(i.am_util_delay_ms))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = am_util_delay_ms
 </UL>
-<BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_sysclk_get
+<BR>[Calls]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_sysclk_get
 <LI><a href="#[2d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_cycles
 </UL>
 <BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -807,23 +819,23 @@ Global Symbols
 <P><STRONG><a name="[36]"></a>configure_spiflash_pins</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, image_boot_handlers.o(i.configure_spiflash_pins))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = configure_spiflash_pins
 </UL>
-<BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_enable
+<BR>[Calls]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_enable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
-<P><STRONG><a name="[38]"></a>image_load_from_external_flash</STRONG> (Thumb, 214 bytes, Stack size 40 bytes, image_boot_handlers.o(i.image_load_from_external_flash))
+<P><STRONG><a name="[3e]"></a>image_load_from_external_flash</STRONG> (Thumb, 214 bytes, Stack size 40 bytes, image_boot_handlers.o(i.image_load_from_external_flash))
 <BR><BR>[Stack]<UL><LI>Max Depth = 280<LI>Call Chain = image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
-<LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_disable
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
-<LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
-<LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_enable
-<LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_disable
+<BR>[Calls]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_enable
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_iom_disable
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
+<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_devices_spiflash_read
+<LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_enable
+<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_iom_spi_pins_disable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
@@ -831,38 +843,38 @@ Global Symbols
 <P><STRONG><a name="[33]"></a>image_load_from_internal_flash</STRONG> (Thumb, 196 bytes, Stack size 40 bytes, image_boot_handlers.o(i.image_load_from_internal_flash))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = image_load_from_internal_flash &rArr; __aeabi_memcpy4
 </UL>
-<BR>[Calls]<UL><LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
+<BR>[Calls]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_set
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_boot_from_storage
 </UL>
 
 <P><STRONG><a name="[27]"></a>main</STRONG> (Thumb, 264 bytes, Stack size 0 bytes, multi_boot.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
+<BR><BR>[Stack]<UL><LI>Max Depth = 368<LI>Call Chain = main &rArr; am_bootloader_image_check &rArr; am_bootloader_boot_from_storage &rArr; image_load_from_external_flash &rArr; am_devices_spiflash_read &rArr; am_hal_iom_spi_write &rArr; am_hal_iom_spi_write_nb &rArr; am_hal_iom_fifo_write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
+<BR>[Calls]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_util_delay_ms
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_start
 <LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_load
-<LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_count
+<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_systick_count
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_enable
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_enable
-<LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_clear
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_gpio_int_clear
 <LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_clkgen_sysclk_select
-<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
+<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bsp_low_power_init
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_run
-<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_image_check
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_enable
 <LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setup_ios_interface
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cleanup_ios_interface
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_master_disable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[65]"></a>ser_out</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart_boot_handlers.o(i.ser_out))
+<P><STRONG><a name="[69]"></a>ser_out</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart_boot_handlers.o(i.ser_out))
 <BR><BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 </UL>
 
@@ -870,24 +882,24 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = setup_ios_interface &rArr; am_hal_ios_config
 </UL>
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_enable
-<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_clear
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_int_clear
 <LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_config
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_enable
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_clear
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_ios_access_int_clear
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_enable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[4d]"></a>setup_serial</STRONG> (Thumb, 176 bytes, Stack size 16 bytes, uart_boot_handlers.o(i.setup_serial))
+<P><STRONG><a name="[52]"></a>setup_serial</STRONG> (Thumb, 176 bytes, Stack size 16 bytes, uart_boot_handlers.o(i.setup_serial))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = setup_serial &rArr; am_hal_uart_config
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_enable
-<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_clear
+<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_int_clear
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_fifo_config
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_enable
 <LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_disable
-<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_config
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_config
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_uart_clock_enable
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_interrupt_enable
 </UL>
@@ -905,31 +917,31 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[5c]"></a>image_data_packet_read</STRONG> (Thumb, 194 bytes, Stack size 24 bytes, ios_boot_handlers.o(i.image_data_packet_read))
+<P><STRONG><a name="[60]"></a>image_data_packet_read</STRONG> (Thumb, 194 bytes, Stack size 24 bytes, ios_boot_handlers.o(i.image_data_packet_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = image_data_packet_read &rArr; am_bootloader_partial_crc32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
+<BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
 </UL>
 <BR>[Called By]<UL><LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
 
-<P><STRONG><a name="[5b]"></a>image_start_packet_read</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, ios_boot_handlers.o(i.image_start_packet_read))
+<P><STRONG><a name="[5f]"></a>image_start_packet_read</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, ios_boot_handlers.o(i.image_start_packet_read))
 <BR><BR>[Called By]<UL><LI><a href="#[11]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_ioslave_acc_isr
 </UL>
 
-<P><STRONG><a name="[64]"></a>image_data_packet_read</STRONG> (Thumb, 216 bytes, Stack size 32 bytes, uart_boot_handlers.o(i.image_data_packet_read))
+<P><STRONG><a name="[68]"></a>image_data_packet_read</STRONG> (Thumb, 216 bytes, Stack size 32 bytes, uart_boot_handlers.o(i.image_data_packet_read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = image_data_packet_read &rArr; am_bootloader_partial_crc32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
-<LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
-<LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
+<BR>[Calls]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_bootloader_partial_crc32
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_program_main
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_hal_flash_page_erase
 </UL>
 <BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 </UL>
 
-<P><STRONG><a name="[63]"></a>image_start_packet_read</STRONG> (Thumb, 60 bytes, Stack size 0 bytes, uart_boot_handlers.o(i.image_start_packet_read))
+<P><STRONG><a name="[67]"></a>image_start_packet_read</STRONG> (Thumb, 60 bytes, Stack size 0 bytes, uart_boot_handlers.o(i.image_start_packet_read))
 <BR><BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;am_uart_isr
 </UL>
 <P>
