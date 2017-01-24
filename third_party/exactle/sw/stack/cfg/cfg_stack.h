@@ -4,8 +4,8 @@
  *
  *  \brief  Stack configuration.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -46,7 +46,18 @@ extern "C" {
 
 /*! Maximum number of connections */
 #ifndef DM_CONN_MAX
-#define DM_CONN_MAX 3
+#define DM_CONN_MAX      3
+#endif
+
+/*! Number of supported advertising sets: must be set to 1 for legacy advertising */
+#ifndef DM_NUM_ADV_SETS
+#define DM_NUM_ADV_SETS  1
+#endif
+
+/*! Number of scanner and initiator PHYs (LE 1M and LE Coded): must be set 1 and 2 for
+    legacy and extended scanning respectively */
+#ifndef DM_NUM_PHYS
+#define DM_NUM_PHYS      1
 #endif
 
 /**************************************************************************************************

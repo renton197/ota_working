@@ -4,8 +4,8 @@
  *        
  *  \brief  Health/medical collector sample application interface file.
  *
- *          $Date: 2012-12-27 12:15:33 -0800 (Thu, 27 Dec 2012) $
- *          $Revision: 403 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *  
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -119,6 +119,7 @@ extern medcIf_t medcBlpIf;          /* blood pressure profile */
 extern medcIf_t medcGlpIf;          /* glucose profile */
 extern medcIf_t medcWspIf;          /* weight scale profile */
 extern medcIf_t medcHtpIf;          /* health thermometer profile */
+extern medcIf_t medcPlxpIf;         /* pulse oximeter profile */
 
 /**************************************************************************************************
   Function Declarations

@@ -57,6 +57,47 @@ uint8_t SRAM_load_ui32[8] = {0x00, 0x68,        // 6800   ldr r0, [r0,0]
 
 //*****************************************************************************
 //
+//! @brief Implement an iterative spin loop.
+//!
+//! @param ui32Iterations - Number of iterations to delay.
+//!
+//! Use this function to implement a CPU busy waiting spin.  For Apollo, this
+//! delay can be used for timing purposes since for Apollo, each iteration will
+//! take 3 cycles.
+//!
+//! @return None.
+//
+//*****************************************************************************
+#ifdef gcc
+void __attribute__((naked))
+am_hal_flash_delay(uint32_t ui32Iterations)
+{
+    __asm("    subs    r0, #1\n"
+          "    bne     am_hal_flash_delay\n"
+          "    bx      lr");
+}
+#endif
+#ifdef keil
+__asm void
+am_hal_flash_delay(uint32_t ui32Iterations)
+{
+    SUBS    R0, #1
+    BNE     am_hal_flash_delay
+    BX      LR
+}
+#endif
+#ifdef iar
+void
+am_hal_flash_delay(uint32_t ui32Iterations)
+{
+    asm("SUBS    R0, #1");
+    asm("BNE.N   am_hal_flash_delay");
+    asm("BX      LR");
+}
+#endif
+
+//*****************************************************************************
+//
 //! @brief This function performs a mass erase on a flash block.
 //!
 //! @param ui32Value - The flash program key.

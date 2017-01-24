@@ -4,8 +4,8 @@
  *
  *  \brief  HCI vendor specific functions for generic controllers.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -35,8 +35,116 @@
 
 /*************************************************************************************************/
 /*!
+*  \fn     hciCoreReadMaxDataLen
+*
+*  \brief  Read maximum data length command.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void hciCoreReadMaxDataLen(void)
+{
+  /* if LE Data Packet Length Extensions is supported by Controller and included */
+  if ((hciCoreCb.leSupFeat & HCI_LE_SUP_FEAT_DATA_LEN_EXT) &&
+      (hciLeSupFeatCfg & HCI_LE_SUP_FEAT_DATA_LEN_EXT))
+  {
+    /* send next command in sequence */
+    HciLeReadMaxDataLen();
+  }
+  else
+  {
+    /* send next command in sequence */
+    HciLeRandCmd();
+  }
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     hciCoreReadResolvingListSize
+*
+*  \brief  Read resolving list command.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void hciCoreReadResolvingListSize(void)
+{
+  /* if LL Privacy is supported by Controller and included */
+  if ((hciCoreCb.leSupFeat & HCI_LE_SUP_FEAT_PRIVACY) &&
+      (hciLeSupFeatCfg & HCI_LE_SUP_FEAT_PRIVACY))
+  {
+    /* send next command in sequence */
+    HciLeReadResolvingListSize();
+  }
+  else
+  {
+    hciCoreCb.resListSize = 0;
+
+    /* send next command in sequence */
+    hciCoreReadMaxDataLen();
+  }
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     hciCoreReadMaxAdvDataLen
+*
+*  \brief  Read maximum advertising data length command.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void hciCoreReadMaxAdvDataLen(void)
+{
+  /* if LE Extended Advertising is supported by Controller and included */
+  if ((hciCoreCb.leSupFeat & HCI_LE_SUP_FEAT_LE_EXT_ADV) &&
+      (hciLeSupFeatCfg & HCI_LE_SUP_FEAT_LE_EXT_ADV))
+  {
+    /* send next command in sequence */
+    HciLeReadMaxAdvDataLen();
+  }
+  else
+  {
+    hciCoreCb.maxAdvDataLen = 0;
+    hciCoreCb.numSupAdvSets = 0;
+
+    /* send next command in sequence */
+    HciLeRandCmd();
+  }
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     hciCoreReadNumSupAdvSets
+*
+*  \brief  Read read number of supported advertising sets command.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void hciCoreReadNumSupAdvSets(void)
+{
+  /* if LE Extended Advertising is supported by Controller and included */
+  if ((hciCoreCb.leSupFeat & HCI_LE_SUP_FEAT_LE_EXT_ADV) &&
+      (hciLeSupFeatCfg & HCI_LE_SUP_FEAT_LE_EXT_ADV))
+  {
+    /* send next command in sequence */
+    HciLeReadNumSupAdvSets();
+  }
+  else
+  {
+    hciCoreCb.maxAdvDataLen = 0;
+    hciCoreCb.numSupAdvSets = 0;
+
+    /* send next command in sequence */
+    HciLeRandCmd();
+  }
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     hciCoreResetStart
- *        
+ *
  *  \brief  Start the HCI reset sequence.
  *
  *  \return None.
@@ -51,7 +159,7 @@ void hciCoreResetStart(void)
 /*************************************************************************************************/
 /*!
  *  \fn     hciCoreResetSequence
- *        
+ *
  *  \brief  Implement the HCI reset sequence.
  *
  *  \param  pMsg    HCI event message from previous command in the sequence.
@@ -64,7 +172,7 @@ void hciCoreResetSequence(uint8_t *pMsg)
   uint16_t       opcode;
   wsfMsgHdr_t    hdr;
   static uint8_t randCnt;
-  
+
   /* if event is a command complete event */
   if (*pMsg == HCI_CMD_CMPL_EVT)
   {
@@ -73,19 +181,24 @@ void hciCoreResetSequence(uint8_t *pMsg)
     pMsg++;                   /* skip num packets */
     BSTREAM_TO_UINT16(opcode, pMsg);
     pMsg++;                   /* skip status */
-    
+
     /* decode opcode */
     switch (opcode)
     {
       case HCI_OPCODE_RESET:
         /* initialize rand command count */
         randCnt = 0;
-        
+
         /* send next command in sequence */
         HciLeSetEventMaskCmd((uint8_t *) hciLeEventMask);
         break;
 
       case HCI_OPCODE_LE_SET_EVENT_MASK:
+        /* send next command in sequence */
+        HciSetEventMaskPage2Cmd((uint8_t *)hciEventMaskPage2);
+        break;
+
+      case HCI_OPCODE_SET_EVENT_MASK_PAGE2:
         /* send next command in sequence */
         HciReadBdAddrCmd();
         break;
@@ -105,7 +218,7 @@ void hciCoreResetSequence(uint8_t *pMsg)
 
         /* initialize ACL buffer accounting */
         hciCoreCb.availBufs = hciCoreCb.numBufs;
-        
+
         /* send next command in sequence */
         HciLeReadSupStatesCmd();
         break;
@@ -121,6 +234,58 @@ void hciCoreResetSequence(uint8_t *pMsg)
       case HCI_OPCODE_LE_READ_WHITE_LIST_SIZE:
         /* parse and store event parameters */
         BSTREAM_TO_UINT8(hciCoreCb.whiteListSize, pMsg);
+
+        /* send next command in sequence */
+        HciLeReadLocalSupFeatCmd();
+        break;
+
+      case HCI_OPCODE_LE_READ_LOCAL_SUP_FEAT:
+        /* parse and store event parameters */
+        BSTREAM_TO_UINT16(hciCoreCb.leSupFeat, pMsg);
+
+        /* send next command in sequence */
+        hciCoreReadResolvingListSize();
+        break;
+
+      case HCI_OPCODE_LE_READ_RES_LIST_SIZE:
+        /* parse and store event parameters */
+        BSTREAM_TO_UINT8(hciCoreCb.resListSize, pMsg);
+
+        /* send next command in sequence */
+        hciCoreReadMaxDataLen();
+        break;
+
+      case HCI_OPCODE_LE_READ_MAX_DATA_LEN:
+        {
+          uint16_t maxTxOctets;
+          uint16_t maxTxTime;
+
+          BSTREAM_TO_UINT16(maxTxOctets, pMsg);
+          BSTREAM_TO_UINT16(maxTxTime, pMsg);
+
+          /* use Controller's maximum supported payload octets and packet duration times
+           * for transmission as Host's suggested values for maximum transmission number
+           * of payload octets and maximum packet transmission time for new connections.
+           */
+          HciLeWriteDefDataLen(maxTxOctets, maxTxTime);
+        }
+        break;
+
+      case HCI_OPCODE_LE_WRITE_DEF_DATA_LEN:
+        /* send next command in sequence */
+        hciCoreReadMaxAdvDataLen();
+        break;
+
+      case HCI_OPCODE_LE_READ_MAX_ADV_DATA_LEN:
+        BSTREAM_TO_UINT16(hciCoreCb.maxAdvDataLen, pMsg);
+
+        /* send next command in sequence */
+        hciCoreReadNumSupAdvSets();
+        break;
+
+      case HCI_OPCODE_LE_READ_NUM_SUP_ADV_SETS:
+        /* parse and store event parameters */
+        BSTREAM_TO_UINT8(hciCoreCb.numSupAdvSets, pMsg);
 
         /* send next command in sequence */
         HciLeRandCmd();
@@ -152,7 +317,7 @@ void hciCoreResetSequence(uint8_t *pMsg)
 /*************************************************************************************************/
 /*!
  *  \fn     hciCoreVsCmdCmplRcvd
- *        
+ *
  *  \brief  Perform internal HCI processing of vendor specific command complete events.
  *
  *  \param  opcode  HCI command opcode.
@@ -170,7 +335,7 @@ uint8_t hciCoreVsCmdCmplRcvd(uint16_t opcode, uint8_t *pMsg, uint8_t len)
 /*************************************************************************************************/
 /*!
  *  \fn     hciCoreVsEvtRcvd
- *        
+ *
  *  \brief  Perform internal HCI processing of vendor specific HCI events.
  *
  *  \param  p       Pointer to input HCI event parameter byte stream.
@@ -187,7 +352,7 @@ uint8_t hciCoreVsEvtRcvd(uint8_t *p, uint8_t len)
 /*************************************************************************************************/
 /*!
  *  \fn     hciCoreHwErrorRcvd
- *        
+ *
  *  \brief  Perform internal HCI processing of hardware error event.
  *
  *  \param  p       Pointer to input HCI event parameter byte stream.
@@ -203,7 +368,7 @@ uint8_t hciCoreHwErrorRcvd(uint8_t *p)
 /*************************************************************************************************/
 /*!
  *  \fn     HciVsInit
- *        
+ *
  *  \brief  Vendor-specific controller initialization function.
  *
  *  \param  param    Vendor-specific parameter.

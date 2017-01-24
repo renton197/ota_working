@@ -8,8 +8,8 @@
  *            Find Me profile locator
  *            Wicentric Data Exchange
  *
- *          $Date: 2014-10-16 07:18:36 -0700 (Thu, 16 Oct 2014) $
- *          $Revision: 1885 $
+ *          $Date: 2016-08-03 13:30:39 -0700 (Wed, 03 Aug 2016) $
+ *          $Revision: 8135 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -123,21 +123,15 @@ static const uint8_t tagAdvDataDisc[] =
   0,                                      /*! tx power */
 
   /*! device name */
-  14,                                     /*! length */
+  8,                                      /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
-  'i',
-  'c',
-  'e',
-  'n',
-  't',
-  'r',
-  'i',
-  'c',
-  ' ',
+  'T',
   'a',
-  'p',
-  'p'
+  'g',
+  ' ',
+  'W',
+  'D',
+  'X'
 };
 
 /*! scan data */
@@ -274,10 +268,13 @@ static void tagAlert(uint8_t alert)
 static void tagDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t *pMsg;
-  
-  if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+  uint16_t  len;
+
+  len = DmSizeOfEvt(pDmEvt);
+
+  if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(tagCb.handlerId, pMsg);
   }
 }

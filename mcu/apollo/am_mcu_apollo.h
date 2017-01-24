@@ -44,6 +44,7 @@
 #include "regs/am_reg_iomstr.h"
 #include "regs/am_reg_ioslave.h"
 #include "regs/am_reg_itm.h"
+#include "regs/am_reg_jedec.h"
 #include "regs/am_reg_macros.h"
 #include "regs/am_reg_mcuctrl.h"
 #include "regs/am_reg_nvic.h"

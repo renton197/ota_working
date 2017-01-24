@@ -4,8 +4,8 @@
  *
  *  \brief  HCI event module.
  *
- *          $Date: 2011-10-14 21:35:03 -0700 (Fri, 14 Oct 2011) $
- *          $Revision: 191 $
+ *          $Date: 2016-03-29 11:20:44 -0700 (Tue, 29 Mar 2016) $
+ *          $Revision: 6512 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -44,6 +44,7 @@ typedef struct
   uint16_t numEncKeyRefreshCmplEvt;
   uint16_t numLeMetaEvt;
   uint16_t numVendorSpecEvt;
+  uint16_t numAuthToEvt;
 } hciEvtStats_t;
 
 /**************************************************************************************************

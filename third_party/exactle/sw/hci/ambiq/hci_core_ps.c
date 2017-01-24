@@ -4,8 +4,8 @@
  *
  *  \brief  HCI core platform-specific module for dual-chip.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -285,8 +285,91 @@ uint8_t *HciGetSupStates(void)
  *  \return Supported features.
  */
 /*************************************************************************************************/
-uint8_t HciGetLeSupFeat(void)
+uint16_t HciGetLeSupFeat(void)
 {
   return hciCoreCb.leSupFeat;
 }
 
+/*************************************************************************************************/
+/*!
+ *  \fn     HciGetMaxRxAclLen
+ *
+ *  \brief  Get the maximum reassembled RX ACL packet length.
+ *
+ *  \return ACL packet length.
+ */
+/*************************************************************************************************/
+uint16_t HciGetMaxRxAclLen(void)
+{
+  return hciCoreCb.maxRxAclLen;
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     HciGetResolvingListSize
+ *
+ *  \brief  Return the resolving list size.
+ *
+ *  \return resolving list size.
+ */
+/*************************************************************************************************/
+uint8_t HciGetResolvingListSize(void)
+{
+  return hciCoreCb.resListSize;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLlPrivacySupported
+*
+*  \brief  Whether LL Privacy is supported.
+*
+*  \return TRUE if LL Privacy is supported. FALSE, otherwise.
+*/
+/*************************************************************************************************/
+bool_t HciLlPrivacySupported(void)
+{
+  return (hciCoreCb.resListSize > 0) ? TRUE : FALSE;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciGetMaxAdvDataLen
+*
+*  \brief  Get the maximum advertisement (or scan response) data length supported by the Controller.
+*
+*  \return Maximum advertisement data length.
+*/
+/*************************************************************************************************/
+uint16_t HciGetMaxAdvDataLen(void)
+{
+  return hciCoreCb.maxAdvDataLen;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciGetNumSupAdvSets
+*
+*  \brief  Get the maximum number of advertising sets supported by the Controller.
+*
+*  \return Maximum number of advertising sets.
+*/
+/*************************************************************************************************/
+uint8_t HciGetNumSupAdvSets(void)
+{
+  return hciCoreCb.numSupAdvSets;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeAdvExtSupported
+*
+*  \brief  Whether LE Advertising Extensions is supported.
+*
+*  \return TRUE if LE Advertising Extensions is supported. FALSE, otherwise.
+*/
+/*************************************************************************************************/
+bool_t HciLeAdvExtSupported(void)
+{
+  return (hciCoreCb.numSupAdvSets > 0) ? TRUE : FALSE;
+}

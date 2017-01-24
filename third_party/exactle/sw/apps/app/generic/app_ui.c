@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework user interface.
  *
- *          $Date: 2015-08-24 15:34:11 -0700 (Mon, 24 Aug 2015) $
- *          $Revision: 3684 $
+ *          $Date: 2016-02-01 10:54:45 -0800 (Mon, 01 Feb 2016) $
+ *          $Revision: 5663 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -134,6 +134,22 @@ void AppUiAction(uint8_t event)
 void AppUiDisplayPasskey(uint32_t passkey)
 {
   APP_TRACE_INFO1(">>> Passkey: %d <<<", passkey);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppUiDisplayConfirmValue
+*
+*  \brief  Display a confirmation value.
+*
+*  \param  confirm    Confirm value to display.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppUiDisplayConfirmValue(uint32_t confirm)
+{
+  APP_TRACE_INFO1(">>> Confirm Value: %d <<<", confirm);
 }
 
 /*************************************************************************************************/

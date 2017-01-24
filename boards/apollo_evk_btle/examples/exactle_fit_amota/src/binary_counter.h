@@ -4,7 +4,6 @@
 //!
 //! @brief This file describes the external calls and variable definitions 
 //!         of the binary counter for debug purpose/
-//! --RMA
 //
 //*****************************************************************************
 

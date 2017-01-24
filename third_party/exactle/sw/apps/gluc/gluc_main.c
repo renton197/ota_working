@@ -4,8 +4,8 @@
  *
  *  \brief  Glucose sensor sample application.
  *
- *          $Date: 2014-10-16 07:18:36 -0700 (Thu, 16 Oct 2014) $
- *          $Revision: 1885 $
+ *          $Date: 2016-08-03 13:30:39 -0700 (Wed, 03 Aug 2016) $
+ *          $Revision: 8135 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -115,21 +115,19 @@ static const uint8_t glucAdvDataDisc[] =
 static const uint8_t glucScanDataDisc[] =
 {
   /*! device name */
-  14,                                     /*! length */
+  12,                                     /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
-  'i',
-  'c',
-  'e',
-  'n',
-  't',
-  'r',
-  'i',
+  'G',
+  'l',
+  'u',
   'c',
   ' ',
-  'a',
-  'p',
-  'p'
+  'S',
+  'e',
+  'n',
+  's',
+  'o',
+  'r'
 };
 
 /**************************************************************************************************
@@ -170,10 +168,13 @@ static struct
 static void glucDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t *pMsg;
-  
-  if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+  uint16_t len;
+
+  len = DmSizeOfEvt(pDmEvt);
+
+  if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(glucCb.handlerId, pMsg);
   }
 }
@@ -286,6 +287,8 @@ static void glucBtnCback(uint8_t btn)
         break;
         
       default:
+        /* all other button presses-- send to profile */
+        GlpsBtn(connId, btn);
         break;
     }    
   }
@@ -312,6 +315,8 @@ static void glucBtnCback(uint8_t btn)
         break;
         
       default:
+        /* all other button presses-- send to profile */
+        GlpsBtn(connId, btn);
         break;
     }
   }

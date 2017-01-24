@@ -7,8 +7,8 @@
  *            Alert Notification profile client
  *            Phone Alert Status profile client
  *
- *          $Date: 2014-10-16 07:18:36 -0700 (Thu, 16 Oct 2014) $
- *          $Revision: 1885 $
+ *          $Date: 2016-08-03 13:30:39 -0700 (Wed, 03 Aug 2016) $
+ *          $Revision: 8135 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -39,74 +39,22 @@
 #include "app_ui.h"
 #include "svc_core.h"
 #include "svc_ch.h"
-#include "svc_wp.h"
 #include "gatt_api.h"
 #include "tipc_api.h"
 #include "anpc_api.h"
 #include "paspc_api.h"
 
-/*! Event types for application event handler */
-#define DEVTX_EVT_TX_PATH                   0x01      /*! Trigger tx data path */
-
-/*! Proprietary data protocol message IDs */
-#define DEVTX_MSG_ID_START                1         /*! Start data transfer */
-#define DEVTX_MSG_ID_STOP                 2         /*! Stop data transfer */
-#define DEVTX_MSG_ID_DATA                 3         /*! Data transfer payload */
-
-/*! Application message type */
-typedef union
-{
-  wsfMsgHdr_t     hdr;
-  dmEvt_t         dm;
-  attsCccEvt_t    ccc;
-} devtxMsg_t;
-
 /**************************************************************************************************
   Local Variables
 **************************************************************************************************/
 
-static uint8_t g_pui8FitData[20];
-
 /*! application control block */
 static struct
 {
-  /* Watch tracking variables */
   uint16_t          hdlList[APP_DB_HDL_LIST_LEN];
   wsfHandlerId_t    handlerId;
   uint8_t           discState;
-
-  /* Fitness profile transmission */
-  uint16_t          connInterval;     /* connection interval */
-  bool_t            txStarted;        /* TRUE if data tx started by peer */
-  bool_t            txReady;          /* TRUE if tx data flow ready */
-  uint8_t           *dataPtr;
-  uint32_t          dataLen;
-
 } watchCb;
-
-uint8_t g_pui8FitnessData[20] = 
-{
-    0x00,
-    0x01,
-    0x02,
-    0x03,
-    0x04,
-    0x05,
-    0x06,
-    0x07,
-    0x08,
-    0x09,
-    0x0a,
-    0x0b,
-    0x0c,
-    0x0d,
-    0x0e,
-    0x0f,
-    0x10,
-    0x11,
-    0x12,
-    0x13
-};
 
 /**************************************************************************************************
   Configurable Parameters
@@ -132,7 +80,7 @@ static const appSecCfg_t watchSecCfg =
   0,                                      /*! Initiator key distribution flags */
   DM_KEY_DIST_LTK,                        /*! Responder key distribution flags */
   FALSE,                                  /*! TRUE if Out-of-band pairing data is present */
-  FALSE                                   /*! TRUE to initiate security upon connection */
+  TRUE                                    /*! TRUE to initiate security upon connection */
 };
 
 /*! configurable parameters for connection parameter update */
@@ -152,7 +100,7 @@ static const appUpdateCfg_t watchUpdateCfg =
 static const smpCfg_t watchSmpCfg =
 {
   3000,                                   /*! 'Repeated attempts' timeout in msec */
-  SMP_IO_NO_IN_NO_OUT,                    /*! I/O Capability */
+  SMP_IO_DISP_ONLY,                       /*! I/O Capability */
   7,                                      /*! Minimum encryption key length */
   16,                                     /*! Maximum encryption key length */
   3,                                      /*! Attempts to trigger 'repeated attempts' timeout */
@@ -177,7 +125,7 @@ static const uint8_t watchAdvDataDisc[] =
   DM_ADV_TYPE_FLAGS,                      /*! AD type */
   DM_FLAG_LE_LIMITED_DISC |               /*! flags */
   DM_FLAG_LE_BREDR_NOT_SUP,
-
+  
   /*! tx power */
   2,                                      /*! length */
   DM_ADV_TYPE_TX_POWER,                   /*! AD type */
@@ -188,28 +136,20 @@ static const uint8_t watchAdvDataDisc[] =
   DM_ADV_TYPE_16_SOLICIT,                 /*! AD type */
   UINT16_TO_BYTES(ATT_UUID_CURRENT_TIME_SERVICE),
   UINT16_TO_BYTES(ATT_UUID_ALERT_NOTIF_SERVICE),
-  UINT16_TO_BYTES(ATT_UUID_PHONE_ALERT_SERVICE)
+  UINT16_TO_BYTES(ATT_UUID_PHONE_ALERT_SERVICE)  
 };
 
 /*! scan data, discoverable mode */
 static const uint8_t watchScanDataDisc[] =
 {
   /*! device name */
-  14,                                     /*! length */
+  6,                                      /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
-  'i',
-  'c',
-  'e',
-  'n',
-  't',
-  'r',
-  'i',
-  'c',
-  ' ',
+  'W',
   'a',
-  'p',
-  'p'
+  't',
+  'c',
+  'h'
 };
 
 /**************************************************************************************************
@@ -263,10 +203,10 @@ WSF_CT_ASSERT(WATCH_DISC_HDL_LIST_LEN <= APP_DB_HDL_LIST_LEN);
   ATT Client Configuration Data
 **************************************************************************************************/
 
-/*
+/* 
  * Data for configuration after service discovery
  */
-
+ 
 /* Default value for CCC indications */
 static const uint8_t watchCccIndVal[] = {UINT16_TO_BYTES(ATT_CLIENT_CFG_INDICATE)};
 
@@ -284,10 +224,10 @@ static const uint8_t watchAncpEnUnrVal[] = {CH_ANCP_ENABLE_UNREAD, CH_ALERT_CAT_
 
 /* ANS Control point value for "Notify Unread Alert Status Immediately" */
 static const uint8_t watchAncpNotUnrVal[] = {CH_ANCP_NOTIFY_UNREAD, CH_ALERT_CAT_ID_ALL};
-
+  
 /* List of characteristics to configure after service discovery */
-static const attcDiscCfg_t watchDiscCfgList[] =
-{
+static const attcDiscCfg_t watchDiscCfgList[] = 
+{  
   /* Read:  CTS Current time */
   {NULL, 0, (TIPC_CTS_CT_HDL_IDX + WATCH_DISC_CTS_START)},
 
@@ -320,16 +260,16 @@ static const attcDiscCfg_t watchDiscCfgList[] =
 
   /* Write:  ANS Unread alert status ccc descriptor */
   {watchCccNtfVal, sizeof(watchCccNtfVal), (ANPC_ANS_UAS_CCC_HDL_IDX + WATCH_DISC_ANS_START)},
-
+  
   /* Write:  PASS Alert status ccc descriptor */
   {watchCccNtfVal, sizeof(watchCccNtfVal), (PASPC_PASS_AS_CCC_HDL_IDX + WATCH_DISC_PASS_START)},
-
+  
   /* Write:  PASS Ringer setting ccc descriptor */
   {watchCccNtfVal, sizeof(watchCccNtfVal), (PASPC_PASS_RS_CCC_HDL_IDX + WATCH_DISC_PASS_START)},
-
+  
   /* Write:  ANS Control point "Enable New Alert Notification" */
   {watchAncpEnNewVal, sizeof(watchAncpEnNewVal), (ANPC_ANS_ANCP_HDL_IDX + ANPC_ANS_ANCP_HDL_IDX)},
-
+  
   /* Write:  ANS Control point "Notify New Alert Immediately" */
   {watchAncpNotNewVal, sizeof(watchAncpNotNewVal), (ANPC_ANS_ANCP_HDL_IDX + ANPC_ANS_ANCP_HDL_IDX)},
 
@@ -346,13 +286,13 @@ static const attcDiscCfg_t watchDiscCfgList[] =
 /* sanity check:  make sure configuration list length is <= handle list length */
 WSF_CT_ASSERT(WATCH_DISC_CFG_LIST_LEN <= WATCH_DISC_HDL_LIST_LEN);
 
-/*
+/* 
  * Data for configuration on connection setup
  */
 
 /* List of characteristics to configure on connection setup */
-static const attcDiscCfg_t watchDiscConnCfgList[] =
-{
+static const attcDiscCfg_t watchDiscConnCfgList[] = 
+{  
   /* Read:  ANS Supported new alert category */
   {NULL, 0, (ANPC_ANS_SNAC_HDL_IDX + WATCH_DISC_ANS_START)},
 
@@ -364,7 +304,7 @@ static const attcDiscCfg_t watchDiscConnCfgList[] =
 
   /* Write:  ANS Control point "Enable New Alert Notification" */
   {watchAncpEnNewVal, sizeof(watchAncpEnNewVal), (ANPC_ANS_ANCP_HDL_IDX + ANPC_ANS_ANCP_HDL_IDX)},
-
+  
   /* Write:  ANS Control point "Notify New Alert Immediately" */
   {watchAncpNotNewVal, sizeof(watchAncpNotNewVal), (ANPC_ANS_ANCP_HDL_IDX + ANPC_ANS_ANCP_HDL_IDX)},
 
@@ -389,7 +329,6 @@ WSF_CT_ASSERT(WATCH_DISC_CONN_CFG_LIST_LEN <= WATCH_DISC_HDL_LIST_LEN);
 enum
 {
   WATCH_GATT_SC_CCC_IDX,        /*! GATT service, service changed characteristic */
-  DEVTX_WP_DAT_CCC_IDX,         /*! Wicentric proprietary service, data transfer characteristic */
   WATCH_NUM_CCC_IDX             /*! Number of ccc's */
 };
 
@@ -397,14 +336,13 @@ enum
 static const attsCccSet_t watchCccSet[WATCH_NUM_CCC_IDX] =
 {
   /* cccd handle         value range                 security level */
-  {GATT_SC_CH_CCC_HDL,   ATT_CLIENT_CFG_INDICATE,   DM_SEC_LEVEL_NONE},   /* WATCH_GATT_SC_CCC_IDX */
-  {WP_DAT_CH_CCC_HDL,    ATT_CLIENT_CFG_NOTIFY,     DM_SEC_LEVEL_NONE}    /* DEVTX_WP_DAT_CCC_IDX */
+  {GATT_SC_CH_CCC_HDL,   ATT_CLIENT_CFG_INDICATE,    DM_SEC_LEVEL_ENC}    /* WATCH_GATT_SC_CCC_IDX */
 };
 
 /*************************************************************************************************/
 /*!
  *  \fn     watchDmCback
- *
+ *        
  *  \brief  Application DM callback.
  *
  *  \param  pDmEvt  DM callback event
@@ -415,10 +353,13 @@ static const attsCccSet_t watchCccSet[WATCH_NUM_CCC_IDX] =
 static void watchDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t *pMsg;
+  uint16_t  len;
 
-  if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+  len = DmSizeOfEvt(pDmEvt);
+
+  if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(watchCb.handlerId, pMsg);
   }
 }
@@ -426,7 +367,7 @@ static void watchDmCback(dmEvt_t *pDmEvt)
 /*************************************************************************************************/
 /*!
  *  \fn     watchAttCback
- *
+ *        
  *  \brief  Application  ATT callback.
  *
  *  \param  pEvt    ATT callback event
@@ -437,15 +378,7 @@ static void watchDmCback(dmEvt_t *pDmEvt)
 static void watchAttCback(attEvt_t *pEvt)
 {
   attEvt_t *pMsg;
-
-  if (pEvt->hdr.event == ATTS_HANDLE_VALUE_CNF &&
-      pEvt->hdr.status == ATT_SUCCESS)
-  {
-    APP_TRACE_INFO0("AttCback: txReady = true");
-    watchCb.txReady = TRUE;
-    WsfSetEvent(watchCb.handlerId, DEVTX_EVT_TX_PATH);
-  }
-
+  
   if ((pMsg = WsfMsgAlloc(sizeof(attEvt_t) + pEvt->valueLen)) != NULL)
   {
     memcpy(pMsg, pEvt, sizeof(attEvt_t));
@@ -458,7 +391,7 @@ static void watchAttCback(attEvt_t *pEvt)
 /*************************************************************************************************/
 /*!
  *  \fn     watchCccCback
- *
+ *        
  *  \brief  Application ATTS client characteristic configuration callback.
  *
  *  \param  pDmEvt  DM callback event
@@ -470,15 +403,15 @@ static void watchCccCback(attsCccEvt_t *pEvt)
 {
   attsCccEvt_t  *pMsg;
   appDbHdl_t    dbHdl;
-
+  
   /* if CCC not set from initialization and there's a device record */
   if ((pEvt->handle != ATT_HANDLE_NONE) &&
       ((dbHdl = AppDbGetHdl((dmConnId_t) pEvt->hdr.param)) != APP_DB_HDL_NONE))
   {
-    /* store value in device database */
+    /* store value in device database */  
     AppDbSetCccTblValue(dbHdl, pEvt->idx, pEvt->value);
   }
-
+  
   if ((pMsg = WsfMsgAlloc(sizeof(attsCccEvt_t))) != NULL)
   {
     memcpy(pMsg, pEvt, sizeof(attsCccEvt_t));
@@ -488,8 +421,30 @@ static void watchCccCback(attsCccEvt_t *pEvt)
 
 /*************************************************************************************************/
 /*!
- *  \fn     watchSetup
+ *  \fn     watchOpen
+ *        
+ *  \brief  Perform UI actions on connection open.
  *
+ *  \param  pMsg    Pointer to DM callback event message.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void watchOpen(dmEvt_t *pMsg)
+{
+  /* if not bonded send a security request on connection open; devices must pair before
+   * service discovery will be initiated
+   */
+  if (AppDbCheckBonded() == FALSE)
+  {
+    DmSecSlaveReq((dmConnId_t) pMsg->hdr.param, pAppSecCfg->auth);
+  }    
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     watchSetup
+ *        
  *  \brief  Set up advertising and other procedures that need to be performed after
  *          device reset.
  *
@@ -507,7 +462,7 @@ static void watchSetup(dmEvt_t *pMsg)
   /* set advertising and scan response data for connectable mode */
   AppAdvSetData(APP_ADV_DATA_CONNECTABLE, 0, NULL);
   AppAdvSetData(APP_SCAN_DATA_CONNECTABLE, 0, NULL);
-
+  
   /* start advertising; automatically set connectable/discoverable mode and bondable mode */
   AppAdvStart(APP_MODE_AUTO_INIT);
 }
@@ -515,7 +470,7 @@ static void watchSetup(dmEvt_t *pMsg)
 /*************************************************************************************************/
 /*!
  *  \fn     watchValueUpdate
- *
+ *        
  *  \brief  Process a received ATT read response, notification, or indication.
  *
  *  \param  pMsg    Pointer to ATT callback event message.
@@ -528,9 +483,9 @@ static void watchValueUpdate(attEvt_t *pMsg)
   if (pMsg->hdr.status == ATT_SUCCESS)
   {
     /* determine which profile the handle belongs to; start with most likely */
-
+    
     /* alert notification */
-    if (AnpcAnsValueUpdate(pWatchAnsHdlList, pMsg) == ATT_SUCCESS)
+    if (AnpcAnsValueUpdate(pWatchAnsHdlList, pMsg) == ATT_SUCCESS)    
     {
       return;
     }
@@ -541,23 +496,23 @@ static void watchValueUpdate(attEvt_t *pMsg)
     }
 
     /* current time */
-    if (TipcCtsValueUpdate(pWatchCtsHdlList, pMsg) == ATT_SUCCESS)
+    if (TipcCtsValueUpdate(pWatchCtsHdlList, pMsg) == ATT_SUCCESS)    
     {
       return;
     }
 
     /* GATT */
-    if (GattValueUpdate(pWatchGattHdlList, pMsg) == ATT_SUCCESS)
+    if (GattValueUpdate(pWatchGattHdlList, pMsg) == ATT_SUCCESS)    
     {
       return;
     }
   }
-}
+} 
 
 /*************************************************************************************************/
 /*!
  *  \fn     watchBtnCback
- *
+ *        
  *  \brief  Button press callback.
  *
  *  \param  btn    Button press.
@@ -569,7 +524,7 @@ static void watchBtnCback(uint8_t btn)
 {
   dmConnId_t      connId;
   static uint8_t  ringer = CH_RCP_SILENT;
-
+  
   /* button actions when connected */
   if ((connId = AppConnIsOpen()) != DM_CONN_ID_NONE)
   {
@@ -579,21 +534,21 @@ static void watchBtnCback(uint8_t btn)
         /* mute ringer once */
         PaspcPassControl(connId, pWatchPassHdlList[PASPC_PASS_RCP_HDL_IDX], CH_RCP_MUTE_ONCE);
         break;
-
+        
       case APP_UI_BTN_1_MED:
         /* toggle between silencing ringer and enabling ringer */
         PaspcPassControl(connId, pWatchPassHdlList[PASPC_PASS_RCP_HDL_IDX], ringer);
         ringer = (ringer == CH_RCP_SILENT) ? CH_RCP_CANCEL_SILENT : CH_RCP_SILENT;
         break;
-
+        
       case APP_UI_BTN_1_LONG:
         /* disconnect */
         AppConnClose(connId);
         break;
-
+        
       default:
         break;
-    }
+    }    
   }
   /* button actions when not connected */
   else
@@ -604,19 +559,19 @@ static void watchBtnCback(uint8_t btn)
         /* start or restart advertising */
         AppAdvStart(APP_MODE_AUTO_INIT);
         break;
-
+        
       case APP_UI_BTN_1_MED:
         /* enter discoverable and bondable mode mode */
         AppSetBondable(TRUE);
         AppAdvStart(APP_MODE_DISCOVERABLE);
         break;
-
+        
       case APP_UI_BTN_1_LONG:
         /* clear bonded device info and restart advertising */
         AppDbDeleteAllRecords();
         AppAdvStart(APP_MODE_AUTO_INIT);
         break;
-
+        
       default:
         break;
     }
@@ -626,7 +581,7 @@ static void watchBtnCback(uint8_t btn)
 /*************************************************************************************************/
 /*!
  *  \fn     watchDiscCback
- *
+ *        
  *  \brief  Discovery callback.
  *
  *  \param  connId    Connection identifier.
@@ -652,16 +607,16 @@ static void watchDiscCback(dmConnId_t connId, uint8_t status)
     case APP_DISC_START:
       /* initialize discovery state */
       watchCb.discState = WATCH_DISC_GATT_SVC;
-
+      
       /* discover GATT service */
       GattDiscover(connId, pWatchGattHdlList);
       break;
-
-    case APP_DISC_FAILED:
+      
+    case APP_DISC_FAILED:      
     case APP_DISC_CMPL:
       /* next discovery state */
       watchCb.discState++;
-
+      
       if (watchCb.discState == WATCH_DISC_CTS_SVC)
       {
         /* discover current time service */
@@ -678,7 +633,7 @@ static void watchDiscCback(dmConnId_t connId, uint8_t status)
         PaspcPassDiscover(connId, pWatchPassHdlList);
       }
       else
-      {
+      {    
         /* discovery complete */
         AppDiscComplete(connId, APP_DISC_CMPL);
 
@@ -687,14 +642,14 @@ static void watchDiscCback(dmConnId_t connId, uint8_t status)
                          (attcDiscCfg_t *) watchDiscCfgList, WATCH_DISC_HDL_LIST_LEN, watchCb.hdlList);
       }
       break;
-
+      
     case APP_DISC_CFG_START:
       /* start configuration */
       AppDiscConfigure(connId, APP_DISC_CFG_START, WATCH_DISC_CFG_LIST_LEN,
                        (attcDiscCfg_t *) watchDiscCfgList, WATCH_DISC_HDL_LIST_LEN, watchCb.hdlList);
       break;
-
-    case APP_DISC_CFG_CMPL:
+      
+    case APP_DISC_CFG_CMPL: 
       AppDiscComplete(connId, status);
       break;
 
@@ -703,138 +658,16 @@ static void watchDiscCback(dmConnId_t connId, uint8_t status)
       AppDiscConfigure(connId, APP_DISC_CFG_CONN_START, WATCH_DISC_CONN_CFG_LIST_LEN,
                        (attcDiscCfg_t *) watchDiscConnCfgList, WATCH_DISC_HDL_LIST_LEN, watchCb.hdlList);
       break;
-
+      
     default:
       break;
-  }
-}
-
-//*****************************************************************************
-//
-// Fake some data to come out of the phone. In the final version, this will pop
-// data from a queue of fitness data.
-//
-//*****************************************************************************
-void
-fitness_data_get(void)
-{
-    static uint8_t x = 0;
-    uint8_t i;
-
-    // Set all of the elements in the array to a single value.
-    for(i = 0; i < 20; i++)
-    {
-        watchCb.dataPtr[i] = x;
-    }
-
-    // Increment the value every time we send more data.
-    x = ((x + 1) & 0xFF);
-
-    watchCb.dataLen = 20;
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     devtxSendData
- *
- *  \brief  Send notification containing data.
- *
- *  \param  connId      DM connection ID.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-static void devtxSendData(dmConnId_t connId)
-{
-  fitness_data_get();
-
-  /* send notification */
-  AttsHandleValueNtf(connId, WP_DAT_HDL, 20, g_pui8FitnessData);
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     devtxProcTxPath
- *
- *  \brief  Process messages from the event handler.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-static void devtxProcTxPath(void)
-{
-  dmConnId_t  connId;
-
-  /* if connected */
-  if ((connId = AppConnIsOpen()) != DM_CONN_ID_NONE)
-  {
-    /* if tx ready and started */
-    if (watchCb.txReady && watchCb.txStarted)
-    {
-      /* if notifications enabled*/
-      if (AttsCccEnabled(connId, DEVTX_WP_DAT_CCC_IDX))
-      {
-        APP_TRACE_INFO0("Sending data, txReady = false");
-        watchCb.txReady = FALSE;
-        devtxSendData(connId);
-      }
-    }
-  }
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     watchOpen
- *
- *  \brief  Perform UI actions on connection open.
- *
- *  \param  pMsg    Pointer to DM callback event message.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-static void watchOpen(dmEvt_t *pMsg)
-{
-  /* if not bonded send a security request on connection open; devices must pair before
-   * service discovery will be initiated
-   */
-  if (AppDbCheckBonded() == FALSE)
-  {
-    DmSecSlaveReq((dmConnId_t) pMsg->hdr.param, pAppSecCfg->auth);
-  }
-
-  watchCb.connInterval = pMsg->connOpen.connInterval;
-  watchCb.txReady = TRUE;
-  watchCb.txStarted = FALSE;
-  watchCb.dataPtr = g_pui8FitData;
-  watchCb.dataLen = 0;
-
-  devtxProcTxPath();
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     devtxConnUpdate
- *
- *  \brief  Perform actions on connection update.
- *
- *  \param  pMsg    Pointer to message.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-static void devtxConnUpdate(dmEvt_t *pMsg)
-{
-  if (pMsg->hdr.status == HCI_SUCCESS)
-  {
-    watchCb.connInterval = pMsg->connUpdate.connInterval;
   }
 }
 
 /*************************************************************************************************/
 /*!
  *  \fn     watchProcMsg
- *
+ *        
  *  \brief  Process messages from the event handler.
  *
  *  \param  pMsg    Pointer to message.
@@ -845,7 +678,7 @@ static void devtxConnUpdate(dmEvt_t *pMsg)
 static void watchProcMsg(dmEvt_t *pMsg)
 {
   uint8_t uiEvent = APP_UI_NONE;
-
+  
   switch(pMsg->hdr.event)
   {
     case ATTC_READ_RSP:
@@ -853,7 +686,7 @@ static void watchProcMsg(dmEvt_t *pMsg)
     case ATTC_HANDLE_VALUE_IND:
       watchValueUpdate((attEvt_t *) pMsg);
       break;
-
+      
     case DM_RESET_CMPL_IND:
       watchSetup(pMsg);
       uiEvent = APP_UI_RESET_CMPL;
@@ -862,36 +695,32 @@ static void watchProcMsg(dmEvt_t *pMsg)
     case DM_ADV_START_IND:
       uiEvent = APP_UI_ADV_START;
       break;
-
+         
     case DM_ADV_STOP_IND:
       uiEvent = APP_UI_ADV_STOP;
       break;
-
+          
     case DM_CONN_OPEN_IND:
       watchOpen(pMsg);
       uiEvent = APP_UI_CONN_OPEN;
       break;
-
+         
     case DM_CONN_CLOSE_IND:
       uiEvent = APP_UI_CONN_CLOSE;
       break;
-
-    case DM_CONN_UPDATE_IND:
-      devtxConnUpdate(pMsg);
-      break;
-
+       
     case DM_SEC_PAIR_CMPL_IND:
       uiEvent = APP_UI_SEC_PAIR_CMPL;
       break;
-
+     
     case DM_SEC_PAIR_FAIL_IND:
       uiEvent = APP_UI_SEC_PAIR_FAIL;
       break;
-
+     
     case DM_SEC_ENCRYPT_IND:
       uiEvent = APP_UI_SEC_ENCRYPT;
       break;
-
+       
     case DM_SEC_ENCRYPT_FAIL_IND:
       uiEvent = APP_UI_SEC_ENCRYPT_FAIL;
       break;
@@ -903,7 +732,7 @@ static void watchProcMsg(dmEvt_t *pMsg)
     default:
       break;
   }
-
+  
   if (uiEvent != APP_UI_NONE)
   {
     AppUiAction(uiEvent);
@@ -913,7 +742,7 @@ static void watchProcMsg(dmEvt_t *pMsg)
 /*************************************************************************************************/
 /*!
  *  \fn     WatchHandlerInit
- *
+ *        
  *  \brief  Application handler init function called during system initialization.
  *
  *  \param  handlerID  WSF handler ID.
@@ -924,20 +753,20 @@ static void watchProcMsg(dmEvt_t *pMsg)
 void WatchHandlerInit(wsfHandlerId_t handlerId)
 {
   APP_TRACE_INFO0("WatchHandlerInit");
-
+  
   /* store handler ID */
   watchCb.handlerId = handlerId;
-
+  
   /* Set configuration pointers */
   pAppSlaveCfg = (appSlaveCfg_t *) &watchSlaveCfg;
   pAppAdvCfg = (appAdvCfg_t *) &watchAdvCfg;
   pAppSecCfg = (appSecCfg_t *) &watchSecCfg;
   pAppUpdateCfg = (appUpdateCfg_t *) &watchUpdateCfg;
   pAppDiscCfg = (appDiscCfg_t *) &watchDiscCfg;
-
+  
   /* Set stack configuration pointers */
   pSmpCfg = (smpCfg_t *) &watchSmpCfg;
-
+  
   /* Initialize application framework */
   AppSlaveInit();
   AppDiscInit();
@@ -946,7 +775,7 @@ void WatchHandlerInit(wsfHandlerId_t handlerId)
 /*************************************************************************************************/
 /*!
  *  \fn     WatchHandler
- *
+ *        
  *  \brief  WSF event handler for application.
  *
  *  \param  event   WSF event mask.
@@ -956,7 +785,7 @@ void WatchHandlerInit(wsfHandlerId_t handlerId)
  */
 /*************************************************************************************************/
 void WatchHandler(wsfEventMask_t event, wsfMsgHdr_t *pMsg)
-{
+{ 
   if (pMsg != NULL)
   {
     APP_TRACE_INFO1("Watch got evt %d", pMsg->event);
@@ -972,135 +801,46 @@ void WatchHandler(wsfEventMask_t event, wsfMsgHdr_t *pMsg)
     {
       /* process advertising and connection-related messages */
       AppSlaveProcDmMsg((dmEvt_t *) pMsg);
-
+      
       /* process security-related messages */
       AppSlaveSecProcDmMsg((dmEvt_t *) pMsg);
-
+      
       /* process discovery-related messages */
       AppDiscProcDmMsg((dmEvt_t *) pMsg);
     }
+          
     /* perform profile and user interface-related operations */
-    watchProcMsg((dmEvt_t *) pMsg);
-  }
-  else if (event == DEVTX_EVT_TX_PATH)
-  {
-      devtxProcTxPath();
-  }
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     devtxUpdateInterval
- *
- *  \brief  Update the connection interval.
- *
- *  \param  connId      DM connection ID.
- *  \param  intervalMin Minimum connection interval.
- *  \param  intervalMax Maximum connection interval.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-static void devtxUpdateInterval(dmConnId_t connId, uint16_t intervalMin, uint16_t intervalMax)
-{
-  hciConnSpec_t connSpec;
-
-  /* if conn interval not already within range */
-  if (watchCb.connInterval < intervalMin || watchCb.connInterval > intervalMax)
-  {
-    /* update connection parameters */
-    connSpec.connIntervalMin = intervalMin;
-    connSpec.connIntervalMax = intervalMax;
-    connSpec.connLatency = watchUpdateCfg.connLatency;
-    connSpec.supTimeout = watchUpdateCfg.supTimeout;
-    DmConnUpdate(connId, &connSpec);
-  }
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     devtxWpWriteCback
- *
- *  \brief  ATTS write callback for proprietary data service.
- *
- *  \return ATT status.
- */
-/*************************************************************************************************/
-uint8_t devtxWpWriteCback(dmConnId_t connId, uint16_t handle, uint8_t operation,
-                          uint16_t offset, uint16_t len, uint8_t *pValue, attsAttr_t *pAttr)
-{
-  uint16_t intervalMin;
-  uint16_t intervalMax;
-
-  if (*pValue == DEVTX_MSG_ID_START)
-  {
-    if (!watchCb.txStarted)
-    {
-      /* data transfer started */
-      watchCb.txStarted = TRUE;
-
-      /* parse min and max connection interval */
-      pValue++;
-      BSTREAM_TO_UINT16(intervalMin, pValue);
-      BSTREAM_TO_UINT16(intervalMax, pValue);
-
-      /* update connection interval */
-      devtxUpdateInterval(connId, intervalMin, intervalMax);
-
-      /* trigger tx */
-      WsfSetEvent(watchCb.handlerId, DEVTX_EVT_TX_PATH);
-    }
-    return ATT_SUCCESS;
-  }
-  else if (*pValue == DEVTX_MSG_ID_STOP)
-  {
-    if (watchCb.txStarted)
-    {
-      /* data transfer stopped */
-      watchCb.txStarted = FALSE;
-    }
-
-    return ATT_SUCCESS;
-  }
-  else
-  {
-    /* else unknown command */
-    return ATT_ERR_VALUE_RANGE;
+    watchProcMsg((dmEvt_t *) pMsg);    
   }
 }
 
 /*************************************************************************************************/
 /*!
  *  \fn     WatchStart
- *
+ *        
  *  \brief  Start the application.
  *
  *  \return None.
  */
 /*************************************************************************************************/
 void WatchStart(void)
-{
+{  
   /* Register for stack callbacks */
   DmRegister(watchDmCback);
   DmConnRegister(DM_CLIENT_ID_APP, watchDmCback);
   AttRegister(watchAttCback);
-  AttConnRegister(AppServerConnCback);
+  AttConnRegister(AppServerConnCback);  
   AttsCccRegister(WATCH_NUM_CCC_IDX, (attsCccSet_t *) watchCccSet, watchCccCback);
-
+  
   /* Register for app framework button callbacks */
   AppUiBtnRegister(watchBtnCback);
 
   /* Register for app framework discovery callbacks */
   AppDiscRegister(watchDiscCback);
-
+  
   /* Initialize attribute server database */
   SvcCoreAddGroup();
-  SvcWpCbackRegister(NULL, devtxWpWriteCback);
-  SvcWpAddGroup();
-
-  /* Create a queue for sending data over BLE*/
-  //WSF_QUEUE_INIT();
 
   /* Reset the device */
-  DmDevReset();
+  DmDevReset();  
 }

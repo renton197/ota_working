@@ -4,8 +4,8 @@
  *
  *  \brief  HCI core interfaces.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -68,8 +68,11 @@ typedef struct
   uint8_t         numBufs;                      /* Controller number of ACL data buffers */
   uint8_t         whiteListSize;                /* Controller white list size */
   uint8_t         numCmdPkts;                   /* Controller command packed count */
-  uint8_t         leSupFeat;                    /* Controller LE supported features */
+  uint16_t        leSupFeat;                    /* Controller LE supported features */
   int8_t          advTxPwr;                     /* Controller advertising TX power */
+  uint8_t         resListSize;                  /* Controller resolving list size */
+  uint16_t        maxAdvDataLen;                /* Controller maximum advertisement (or scan response) data length */
+  uint8_t         numSupAdvSets;                /* Controller maximum number of advertising sets */
 } hciCoreCb_t;
 
 /**************************************************************************************************
@@ -81,6 +84,12 @@ extern hciCoreCb_t hciCoreCb;
 
 /* LE event mask */
 extern const uint8_t hciLeEventMask[HCI_LE_EVT_MASK_LEN];
+
+/* Event mask page 2 */
+extern const uint8_t hciEventMaskPage2[HCI_EVT_MASK_LEN];
+
+/* LE supported features configuration mask */
+extern uint16_t hciLeSupFeatCfg;
 
 /**************************************************************************************************
   Function Declarations

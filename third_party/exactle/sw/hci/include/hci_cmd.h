@@ -4,8 +4,8 @@
  *
  *  \brief  HCI command module.
  *
- *          $Date: 2013-06-22 17:43:56 -0700 (Sat, 22 Jun 2013) $
- *          $Revision: 752 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -31,7 +31,7 @@ extern "C" {
 **************************************************************************************************/
 
 void hciCmdSend(uint8_t *pData);
-uint8_t *hciCmdAlloc(uint16_t opcode, uint8_t len);
+uint8_t *hciCmdAlloc(uint16_t opcode, uint16_t len);
 void hciCmdInit(void);
 void hciCmdTimeout(wsfMsgHdr_t *pMsg);
 void hciCmdRecvCmpl(uint8_t numCmdPkts);

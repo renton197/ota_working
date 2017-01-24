@@ -86,16 +86,18 @@ extern g_am_hal_flash_t g_am_hal_flash;
 // Function prototypes for the helper functions
 //
 //*****************************************************************************
-extern int am_hal_flash_mass_erase(uint32_t ui32Value, uint32_t ui32FlashBlk);
-extern int am_hal_flash_page_erase(uint32_t ui32Value, uint32_t ui32FlashBlk,
-                        uint32_t ui32PageNum);
+extern void am_hal_flash_delay(uint32_t ui32Iterations);
+extern int  am_hal_flash_mass_erase(uint32_t ui32Value, uint32_t ui32FlashBlk);
+extern int  am_hal_flash_page_erase(uint32_t ui32Value, uint32_t ui32FlashBlk,
+                                    uint32_t ui32PageNum);
 
-extern int am_hal_flash_program_otp(uint32_t ui32Value, uint32_t ui32FlashBlk,
-                         const uint32_t *pui32Src, uint32_t ui32Offset,
-                         uint32_t ui32NumWords);
+extern int  am_hal_flash_program_otp(uint32_t ui32Value, uint32_t ui32FlashBlk,
+                                     const uint32_t *pui32Src,
+                                     uint32_t ui32Offset,
+                                     uint32_t ui32NumWords);
 
-extern int am_hal_flash_program_main(uint32_t value, const uint32_t *pSrc,
-                                     uint32_t *pDst, uint32_t  NumberOfWords);
+extern int  am_hal_flash_program_main(uint32_t value, const uint32_t *pSrc,
+                                      uint32_t *pDst, uint32_t  NumberOfWords);
 // SRAM variants
 extern void am_hal_flash_erase_main_pages_sram(void);
 extern void am_hal_flash_mass_erase_sram(void);

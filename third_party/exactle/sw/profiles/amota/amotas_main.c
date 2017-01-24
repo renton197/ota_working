@@ -1,6 +1,6 @@
 //*****************************************************************************
 //
-//! @file coding_standard.c
+//! @file amotas_main.c
 //!
 //! @brief Description of the purpose of the c file.
 //!
@@ -40,6 +40,8 @@
 #include "am_bootloader.h"
 #include "image_boot_handlers.h"
 
+#include "exactle_fit_amota_multi_boot_config.h"
+
 //*****************************************************************************
 //
 // Macro definitions
@@ -76,6 +78,7 @@ typedef enum
     AMOTA_STATUS_INVALID_HEADER_INFO,
     AMOTA_STATUS_INVALID_PKT_LENGTH,
     AMOTA_STATUS_INSUFFICIENT_BUFFER,
+    AMOTA_STATUS_INSUFFICIENT_FLASH,
     AMOTA_STATUS_UNKNOWN_ERROR,
     AMOTA_STATUS_MAX
 }eAmotaStatus;
@@ -85,12 +88,18 @@ typedef enum
 typedef struct
 {
     uint32_t    encrypted;
-    uint32_t    version;
+    uint32_t    fwStartAddr;
     uint32_t    fwLength;
     uint32_t    fwCrc;
-    uint32_t    fwStartAddr;
-    uint32_t    fwDataType;
-    uint32_t    receivedBytes;
+    uint32_t    overridePin;            // RFU
+    uint32_t    overridePolarity;       // RFU
+    uint32_t    appStackPointer;        // RFU
+    uint32_t    appProgramCouter;       // RFU
+    uint32_t    version;
+    uint32_t    fwDataType;             //binary type
+    uint32_t    storageType;
+    uint32_t    reserved;               // RFU
+
 }
 amotaHeaderInfo_t;
 
@@ -136,6 +145,16 @@ static struct
 }
 amotasCb;
 
+// data structure for external spi flash operation
+typedef struct
+{
+    uint8_t     writeBuffer[AM_DEVICES_SPIFLASH_PAGE_SIZE]   __attribute__((aligned(4)));   //--RMA
+    uint16_t    bufferIndex;
+}amotasSpiFlashOp_t;
+
+amotasSpiFlashOp_t amotasSpiFlash = {
+    .bufferIndex = 0,
+};
 
 static void
 amotas_conn_open(dmEvt_t *pMsg)
@@ -226,21 +245,22 @@ amotas_reply_to_client(eAmotaCommand cmd, eAmotaStatus status, uint8_t *data, ui
     amotas_send_data(buf, len + 4);
 }
 
-static void
+//return true if success, otherwise false
+static bool
 amotas_set_fw_addr(void)
 {
+    bool bResult = false;
+
     amotasCb.newFwFlashInfo.addr = 0;
     amotasCb.newFwFlashInfo.offset = 0;
 
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
         //storage in internal flash
         uint32_t ui32TestSpaceLeft;
-        bool bResult;
 
         bResult = image_get_storage_information_internal(g_psBootImage, 
                                                     amotasCb.fwHeader.fwLength,
@@ -268,8 +288,9 @@ amotas_set_fw_addr(void)
                                amotasCb.fwHeader.fwLength, ui32TestSpaceLeft);
             WsfTrace("not enough space left");
         }
+
     }
-    else
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
     {
         //storage in external flash
 
@@ -298,17 +319,16 @@ amotas_set_fw_addr(void)
         // update target address information
         //
         amotasCb.newFwFlashInfo.addr = AMOTA_SPI_FLASH_STORAGE_START_ADDRESS;
-    }
-}
-typedef struct
-{
-    uint8_t     writeBuffer[AM_DEVICES_SPIFLASH_PAGE_SIZE]   __attribute__((aligned(4)));   //--RMA
-    uint16_t    bufferIndex;
-}amotasSpiFlashOp_t;
 
-amotasSpiFlashOp_t amotasSpiFlash = {
-    .bufferIndex = 0,
-};
+        bResult = true;
+    }
+    else
+    {
+        // reserved state
+    }
+    return bResult;
+}
+
 static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t addr, bool lastPktFlag)
 {
     uint16_t ui16BytesRemaining = len;
@@ -316,6 +336,7 @@ static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t add
     uint8_t ui8PageCount = 0;
     uint16_t ui16TempBufIndex = 0;
     bool bResult = false;
+
     //
     // Set up IOM1 SPI pins and turn on the IOM for this operation.
     //
@@ -356,6 +377,7 @@ static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t add
         ui8PageCount++;
 
         WsfTrace("spi flash write succeeded to address 0x%x. length %d", ui32TargetAddress, AM_DEVICES_SPIFLASH_PAGE_SIZE);
+        bResult = true;
     }
    
     if(ui16BytesRemaining != 0)
@@ -367,6 +389,7 @@ static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t add
             ui16TempBufIndex++;
         }
         amotasSpiFlash.bufferIndex += ui16BytesRemaining;    
+        bResult = true;
     }
 
     if(lastPktFlag == true)
@@ -392,12 +415,14 @@ static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t add
             return false;   
         }
 
+        bResult = true;
         WsfTrace("spi flash write last pkt succeeded to address 0x%x. length %d", ui32TargetAddress, ui16BytesRemaining + amotasSpiFlash.bufferIndex + 1);
         amotasSpiFlash.bufferIndex = 0;
     }
     else
     {
         WsfTrace("spi flash write not performed. Buffer depth %d.", amotasSpiFlash.bufferIndex);
+        bResult = true;
     }
 
     //
@@ -406,25 +431,25 @@ static bool amotas_write2external_flash(uint16_t len, uint8_t *buf, uint32_t add
     am_bsp_iom_spi_pins_disable(AM_BSP_FLASH_IOM);
     am_hal_iom_disable(AM_BSP_FLASH_IOM);
 
-
     //
     // If we get here, operations are done correctly
     //
     return bResult; 
 }
 
-static void
+static bool
 amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
 {
+    bool bResult = false;
+
     WsfTrace("write to flash addr = 0x%x, len = 0x%x", addr, len);
 
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
-        //write to internal flash
+        // write to internal flash
 
         //
         // Check the target flash address to ensure we do not operation the wrong address
@@ -434,12 +459,11 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
             //
             // application is trying to write to wrong address 
             //
-            return;
+            return false;
         }
 
-
-        //RMA: Add flash operation here
-        if(image_flash_write_from_sram( (uint32_t*)addr, (uint32_t*)buf, len))
+        bResult = image_flash_write_from_sram( (uint32_t*)addr, (uint32_t*)buf, len);
+        if(bResult == true)
         {
             WsfTrace("flash write succeeded.");
         }
@@ -448,20 +472,17 @@ amotas_write2flash(uint16_t len, uint8_t *buf, uint32_t addr)
             WsfTrace("flash write failed.");
         }
     }
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
+    {
+        // write to external flash
+        bResult = amotas_write2external_flash(len, buf, addr - amotasCb.newFwFlashInfo.addr, false);
+    }
     else
     {
-        //write to external flash
-        bool bResult = amotas_write2external_flash(len, buf, addr - amotasCb.newFwFlashInfo.addr, false);
-        
-        if(bResult == false)
-        {
-//            WsfTrace("spi flash write succeeded to address 0x%x. length %d", (addr - amotasCb.newFwFlashInfo.addr), len);
-        }
-        else
-        {
-//            WsfTrace("spi flash write failed to address 0x%x. length %d", (addr - amotasCb.newFwFlashInfo.addr), len);
-        }
+        // reserved state
     }
+
+    return bResult;
 }
 
 static bool_t
@@ -471,16 +492,15 @@ amotas_verify_firmware_crc(void)
     uint32_t ui32CRC = 0;
     
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
         // check crc in internal flash
         ui32CRC = am_bootloader_fast_crc32((uint32_t *)amotasCb.newFwFlashInfo.addr,  
                                              amotasCb.fwHeader.fwLength);
     }
-    else
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
     {
         //
         // Check crc in external flash
@@ -519,7 +539,10 @@ amotas_verify_firmware_crc(void)
         am_hal_iom_disable(AM_BSP_FLASH_IOM);
 
     }
-
+    else
+    {
+        // reserved state
+    }
 
     return (ui32CRC == amotasCb.fwHeader.fwCrc);
 }
@@ -531,8 +554,7 @@ amotas_update_flag_page(void)
     // Update flash flag page here
     //
     am_bootloader_image_t FlagImage;
-    // fixme, we don't need this for final release
-    FlagImage.pui32LinkAddress = (uint32_t*)(amotasCb.fwHeader.fwStartAddr & 0xfeffffff);   //--RMA debug only
+    FlagImage.pui32LinkAddress = (uint32_t*)amotasCb.fwHeader.fwStartAddr;
     FlagImage.ui32NumBytes = amotasCb.fwHeader.fwLength;
     FlagImage.ui32CRC = amotasCb.fwHeader.fwCrc;
 
@@ -542,10 +564,9 @@ amotas_update_flag_page(void)
 
    
     //
-    // fixme
-    // Using amotasCb.fwHeader.fwStartAddr to determine internal or external.
+    // Check storage type
     //
-    if(amotasCb.fwHeader.fwStartAddr < 0x1000000)
+    if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_INTERNAL)
     {
         FlagImage.pui32StackPointer = (uint32_t*)(((uint32_t*)amotasCb.newFwFlashInfo.addr)[0]);
         FlagImage.pui32ResetVector = (uint32_t*)(((uint32_t*)amotasCb.newFwFlashInfo.addr)[1]);
@@ -553,7 +574,7 @@ amotas_update_flag_page(void)
         FlagImage.ui32Options = BOOT_NEW_IMAGE_INTERNAL_FLASH;
         FlagImage.pui32StorageAddressNewImage = (uint32_t*)amotasCb.newFwFlashInfo.addr;
     }
-    else
+    else if(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL)
     {
         //
         // Set up IOM1 SPI pins and turn on the IOM for this operation.
@@ -579,6 +600,10 @@ amotas_update_flag_page(void)
         FlagImage.ui32Options = BOOT_NEW_IMAGE_EXTERNAL_FLASH;
         FlagImage.pui32StorageAddressNewImage = AMOTA_SPI_FLASH_STORAGE_START_ADDRESS;  // always address 0 in external flash
     }
+    else
+    {
+        // reserved state
+    }
 
     FlagImage.bEncrypted = false;
 
@@ -591,6 +616,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 {
     eAmotaStatus status = AMOTA_STATUS_SUCCESS;
     uint8_t data[4] = {0};
+    bool bResult = false;
     uint32_t ver, fwCrc;
     ver = fwCrc = 0;
     bool_t resumeTransfer = FALSE;
@@ -609,22 +635,20 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
 
             if (amotasCb.state == AMOTA_STATE_GETTING_FW)
             {
-                BYTES_TO_UINT32(ver, buf + 4);
+                BYTES_TO_UINT32(ver, buf + 32);
                 BYTES_TO_UINT32(fwCrc, buf + 12);
+
                 if (ver == amotasCb.fwHeader.version && fwCrc == amotasCb.fwHeader.fwCrc)
                     resumeTransfer = TRUE;
             }
-
+            
             BYTES_TO_UINT32(amotasCb.fwHeader.encrypted, buf);
-            BYTES_TO_UINT32(amotasCb.fwHeader.version, buf + 4);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 4);
             BYTES_TO_UINT32(amotasCb.fwHeader.fwLength, buf + 8);
             BYTES_TO_UINT32(amotasCb.fwHeader.fwCrc, buf + 12);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwStartAddr, buf + 16);
-            BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 20);
-            BYTES_TO_UINT32(amotasCb.fwHeader.receivedBytes, buf + 24);
-
-            //fixme, need to be removed.
-//            amotasCb.fwHeader.fwStartAddr += 0x1000000;
+            BYTES_TO_UINT32(amotasCb.fwHeader.version, buf + 32);
+            BYTES_TO_UINT32(amotasCb.fwHeader.fwDataType, buf + 36);
+            BYTES_TO_UINT32(amotasCb.fwHeader.storageType, buf + 40);
 
             if (resumeTransfer)
             {
@@ -634,7 +658,15 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             else
             {
                 WsfTrace("OTA process start from beginning");
-                amotas_set_fw_addr();
+                bResult = amotas_set_fw_addr();
+                
+                if(bResult == false)
+                {
+                    amotas_reply_to_client(cmd, AMOTA_STATUS_INSUFFICIENT_FLASH, NULL, 0);
+                    amotasCb.state = AMOTA_STATE_INIT;
+                    return;
+                }
+                
                 amotasCb.state = AMOTA_STATE_GETTING_FW;
             }
 #ifdef AMOTA_DEBUG_ON
@@ -645,7 +677,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
             WsfTrace("fwCrc = 0x%x", amotasCb.fwHeader.fwCrc);
             WsfTrace("fwStartAddr = 0x%x", amotasCb.fwHeader.fwStartAddr);
             WsfTrace("fwDataType = 0x%x", amotasCb.fwHeader.fwDataType);
-            WsfTrace("receivedBytes = 0x%x", amotasCb.fwHeader.receivedBytes);
+            WsfTrace("storageType = 0x%x", amotasCb.fwHeader.storageType);
             WsfTrace("============= fw header end ===============");
 #endif // AMOTA_DEBUG_ON
             data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
@@ -656,33 +688,42 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         break;
 
         case AMOTA_CMD_FW_DATA:
-            amotas_write2flash(len, buf, amotasCb.newFwFlashInfo.addr + amotasCb.newFwFlashInfo.offset);
-            amotasCb.newFwFlashInfo.offset += len;
-    
-            //
-            // fixme
-            // Trigger a write operation to the flash
-            // RMA: this may be implemented by other means. 
-            //
-            uint8_t dummy;
-            if((amotasCb.newFwFlashInfo.offset >= amotasCb.fwHeader.fwLength)&&(amotasCb.fwHeader.fwStartAddr > 0x1000000))
+            bResult = amotas_write2flash(len, buf, amotasCb.newFwFlashInfo.addr + amotasCb.newFwFlashInfo.offset);
+
+            if(bResult == false)
             {
-                amotas_write2external_flash(0, &dummy, amotasCb.newFwFlashInfo.offset, true);
+                data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
+                data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
+                data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
+                data[3] = ((amotasCb.newFwFlashInfo.offset >> 24) & 0xff);
+                amotas_reply_to_client(cmd, AMOTA_STATUS_CRC_ERROR, data, sizeof(data));
             }
-            data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
-            data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
-            data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
-            data[3] = ((amotasCb.newFwFlashInfo.offset >> 24) & 0xff);
-            amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, data, sizeof(data));
+            else
+            {
+                amotasCb.newFwFlashInfo.offset += len;
+    
+                //
+                // Trigger a write operation to the flash
+                //
+                if((amotasCb.newFwFlashInfo.offset == amotasCb.fwHeader.fwLength)&&(amotasCb.fwHeader.storageType == AMOTA_FW_STORAGE_EXTERNAL))
+                {
+                    amotas_write2external_flash(0, NULL, amotasCb.newFwFlashInfo.offset, true);
+                }
+                data[0] = ((amotasCb.newFwFlashInfo.offset) & 0xff);
+                data[1] = ((amotasCb.newFwFlashInfo.offset >> 8) & 0xff);
+                data[2] = ((amotasCb.newFwFlashInfo.offset >> 16) & 0xff);
+                data[3] = ((amotasCb.newFwFlashInfo.offset >> 24) & 0xff);
+                amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, data, sizeof(data));
+            }
         break;
 
         case AMOTA_CMD_FW_VERIFY:
+            amotasCb.state = AMOTA_STATE_VERIFY;
             if (amotas_verify_firmware_crc())
             {
                 WsfTrace("crc verify success");
 
                 amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
-                amotasCb.state = AMOTA_STATE_VERIFY;
 
                 //
                 // Update flash flag page here
@@ -697,9 +738,7 @@ amotas_packet_handler(eAmotaCommand cmd, uint16_t len, uint8_t *buf)
         break;
 
         case AMOTA_CMD_FW_RESET:
-            // RMA++
             WsfTrace("Apollo will reset itself in 500ms.");
-            // RMA--
             amotas_reply_to_client(cmd, AMOTA_STATUS_SUCCESS, NULL, 0);
             
             //
@@ -801,7 +840,7 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
         uint32_t peerCrc = 0;
         // check CRC
         BYTES_TO_UINT32(peerCrc, amotasCb.pkt.data + amotasCb.pkt.len - AMOTA_CRC_SIZE_IN_PKT);
-        calDataCrc = CalcCrc32(amotasCb.pkt.len - AMOTA_CRC_SIZE_IN_PKT, amotasCb.pkt.data);
+        calDataCrc = CalcCrc32(0xFFFFFFFFU, amotasCb.pkt.len - AMOTA_CRC_SIZE_IN_PKT, amotasCb.pkt.data);
 #ifdef AMOTA_DEBUG_ON
         WsfTrace("calDataCrc = 0x%x", calDataCrc);
         WsfTrace("peerCrc = 0x%x", peerCrc);
@@ -810,6 +849,12 @@ amotas_write_cback(dmConnId_t connId, uint16_t handle, uint8_t operation,
         if (peerCrc != calDataCrc)
         {
             amotas_reply_to_client(amotasCb.pkt.type, AMOTA_STATUS_CRC_ERROR, NULL, 0);
+
+            // clear pkt
+            amotasCb.pkt.offset = 0;
+            amotasCb.pkt.type = AMOTA_CMD_UNKNOWN;
+            amotasCb.pkt.len = 0;
+
             return ATT_SUCCESS;
         }
 

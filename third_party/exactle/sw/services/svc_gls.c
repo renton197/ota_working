@@ -4,8 +4,8 @@
  *        
  *  \brief  Example Glucose service implementation.
  *
- *          $Date: 2012-06-07 11:59:12 -0700 (Thu, 07 Jun 2012) $
- *          $Revision: 331 $
+ *          $Date: 2016-05-10 14:01:19 -0700 (Tue, 10 May 2016) $
+ *          $Revision: 7080 $
  *  
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

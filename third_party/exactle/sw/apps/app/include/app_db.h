@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework device database.
  *
- *          $Date: 2012-05-11 21:14:08 -0700 (Fri, 11 May 2012) $
- *          $Revision: 318 $
+ *          $Date: 2016-03-22 07:45:42 -0700 (Tue, 22 Mar 2016) $
+ *          $Revision: 6426 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -75,6 +75,20 @@ appDbHdl_t AppDbNewRecord(uint8_t addrType, uint8_t *pAddr);
 
 /*************************************************************************************************/
 /*!
+*  \fn     AppDbGetNextRecord
+*
+*  \brief  Get next device database record for a given database record. For the first database
+*          record, the function should be called with 'hdl' set to 'APP_DB_HDL_NONE'.
+*
+*  \param  hdl  Database record handle.
+*
+*  \return Next database record handle found. APP_DB_HDL_NONE, otherwise.
+*/
+/*************************************************************************************************/
+appDbHdl_t AppDbGetNextRecord(appDbHdl_t hdl);
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppDbDeleteRecord
  *        
  *  \brief  Delete a new device database record.
@@ -114,6 +128,19 @@ void AppDbValidateRecord(appDbHdl_t hdl, uint8_t keyMask);
  */
 /*************************************************************************************************/
 void AppDbCheckValidRecord(appDbHdl_t hdl);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbRecordInUse
+*
+*  \brief  Check if a database record is in use.
+
+*  \param  hdl       Database record handle.
+*
+*  \return TURE if record in use. FALSE, otherwise.
+*/
+/*************************************************************************************************/
+bool_t AppDbRecordInUse(appDbHdl_t hdl);
 
 /*************************************************************************************************/
 /*!
@@ -315,6 +342,60 @@ char *AppDbGetDevName(uint8_t *pLen);
  */
 /*************************************************************************************************/
 void AppDbSetDevName(uint8_t len, char *pStr);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbGetPeerAddrRes
+*
+*  \brief  Get address resolution attribute value read from a peer device.
+*
+*  \param  hdl        Database record handle.
+*
+*  \return TRUE if address resolution is supported in peer device. FALSE, otherwise.
+*/
+/*************************************************************************************************/
+bool_t AppDbGetPeerAddrRes(appDbHdl_t hdl);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbSetPeerAddrRes
+*
+*  \brief  Set address resolution attribute value for a peer device.
+*
+*  \param  hdl        Database record handle.
+*  \param  addrRes    Peer address resolution attribue value.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppDbSetPeerAddrRes(appDbHdl_t hdl, uint8_t addrRes);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbGetPeerSignCounter
+*
+*  \brief  Get sign counter for a peer device.
+*
+*  \param  hdl        Database record handle.
+*
+*  \return Sign counter for peer device.
+*/
+/*************************************************************************************************/
+uint32_t AppDbGetPeerSignCounter(appDbHdl_t hdl);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbSetPeerSignCounter
+*
+*  \brief  Set sign counter for a peer device.
+*
+*  \param  hdl          Database record handle.
+*  \param  signCounter  Sign counter for peer device.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppDbSetPeerSignCounter(appDbHdl_t hdl, uint32_t signCounter);
 
 #ifdef __cplusplus
 };

@@ -4,8 +4,8 @@
  *
  *  \brief  HCI core module, platform independent functions.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -62,15 +62,52 @@ const uint8_t hciLeEventMask[HCI_LE_EVT_MASK_LEN] =
   HCI_EVT_MASK_LE_ADV_REPORT_EVT |                /* Byte 0 */
   HCI_EVT_MASK_LE_CONN_UPDATE_CMPL_EVT |          /* Byte 0 */
   HCI_EVT_MASK_LE_READ_REMOTE_FEAT_CMPL_EVT |     /* Byte 0 */
-  HCI_EVT_MASK_LE_LTK_REQ_EVT,                    /* Byte 0 */
-  0,                                              /* Byte 1 */
-  0,                                              /* Byte 2 */
+  HCI_EVT_MASK_LE_LTK_REQ_EVT |                   /* Byte 0 */
+  HCI_EVT_MASK_LE_REMOTE_CONN_PARAM_REQ_EVT |     /* Byte 0 */
+  HCI_EVT_MASK_LE_DATA_LEN_CHANGE_EVT |           /* Byte 0 */
+  HCI_EVT_MASK_LE_READ_LOCAL_P256_PUB_KEY_CMPL,   /* Byte 0 */
+  HCI_EVT_MASK_LE_GENERATE_DHKEY_CMPL |           /* Byte 1 */
+  HCI_EVT_MASK_LE_ENHANCED_CONN_CMPL_EVT |        /* Byte 1 */
+  HCI_EVT_MASK_LE_DIRECT_ADV_REPORT_EVT |         /* Byte 1 */
+  HCI_EVT_MASK_LE_PHY_UPDATE_CMPL_EVT,            /* Byte 1 */
+  HCI_EVT_MASK_LE_SCAN_TIMEOUT_EVT |              /* Byte 2 */
+  HCI_EVT_MASK_LE_ADV_SET_TERM_EVT |              /* Byte 2 */
+  HCI_EVT_MASK_LE_SCAN_REQ_RCVD_EVT,              /* Byte 2 */
   0,                                              /* Byte 3 */
   0,                                              /* Byte 4 */
   0,                                              /* Byte 5 */
   0,                                              /* Byte 6 */
   0                                               /* Byte 7 */
 };
+
+/* event mask page 2 */
+const uint8_t hciEventMaskPage2[HCI_EVT_MASK_PAGE_2_LEN] =
+{
+  0,                                              /* Byte 0 */
+  0,                                              /* Byte 1 */
+  HCI_EVT_MASK_AUTH_PAYLOAD_TIMEOUT,              /* Byte 2 */
+  0,                                              /* Byte 3 */
+  0,                                              /* Byte 4 */
+  0,                                              /* Byte 5 */
+  0,                                              /* Byte 6 */
+  0                                               /* Byte 7 */
+};
+
+/* LE supported features configuration mask */
+uint16_t hciLeSupFeatCfg =
+  HCI_LE_SUP_FEAT_ENCRYPTION                 |    /* LE Encryption */
+  HCI_LE_SUP_FEAT_CONN_PARAM_REQ_PROC        |    /* Connection Parameters Request Procedure */
+  HCI_LE_SUP_FEAT_EXT_REJECT_IND             |    /* Extended Reject Indication */
+  HCI_LE_SUP_FEAT_SLV_INIT_FEAT_EXCH         |    /* Slave-initiated Features Exchange */
+  HCI_LE_SUP_FEAT_LE_PING                    |    /* LE Ping */
+  HCI_LE_SUP_FEAT_DATA_LEN_EXT               |    /* LE Data Packet Length Extension */
+  HCI_LE_SUP_FEAT_PRIVACY                    |    /* LL Privacy */
+  HCI_LE_SUP_FEAT_EXT_SCAN_FILT_POLICY       |    /* Extended Scanner Filter Policies */
+  HCI_LE_SUP_FEAT_LE_2M_PHY                  |    /* LE 2M PHY supported */
+  HCI_LE_SUP_FEAT_STABLE_MOD_IDX_TRANSMITTER |    /* Stable Modulation Index - Transmitter supported */
+  HCI_LE_SUP_FEAT_STABLE_MOD_IDX_RECEIVER    |    /* Stable Modulation Index - Receiver supported */
+  HCI_LE_SUP_FEAT_LE_EXT_ADV                 |    /* LE Extended Advertising */
+  HCI_LE_SUP_FEAT_LE_PER_ADV;                     /* LE Periodic Advertising */
 
 /**************************************************************************************************
   Global Variables
@@ -139,14 +176,14 @@ static void hciCoreConnFree(uint16_t handle)
       {
         WsfMsgFree(pConn->pTxAclPkt);
         pConn->pTxAclPkt = NULL;
-      }      
+      }
       pConn->fragmenting = FALSE;
 
       if (pConn->pRxAclPkt != NULL)
       {
         WsfMsgFree(pConn->pRxAclPkt);
         pConn->pRxAclPkt = NULL;
-      }      
+      }
 
       /* free structure */
       pConn->handle = HCI_HANDLE_NONE;
@@ -311,11 +348,11 @@ void hciCoreTxReady(uint8_t bufs)
       hciCoreCb.availBufs = hciCoreCb.numBufs;
     }
   }
-  
+
   /* service ACL data queue and send as many buffers as we can */
   while (hciCoreCb.availBufs > 0)
   {
-    /* send continuation of any fragments first */    
+    /* send continuation of any fragments first */
     if (hciCoreTxAclContinue(NULL) == FALSE)
     {
       /* if no fragments then check for any queued ACL data */
@@ -364,18 +401,18 @@ void hciCoreTxReady(uint8_t bufs)
 void hciCoreTxAclStart(hciCoreConn_t *pConn, uint16_t len, uint8_t *pData)
 {
   uint16_t hciLen;
-  
+
   /* make sure not already fragmenting on this connection */
   WSF_ASSERT(pConn->fragmenting == FALSE);
-  
+
   hciLen = HciGetBufSize();
 
   HCI_TRACE_INFO1("hciCoreTxAclStart len=%u", len);
-  
+
   /* if acl len > controller acl buf len */
   if (len > hciLen)
   {
-    /* store remaining acl len = acl len – hci acl buf len */
+    /* store remaining acl len = acl len - hci acl buf len */
     pConn->txAclRemLen = len - hciLen;
 
     /* store position for next fragment */
@@ -390,7 +427,7 @@ void hciCoreTxAclStart(hciCoreConn_t *pConn, uint16_t len, uint8_t *pData)
 
     /* send the packet */
     hciCoreSendAclData(pConn, pData);
-          
+
     /* send additional fragments while there are HCI buffers available */
     while ((hciCoreCb.availBufs > 0) && hciCoreTxAclContinue(pConn));
   }
@@ -417,30 +454,30 @@ void hciCoreTxAclStart(hciCoreConn_t *pConn, uint16_t len, uint8_t *pData)
 bool_t hciCoreTxAclContinue(hciCoreConn_t *pConn)
 {
   uint16_t aclLen;
- 
+
   if (pConn == NULL)
   {
     pConn = hciCoreNextConnFragment();
   }
-  
+
   if (pConn != NULL)
   {
     /* get next fragment length */
     aclLen = (pConn->txAclRemLen < HciGetBufSize()) ? pConn->txAclRemLen : HciGetBufSize();
-    
+
     if (aclLen > 0)
     {
       /* decrement remaining length */
       pConn->txAclRemLen -= aclLen;
-      
+
       /* set handle in packet with continuation bit set */
       UINT16_TO_BUF(pConn->pNextTxFrag, (pConn->handle | HCI_PB_CONTINUE));
-      
+
       /* set acl len in packet */
       UINT16_TO_BUF(&(pConn->pNextTxFrag[2]), aclLen);
 
       HCI_TRACE_INFO2("hciCoreTxAclContinue aclLen=%u remLen=%u", aclLen, pConn->txAclRemLen);
-      
+
       /* send the packet */
       hciCoreSendAclData(pConn, pConn->pNextTxFrag);
 
@@ -449,11 +486,11 @@ bool_t hciCoreTxAclContinue(hciCoreConn_t *pConn)
       {
         pConn->pNextTxFrag += aclLen;
       }
-      
+
       return TRUE;
     }
   }
-  
+
   return FALSE;
 }
 
@@ -482,13 +519,13 @@ void hciCoreTxAclComplete(hciCoreConn_t *pConn, uint8_t *pData)
       WsfMsgFree(pConn->pTxAclPkt);
       pConn->pTxAclPkt = NULL;
       pConn->fragmenting = FALSE;
-      HCI_TRACE_INFO0("hciCoreTxAclComplete free pTxAclPkt");    
+      HCI_TRACE_INFO0("hciCoreTxAclComplete free pTxAclPkt");
     }
   }
   else
   {
     WsfMsgFree(pData);
-  }  
+  }
 }
 
 /*************************************************************************************************/
@@ -511,12 +548,12 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
   uint16_t      l2cLen;
   uint16_t      pbf;
   bool_t        freeData = TRUE;
-  
+
   BYTES_TO_UINT16(handle, pData);
   pbf = handle & HCI_PB_FLAG_MASK;
   handle &= HCI_HANDLE_MASK;
   BYTES_TO_UINT16(aclLen, &pData[2]);
-    
+
   /* look up connection */
   if ((pConn = hciCoreConnByHandle(handle)) != NULL)
   {
@@ -529,14 +566,14 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
         /* discard currently reassembled packet */
         WsfMsgFree(pConn->pRxAclPkt);
         pConn->pRxAclPkt = NULL;
-        HCI_TRACE_WARN1("disarded hci rx pkt handle=0x%04x", handle);    
-      }      
+        HCI_TRACE_WARN1("disarded hci rx pkt handle=0x%04x", handle);
+      }
 
       /* read l2cap length */
       if (aclLen >= L2C_HDR_LEN)
       {
         BYTES_TO_UINT16(l2cLen, &pData[4]);
-        
+
         /* check length vs. configured maximum */
         if ((l2cLen + L2C_HDR_LEN) > hciCoreCb.maxRxAclLen)
         {
@@ -556,7 +593,7 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
             UINT16_TO_BSTREAM(pConn->pNextRxFrag, l2cLen + L2C_HDR_LEN);
             memcpy(pConn->pNextRxFrag, &pData[4], aclLen);
             pConn->pNextRxFrag += aclLen;
-            
+
             /* store remaining length */
             pConn->rxAclRemLen = l2cLen + L2C_HDR_LEN - aclLen;
           }
@@ -570,13 +607,13 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
         {
           /* no reassembly required, pData is ready to go */
           pDataRtn = pData;
-          freeData = FALSE;  
+          freeData = FALSE;
         }
       }
       else
       {
         /* invalid l2cap packet; discard */
-        HCI_TRACE_WARN1("invalid l2c pkt aclLen=%u", aclLen);        
+        HCI_TRACE_WARN1("invalid l2c pkt aclLen=%u", aclLen);
       }
     }
     /* else if this is a continuation packet */
@@ -593,7 +630,7 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
 
           /* update remaining length */
           pConn->rxAclRemLen -= aclLen;
-          
+
           /* if reassembly complete return reassembled packet */
           if (pConn->rxAclRemLen == 0)
           {
@@ -627,7 +664,7 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
   {
     WsfMsgFree(pData);
   }
-    
+
   return pDataRtn;
 }
 
@@ -654,7 +691,7 @@ void HciCoreInit(void)
   hciCoreCb.maxRxAclLen = HCI_MAX_RX_ACL_LEN;
   hciCoreCb.aclQueueHi = HCI_ACL_QUEUE_HI;
   hciCoreCb.aclQueueLo = HCI_ACL_QUEUE_LO;
-  
+
   hciCoreInit();
 }
 
@@ -698,7 +735,7 @@ void HciSetMaxRxAclLen(uint16_t len)
  *
  *  \brief  Set TX ACL queue high and low watermarks.
  *
- *  \param  queueHi   Disable flow on a connection when this many ACL buffers are queued. 
+ *  \param  queueHi   Disable flow on a connection when this many ACL buffers are queued.
  *          queueLo   Disable flow on a connection when this many ACL buffers are queued.
  *
  *  \return None.
@@ -708,6 +745,33 @@ void HciSetAclQueueWatermarks(uint8_t queueHi, uint8_t queueLo)
 {
   hciCoreCb.aclQueueHi = queueHi;
   hciCoreCb.aclQueueLo = queueLo;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn      HciSetLeSupFeat
+*
+*  \brief   Set LE supported features configuration mask.
+*
+*  \param   feat    Feature bit to set or clear
+*  \param   flag    TRUE to set feature bit and FALSE to clear it
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciSetLeSupFeat(uint16_t feat, bool_t flag)
+{
+  /* if asked to include feature */
+  if (flag)
+  {
+    /* set feature bit */
+    hciLeSupFeatCfg |= feat;
+  }
+  else
+  {
+    /* clear feature bit */
+    hciLeSupFeatCfg &= ~feat;
+  }
 }
 
 /*************************************************************************************************/

@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework hardware interfaces.
  *
- *          $Date: 2014-02-06 11:36:43 -0800 (Thu, 06 Feb 2014) $
- *          $Revision: 1113 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -80,6 +80,33 @@ typedef struct
   uint8_t           flags;                /*! Flags */
   uint8_t           tempType;             /*! Temperature type */
 } appTm_t;
+
+/*! Pulse Oximeter continuous measurement structure */
+typedef struct
+{
+  uint8_t         flags;            /*! Flags */
+  uint16_t        spo2;             /*! SpO2PR-Spot-Check - SpO2 */
+  uint16_t        pulseRate;        /*! SpO2PR-Spot-Check - Pulse Rate */
+  uint16_t        spo2Fast;         /*! SpO2PR-Spot-Check Fast - SpO2 */
+  uint16_t        pulseRateFast;    /*! SpO2PR-Spot-Check Fast - Pulse Rate */
+  uint16_t        spo2Slow;         /*! SpO2PR-Spot-Check Slow - SpO2 */
+  uint16_t        pulseRateSlow;    /*! SpO2PR-Spot-Check Slow - Pulse Rate */
+  uint16_t        measStatus;       /*! Measurement Status */
+  uint32_t        sensorStatus;     /*! Device and Sensor Status */
+  uint16_t        pulseAmpIndex;    /*! Pulse Amplitude Index */
+} appPlxCm_t;
+
+/*! Pulse Oximeter spot check measurement structure */
+typedef struct
+{
+  uint8_t         flags;            /*! Flags */
+  uint16_t        spo2;             /*! SpO2PR-Spot-Check - SpO2 */
+  uint16_t        pulseRate;        /*! SpO2PR-Spot-Check - Pulse Rate */
+  appDateTime_t   timestamp;        /*! Timestamp */
+  uint16_t        measStatus;       /*! Measurement Status */
+  uint32_t        sensorStatus;     /*! Device and Sensor Status */
+  uint16_t        pulseAmpIndex;    /*! Pulse Amplitude Index */
+} appPlxScm_t;
 
 /**************************************************************************************************
   Function Declarations
@@ -206,6 +233,33 @@ void AppHwTmSetUnits(uint8_t units);
  */
 /*************************************************************************************************/
 void AppHwWmSetUnits(uint8_t units);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppHwPlxcmRead
+ *        
+ *  \brief  Perform a pulse oximeter measurement.
+ *
+ *  \param  pPlxcm   Pulse Oximeter measurement return value.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppHwPlxcmRead(appPlxCm_t *pPlxcm);
+
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppHwPlxscmRead
+ *        
+ *  \brief  Perform a pulse oximeter spot check measurement.
+ *
+ *  \param  pPlxcm   Pulse Oximeter measurement return value.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppHwPlxscmRead(appPlxScm_t *pPlxscm);
 
 #ifdef __cplusplus
 };

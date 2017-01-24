@@ -1,12 +1,12 @@
 /*************************************************************************************************/
 /*!
  *  \file   att_api.h
- *        
+ *
  *  \brief  Attribute protocol client and server API.
  *
- *          $Date: 2015-06-12 15:20:34 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3075 $
- *  
+ *          $Date: 2016-01-06 07:40:44 -0800 (Wed, 06 Jan 2016) $
+ *          $Revision: 5284 $
+ *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
  *
@@ -49,7 +49,7 @@ extern "C" {
 #define ATTS_SET_ALLOW_SIGNED       0x40    /*! Set if signed writes are allowed */
 #define ATTS_SET_REQ_SIGNED         0x80    /*! Set if signed writes are required if link
                                                 is not encrypted */
-                                               
+
 /*! ATT server attribute permissions */
 #define ATTS_PERMIT_READ            0x01    /*! Set if attribute can be read */
 #define ATTS_PERMIT_READ_AUTH       0x02    /*! Set if attribute read requires authentication */
@@ -110,14 +110,14 @@ typedef struct
 /*!
  * Attribute server data types
  */
-  
+
 /*! Attribute structure */
 typedef struct
 {
-  uint8_t const     *pUuid;           /*! Pointer to the attribute’s UUID */
-  uint8_t           *pValue;          /*! Pointer to the attribute’s value */
-  uint16_t          *pLen;            /*! Pointer to the length of the attribute’s value */
-  uint16_t          maxLen;           /*! Maximum length of attribute’s value */
+  uint8_t const     *pUuid;           /*! Pointer to the attribute's UUID */
+  uint8_t           *pValue;          /*! Pointer to the attribute's value */
+  uint16_t          *pLen;            /*! Pointer to the length of the attribute's value */
+  uint16_t          maxLen;           /*! Maximum length of attribute's value */
   uint8_t           settings;         /*! Attribute settings */
   uint8_t           permissions;      /*! Attribute permissions */
 } attsAttr_t;
@@ -147,7 +147,7 @@ typedef struct
 {
   uint16_t          handle;           /*! Client characteristc configuration descriptor handle */
   uint16_t          valueRange;       /*! Acceptable value range of the descriptor value */
-  uint8_t           secLevel;         /*! Security level of characteristic value */ 
+  uint8_t           secLevel;         /*! Security level of characteristic value */
 } attsCccSet_t;
 
 /*! ATT client structure for characteristic and descriptor discovery */
@@ -173,12 +173,12 @@ typedef struct
   attcDiscCfg_t         *pCfgList;    /*! Characterisic list for configuration */
   uint8_t               charListLen;  /*! Characteristic and handle list length */
   uint8_t               cfgListLen;   /*! Configuration list length */
-  
+
   /* the following are for internal use only */
   uint16_t              svcStartHdl;
-  uint16_t              svcEndHdl;  
+  uint16_t              svcEndHdl;
   uint8_t               charListIdx;
-  uint8_t               endHdlIdx;  
+  uint8_t               endHdlIdx;
 } attcDiscCb_t;
 
 /*!
@@ -224,7 +224,7 @@ typedef void (*attsCccCback_t)(attsCccEvt_t *pEvt);
 
 /*! Configuration pointer */
 extern attCfg_t *pAttCfg;
-                                                          
+
 /**************************************************************************************************
   Function Declarations
 **************************************************************************************************/
@@ -232,7 +232,7 @@ extern attCfg_t *pAttCfg;
 /*************************************************************************************************/
 /*!
  *  \fn     AttRegister
- *        
+ *
  *  \brief  Register a callback with ATT.
  *
  *  \param  cback  Client callback function.
@@ -245,7 +245,7 @@ void AttRegister(attCback_t cback);
 /*************************************************************************************************/
 /*!
  *  \fn     AttConnRegister
- *        
+ *
  *  \brief  Register a connection callback with ATT.  The callback is typically used to
  *          manage the attribute server database.
  *
@@ -260,7 +260,7 @@ void AttConnRegister(dmCback_t cback);
 /*************************************************************************************************/
 /*!
  *  \fn     AttGetMtu
- *        
+ *
  *  \brief  Get the attribute protocol MTU of a connection.
  *
  *  \param  connId    DM connection ID.
@@ -273,7 +273,7 @@ uint16_t AttGetMtu(dmConnId_t connId);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsInit
- *        
+ *
  *  \brief  Initialize ATT server.
  *
  *  \return None.
@@ -284,7 +284,7 @@ void AttsInit(void);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsIndInit
- *        
+ *
  *  \brief  Initialize ATT server for indications/notifications.
  *
  *  \return None.
@@ -295,7 +295,7 @@ void AttsIndInit(void);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsSignInit
- *        
+ *
  *  \brief  Initialize ATT server for data signing.
  *
  *  \return None.
@@ -306,7 +306,7 @@ void AttsSignInit(void);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsAuthorRegister
- *        
+ *
  *  \brief  Register an authorization callback with the attribute server.
  *
  *  \param  cback  Client callback function.
@@ -319,7 +319,7 @@ void AttsAuthorRegister(attsAuthorCback_t cback);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsAddGroup
- *        
+ *
  *  \brief  Add an attribute group to the attribute server.
  *
  *  \param  pGroup    Pointer to an attribute group structure.
@@ -332,7 +332,7 @@ void AttsAddGroup(attsGroup_t *pGroup);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsRemoveGroup
- *        
+ *
  *  \brief  Remove an attribute group from the attribute server.
  *
  *  \param  startHandle  Start handle of attribute group to be removed.
@@ -345,7 +345,7 @@ void AttsRemoveGroup(uint16_t startHandle);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsSetAttr
- *        
+ *
  *  \brief  Set an attribute value in the attribute server.
  *
  *  \param  handle    Attribute handle.
@@ -360,7 +360,7 @@ uint8_t AttsSetAttr(uint16_t handle, uint16_t valueLen, uint8_t *pValue);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsGetAttr
- *        
+ *
  *  \brief  Get an attribute value in the attribute server.
  *
  *  \param  handle    Attribute handle.
@@ -377,11 +377,11 @@ uint8_t AttsGetAttr(uint16_t handle, uint16_t *pLen, uint8_t **pValue);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsHandleValueInd
- *        
+ *
  *  \brief  Send an attribute protocol Handle Value Indication.
  *
  *  \param  connId      DM connection ID.
- *  \param  handle      Attribute handle. 
+ *  \param  handle      Attribute handle.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
  *
@@ -393,11 +393,11 @@ void AttsHandleValueInd(dmConnId_t connId, uint16_t handle, uint16_t valueLen, u
 /*************************************************************************************************/
 /*!
  *  \fn     AttsHandleValueNtf
- *        
+ *
  *  \brief  Send an attribute protocol Handle Value Notification.
  *
  *  \param  connId      DM connection ID.
- *  \param  handle      Attribute handle. 
+ *  \param  handle      Attribute handle.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
  *
@@ -409,7 +409,7 @@ void AttsHandleValueNtf(dmConnId_t connId, uint16_t handle, uint16_t valueLen, u
 /*************************************************************************************************/
 /*!
  *  \fn     AttsCccRegister
- *        
+ *
  *  \brief  Register the utility service for managing client characteristic
  *          configuration descriptors.  This function is typically called once on
  *          system initialization.
@@ -426,11 +426,11 @@ void AttsCccRegister(uint8_t setLen, attsCccSet_t *pSet, attsCccCback_t cback);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsCccInitTable
- *        
+ *
  *  \brief  Initialize the client characteristic configuration descriptor value table for a
  *          connection.  The table is initialized with the values from pCccTbl.  If pCccTbl
  *          is NULL the table will be initialized to zero.
- * 
+ *
  *          This function must be called when a connection is established or when a
  *          device is bonded.
  *
@@ -446,7 +446,7 @@ void AttsCccInitTable(dmConnId_t connId, uint16_t *pCccTbl);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsCccClearTable
- *        
+ *
  *  \brief  Clear and deallocate the client characteristic configuration descriptor value
  *          table for a connection.  This function must be called when a connection is closed.
  *
@@ -460,12 +460,12 @@ void AttsCccClearTable(dmConnId_t connId);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsCccGet
- *        
+ *
  *  \brief  Get the value of a client characteristic configuration descriptor by its index.
  *          If not found, return zero.
  *
  *  \param  connId      DM connection ID.
- *  \param  idx         Index of descriptor in CCC descriptor handle table. 
+ *  \param  idx         Index of descriptor in CCC descriptor handle table.
  *
  *  \return Value of the descriptor.
  */
@@ -475,12 +475,12 @@ uint16_t AttsCccGet(dmConnId_t connId, uint8_t idx);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsCccSet
- *        
+ *
  *  \brief  Set the value of a client characteristic configuration descriptor by its index.
  *
  *  \param  connId      DM connection ID.
- *  \param  idx         Index of descriptor in CCC descriptor handle table. 
- *  \param  value       Value of the descriptor. 
+ *  \param  idx         Index of descriptor in CCC descriptor handle table.
+ *  \param  value       Value of the descriptor.
  *
  *  \return None.
  */
@@ -490,12 +490,12 @@ void AttsCccSet(dmConnId_t connId, uint8_t idx, uint16_t value);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsCccEnabled
- *        
+ *
  *  \brief  Check if a client characteristic configuration descriptor is enabled and if
  *          the characteristic's security level has been met.
  *
  *  \param  connId      DM connection ID.
- *  \param  idx         Index of descriptor in CCC descriptor handle table. 
+ *  \param  idx         Index of descriptor in CCC descriptor handle table.
  *
  *  \return Value of the descriptor if security level is met, otherwise zero.
  */
@@ -505,14 +505,14 @@ uint16_t AttsCccEnabled(dmConnId_t connId, uint8_t idx);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsSetCsrk
- *        
+ *
  *  \brief  Set the peer's data signing key on this connection.  This function
  *          is typically called from the ATT connection callback when the connection is
  *          established.  The caller is responsible for maintaining the memory that
  *          contains the key.
  *
  *  \param  connId      DM connection ID.
- *  \param  pCsrk       Pointer to data signing key (CSRK). 
+ *  \param  pCsrk       Pointer to data signing key (CSRK).
  *
  *  \return None.
  */
@@ -522,14 +522,14 @@ void AttsSetCsrk(dmConnId_t connId, uint8_t *pCsrk);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsSetSignCounter
- *        
+ *
  *  \brief  Set the peer's sign counter on this connection.  This function
  *          is typically called from the ATT connection callback when the connection is
  *          established.  ATT maintains the value of the sign counter internally and
  *          sets the value when a signed packet is successfully received.
  *
  *  \param  connId      DM connection ID.
- *  \param  signCounter Sign counter. 
+ *  \param  signCounter Sign counter.
  *
  *  \return None.
  */
@@ -539,7 +539,7 @@ void AttsSetSignCounter(dmConnId_t connId, uint32_t signCounter);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsGetSignCounter
- *        
+ *
  *  \brief  Get the current value peer's sign counter on this connection.  This function
  *          is typically called from the ATT connection callback when the connection is
  *          closed so the application can store the sign counter for use on future
@@ -555,7 +555,7 @@ uint32_t AttsGetSignCounter(dmConnId_t connId);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcInit
- *        
+ *
  *  \brief  Initialize ATT client.
  *
  *  \return None.
@@ -566,7 +566,7 @@ void AttcInit(void);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcSignInit
- *        
+ *
  *  \brief  Initialize ATT client for data signing.
  *
  *  \return None.
@@ -577,12 +577,12 @@ void AttcSignInit(void);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcFindInfoReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Find Information Request.
  *
  *  \param  connId      DM connection ID.
- *  \param  startHandle Attribute start handle. 
- *  \param  endHandle   Attribute end handle. 
+ *  \param  startHandle Attribute start handle.
+ *  \param  endHandle   Attribute end handle.
  *  \param  continuing  TRUE if ATTC continues sending requests until complete.
  *
  *  \return None.
@@ -593,12 +593,12 @@ void AttcFindInfoReq(dmConnId_t connId, uint16_t startHandle, uint16_t endHandle
 /*************************************************************************************************/
 /*!
  *  \fn     AttcFindByTypeValueReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Find By Type Value Request.
  *
  *  \param  connId      DM connection ID.
- *  \param  startHandle Attribute start handle. 
- *  \param  endHandle   Attribute end handle. 
+ *  \param  startHandle Attribute start handle.
+ *  \param  endHandle   Attribute end handle.
  *  \param  uuid16      16-bit UUID to find.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
@@ -613,12 +613,12 @@ void AttcFindByTypeValueReq(dmConnId_t connId, uint16_t startHandle, uint16_t en
 /*************************************************************************************************/
 /*!
  *  \fn     AttcReadByTypeReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Read By Type Request.
  *
  *  \param  connId      DM connection ID.
- *  \param  startHandle Attribute start handle. 
- *  \param  endHandle   Attribute end handle. 
+ *  \param  startHandle Attribute start handle.
+ *  \param  endHandle   Attribute end handle.
  *  \param  uuidLen     Length of UUID (2 or 16).
  *  \param  pUuid       Pointer to UUID data.
  *  \param  continuing  TRUE if ATTC continues sending requests until complete.
@@ -632,7 +632,7 @@ void AttcReadByTypeReq(dmConnId_t connId, uint16_t startHandle, uint16_t endHand
 /*************************************************************************************************/
 /*!
  *  \fn     AttcReadReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Read Request.
  *
  *  \param  connId    DM connection ID.
@@ -646,7 +646,7 @@ void AttcReadReq(dmConnId_t connId, uint16_t handle);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcReadLongReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Read Long Request.
  *
  *  \param  connId      DM connection ID.
@@ -662,7 +662,7 @@ void AttcReadLongReq(dmConnId_t connId, uint16_t handle, uint16_t offset, bool_t
 /*************************************************************************************************/
 /*!
  *  \fn     AttcReadMultipleReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Read Multiple Request.
  *
  *  \param  connId      DM connection ID.
@@ -677,12 +677,12 @@ void AttcReadMultipleReq(dmConnId_t connId, uint8_t numHandles, uint16_t *pHandl
 /*************************************************************************************************/
 /*!
  *  \fn     AttcReadByGroupTypeReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Read By Group Type Request.
  *
  *  \param  connId      DM connection ID.
- *  \param  startHandle Attribute start handle. 
- *  \param  endHandle   Attribute end handle. 
+ *  \param  startHandle Attribute start handle.
+ *  \param  endHandle   Attribute end handle.
  *  \param  uuidLen     Length of UUID (2 or 16).
  *  \param  pUuid       Pointer to UUID data.
  *  \param  continuing  TRUE if ATTC continues sending requests until complete.
@@ -696,11 +696,11 @@ void AttcReadByGroupTypeReq(dmConnId_t connId, uint16_t startHandle, uint16_t en
 /*************************************************************************************************/
 /*!
  *  \fn     AttcWriteReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Write Request.
  *
  *  \param  connId      DM connection ID.
- *  \param  handle      Attribute handle. 
+ *  \param  handle      Attribute handle.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
  *
@@ -712,11 +712,11 @@ void AttcWriteReq(dmConnId_t connId, uint16_t handle, uint16_t valueLen, uint8_t
 /*************************************************************************************************/
 /*!
  *  \fn     AttcWriteCmd
- *        
+ *
  *  \brief  Initiate an attribute protocol Write Command.
  *
  *  \param  connId      DM connection ID.
- *  \param  handle      Attribute handle. 
+ *  \param  handle      Attribute handle.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
  *
@@ -728,11 +728,11 @@ void AttcWriteCmd(dmConnId_t connId, uint16_t handle, uint16_t valueLen, uint8_t
 /*************************************************************************************************/
 /*!
  *  \fn     AttcSignedWriteCmd
- *        
+ *
  *  \brief  Initiate an attribute protocol signed Write Command.
  *
  *  \param  connId      DM connection ID.
- *  \param  handle      Attribute handle. 
+ *  \param  handle      Attribute handle.
  *  \param  signCounter Value of the sign counter.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
@@ -746,11 +746,11 @@ void AttcSignedWriteCmd(dmConnId_t connId, uint16_t handle, uint32_t signCounter
 /*************************************************************************************************/
 /*!
  *  \fn     AttcPrepareWriteReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Prepare Write Request.
  *
  *  \param  connId      DM connection ID.
- *  \param  handle      Attribute handle. 
+ *  \param  handle      Attribute handle.
  *  \param  offset      Write attribute data starting at this offset.
  *  \param  valueLen    Length of value data.
  *  \param  pValue      Pointer to value data.
@@ -766,11 +766,11 @@ void AttcPrepareWriteReq(dmConnId_t connId, uint16_t handle, uint16_t offset, ui
 /*************************************************************************************************/
 /*!
  *  \fn     AttcExecuteWriteReq
- *        
+ *
  *  \brief  Initiate an attribute protocol Execute Write Request.
  *
  *  \param  connId    DM connection ID.
- *  \param  writeAll  TRUE to write all queued writes, FALSE to cancel all queued writes.    
+ *  \param  writeAll  TRUE to write all queued writes, FALSE to cancel all queued writes.
  *
  *  \return None.
  */
@@ -780,7 +780,7 @@ void AttcExecuteWriteReq(dmConnId_t connId, bool_t writeAll);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcCancelReq
- *        
+ *
  *  \brief  Cancel an attribute protocol request in progress.
  *
  *  \param  connId    DM connection ID.
@@ -793,7 +793,7 @@ void AttcCancelReq(dmConnId_t connId);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscService
- *        
+ *
  *  \brief  This utility function discovers the given service on a peer device.  Function
  *          AttcFindByTypeValueReq() is called to initiate the discovery procedure.
  *
@@ -810,7 +810,7 @@ void AttcDiscService(dmConnId_t connId, attcDiscCb_t *pCb, uint8_t uuidLen, uint
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscServiceCmpl
- *        
+ *
  *  \brief  This utility function processes a service discovery result.  It should be called
  *          when an ATTC_FIND_BY_TYPE_VALUE_RSP callback event is received after service
  *          discovery is initiated by calling AttcDiscService().
@@ -826,7 +826,7 @@ uint8_t AttcDiscServiceCmpl(attcDiscCb_t *pCb, attEvt_t *pMsg);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscCharStart
- *        
+ *
  *  \brief  This utility function starts characteristic and characteristic descriptor
  *          discovery for a service on a peer device.  The service must have been previously
  *          discovered by calling AttcDiscService() and AttcDiscServiceCmpl().
@@ -842,9 +842,9 @@ void AttcDiscCharStart(dmConnId_t connId, attcDiscCb_t *pCb);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscCharCmpl
- *        
+ *
  *  \brief  This utility function processes a characteristic discovery result.  It should be
- *          called when an ATTC_READ_BY_TYPE_RSP or ATTC_FIND_INFO_RSP callback event is 
+ *          called when an ATTC_READ_BY_TYPE_RSP or ATTC_FIND_INFO_RSP callback event is
  *          received after characteristic discovery is initiated by calling AttcDiscCharStart().
  *
  *  \param  pCb         Pointer to discovery control block.
@@ -860,7 +860,7 @@ uint8_t AttcDiscCharCmpl(attcDiscCb_t *pCb, attEvt_t *pMsg);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscConfigStart
- *        
+ *
  *  \brief  This utility function starts characteristic configuration for characteristics on a
  *          peer device.  The characteristics must have been previously discovered by calling
  *          AttcDiscCharStart() and AttcDiscCharCmpl().
@@ -877,7 +877,7 @@ uint8_t AttcDiscConfigStart(dmConnId_t connId, attcDiscCb_t *pCb);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscConfigCmpl
- *        
+ *
  *  \brief  This utility function initiates the next characteristic configuration procedure.
  *          It should be called when an ATTC_READ_RSP or ATTC_WRITE_RSP callback event is received
  *          after characteristic configuration is initiated by calling AttcDiscConfigStart().
@@ -894,7 +894,7 @@ uint8_t AttcDiscConfigCmpl(dmConnId_t connId, attcDiscCb_t *pCb);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcDiscConfigResume
- *        
+ *
  *  \brief  This utility function resumes the characteristic configuration procedure.  It can
  *          be called when an ATTC_READ_RSP or ATTC_WRITE_RSP callback event is received
  *          with failure status to attempt the read or write procedure again.
@@ -911,7 +911,7 @@ uint8_t AttcDiscConfigResume(dmConnId_t connId, attcDiscCb_t *pCb);
 /*************************************************************************************************/
 /*!
  *  \fn     AttcMtuReq
- *        
+ *
  *  \brief  For internal use only.
  *
  *  \param  connId    DM connection ID.
@@ -925,7 +925,7 @@ void AttcMtuReq(dmConnId_t connId, uint16_t mtu);
 /*************************************************************************************************/
 /*!
  *  \fn     AttsErrorTest
- *        
+ *
  *  \brief  For testing purposes only.
  *
  *  \param  status    ATT status

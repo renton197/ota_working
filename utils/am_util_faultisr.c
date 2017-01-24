@@ -21,6 +21,7 @@
 //*****************************************************************************
 
 #include <stdint.h>
+#include "am_mcu_apollo.h"
 
 //*****************************************************************************
 //
@@ -188,6 +189,8 @@ void
 am_util_faultisr_collect_data(uint32_t u32IsrSP)
 {
     volatile am_fault_t sFaultData;
+    am_hal_mcuctrl_fault_t sHalFaultData;
+    
     uint32_t u32Mask = 0;
 
     //
@@ -270,6 +273,12 @@ am_util_faultisr_collect_data(uint32_t u32IsrSP)
     sFaultData.u32PC  = getStackedReg(6, u32IsrSP);
     sFaultData.u32PSR = getStackedReg(7, u32IsrSP);
 
+    //
+    // Use the HAL MCUCTRL functions to read the fault data.
+    //
+    am_hal_mcuctrl_fault_status(&sHalFaultData);
+    
+
 #ifdef AM_UTIL_FAULTISR_PRINT
     //
     // If printf has previously been initialized in the application, we should
@@ -328,6 +337,25 @@ am_util_faultisr_collect_data(uint32_t u32IsrSP)
         }
         u32Mask >>= 1;
     }
+    
+    //
+    // Print out any Apollo2 Internal fault information.
+    //
+    am_util_stdio_printf("Apollo2 Fault data:\n");
+    if (sHalFaultData.bICODE)
+    {
+      am_util_stdio_printf("   ICODE Fault Address: 0x%08X\n", sHalFaultData.ui32ICODE);
+    }
+    if (sHalFaultData.bDCODE)
+    {
+      am_util_stdio_printf("   DCODE Fault Address: 0x%08X\n", sHalFaultData.ui32DCODE);
+    }
+    if (sHalFaultData.bSYS)
+    {
+      am_util_stdio_printf("   SYS Fault Address: 0x%08X\n", sHalFaultData.ui32SYS);
+    }
+
+
 #endif
 
     u32Mask = 0;

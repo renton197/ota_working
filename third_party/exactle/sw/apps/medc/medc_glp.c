@@ -4,8 +4,8 @@
  *
  *  \brief  Health/medical collector, glucose profile
  *
- *          $Date: 2012-06-22 14:22:10 -0700 (Fri, 22 Jun 2012) $
- *          $Revision: 335 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -264,7 +264,12 @@ static void medcGlpProcMsg(wsfMsgHdr_t *pMsg)
       if (medcGlpCb.inProgress && pMsg->param != DM_CONN_ID_NONE)
       {
         medcGlpCb.inProgress = FALSE;
-        AppConnClose((dmConnId_t) pMsg->param);
+
+        /* if configured to disconnect upon ATT transaction timeout */
+        if (pAppCfg->disconnect)
+        {
+          AppConnClose((dmConnId_t)pMsg->param);
+        }
       }
       break;
       

@@ -5,8 +5,8 @@
  *  \brief  Fitness sample application for the following profiles:
  *            Heart Rate profile
  *
- *          $Date: 2014-10-16 07:18:36 -0700 (Thu, 16 Oct 2014) $
- *          $Revision: 1885 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -29,6 +29,7 @@
 #include "hci_api.h"
 #include "dm_api.h"
 #include "att_api.h"
+#include "smp_api.h"
 #include "app_api.h"
 #include "app_db.h"
 #include "app_ui.h"
@@ -38,8 +39,10 @@
 #include "svc_hrs.h"
 #include "svc_dis.h"
 #include "svc_batt.h"
+#include "svc_rscs.h"
 #include "bas_api.h"
 #include "hrps_api.h"
+#include "rscp_api.h"
 #include "fit_api.h"
 
 /**************************************************************************************************
@@ -49,11 +52,15 @@
 /*! WSF message event starting value */
 #define FIT_MSG_START               0xA0
 
+/* Default Running Speed and Cadence Measurement period (seconds) */
+#define FIT_DEFAULT_RSCM_PERIOD        1
+
 /*! WSF message event enumeration */
 enum
 {
   FIT_HR_TIMER_IND = FIT_MSG_START,       /*! Heart rate measurement timer expired */
-  FIT_BATT_TIMER_IND                      /*! Battery measurement timer expired */
+  FIT_BATT_TIMER_IND,                     /*! Battery measurement timer expired */
+  FIT_RUNNING_TIMER_IND                   /*! Running speed and cadence measurement timer expired */
 };
 
 /**************************************************************************************************
@@ -89,11 +96,11 @@ static const appSlaveCfg_t fitSlaveCfg =
 /*! configurable parameters for security */
 static const appSecCfg_t fitSecCfg =
 {
-  DM_AUTH_BOND_FLAG,                      /*! Authentication and bonding flags */
+  DM_AUTH_BOND_FLAG | DM_AUTH_SC_FLAG,    /*! Authentication and bonding flags */
   0,                                      /*! Initiator key distribution flags */
   DM_KEY_DIST_LTK,                        /*! Responder key distribution flags */
   FALSE,                                  /*! TRUE if Out-of-band pairing data is present */
-  FALSE                                   /*! TRUE to initiate security upon connection */
+  TRUE                                    /*! TRUE to initiate security upon connection */
 };
 
 /*! configurable parameters for connection parameter update */
@@ -122,6 +129,17 @@ static const basCfg_t fitBasCfg =
   100       /*! Send battery level notification to peer when below this level. */
 };
 
+/*! SMP security parameter configuration */
+static const smpCfg_t fitSmpCfg =
+{
+  3000,                                   /*! 'Repeated attempts' timeout in msec */
+  SMP_IO_NO_IN_NO_OUT,                    /*! I/O Capability */
+  7,                                      /*! Minimum encryption key length */
+  16,                                     /*! Maximum encryption key length */
+  3,                                      /*! Attempts to trigger 'repeated attempts' timeout */
+  0,                                      /*! Device authentication requirements */
+};
+
 /**************************************************************************************************
   Advertising Data
 **************************************************************************************************/
@@ -141,9 +159,10 @@ static const uint8_t fitAdvDataDisc[] =
   0,                                      /*! tx power */
 
   /*! service UUID list */
-  7,                                      /*! length */
+  9,                                      /*! length */
   DM_ADV_TYPE_16_UUID,                    /*! AD type */
   UINT16_TO_BYTES(ATT_UUID_HEART_RATE_SERVICE),
+  UINT16_TO_BYTES(ATT_UUID_RUNNING_SPEED_SERVICE),
   UINT16_TO_BYTES(ATT_UUID_DEVICE_INFO_SERVICE),
   UINT16_TO_BYTES(ATT_UUID_BATTERY_SERVICE)
 };
@@ -152,21 +171,11 @@ static const uint8_t fitAdvDataDisc[] =
 static const uint8_t fitScanDataDisc[] =
 {
   /*! device name */
-  14,                                     /*! length */
+  4,                                      /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
+  'F',
   'i',
-  'c',
-  'e',
-  'n',
-  't',
-  'r',
-  'i',
-  'c',
-  ' ',
-  'a',
-  'p',
-  'p'
+  't'
 };
 
 /**************************************************************************************************
@@ -179,6 +188,7 @@ enum
   FIT_GATT_SC_CCC_IDX,                    /*! GATT service, service changed characteristic */
   FIT_HRS_HRM_CCC_IDX,                    /*! Heart rate service, heart rate monitor characteristic */
   FIT_BATT_LVL_CCC_IDX,                   /*! Battery service, battery level characteristic */
+  FIT_RSCS_SM_CCC_IDX,                   /*! Runninc speed and cadence measurement characteristic */
   FIT_NUM_CCC_IDX
 };
 
@@ -188,7 +198,8 @@ static const attsCccSet_t fitCccSet[FIT_NUM_CCC_IDX] =
   /* cccd handle          value range               security level */
   {GATT_SC_CH_CCC_HDL,    ATT_CLIENT_CFG_INDICATE,  DM_SEC_LEVEL_NONE},   /* FIT_GATT_SC_CCC_IDX */
   {HRS_HRM_CH_CCC_HDL,    ATT_CLIENT_CFG_NOTIFY,    DM_SEC_LEVEL_NONE},   /* FIT_HRS_HRM_CCC_IDX */
-  {BATT_LVL_CH_CCC_HDL,   ATT_CLIENT_CFG_NOTIFY,    DM_SEC_LEVEL_NONE}    /* FIT_BATT_LVL_CCC_IDX */
+  {BATT_LVL_CH_CCC_HDL,   ATT_CLIENT_CFG_NOTIFY,    DM_SEC_LEVEL_NONE},   /* FIT_BATT_LVL_CCC_IDX */
+  {RSCS_RSM_CH_CCC_HDL,   ATT_CLIENT_CFG_NOTIFY,    DM_SEC_LEVEL_NONE}    /* FIT_RSCS_SM_CCC_IDX */
 };
 
 /**************************************************************************************************
@@ -197,6 +208,12 @@ static const attsCccSet_t fitCccSet[FIT_NUM_CCC_IDX] =
 
 /*! WSF handler ID */
 wsfHandlerId_t fitHandlerId;
+
+/* WSF Timer to send running speed and cadence measurement data */
+wsfTimer_t     fitRscmTimer;
+
+/* Running Speed and Cadence Measurement period - Can be changed at runtime to vary period */
+static uint16_t fitRscmPeriod = FIT_DEFAULT_RSCM_PERIOD;
 
 /*************************************************************************************************/
 /*!
@@ -212,10 +229,13 @@ wsfHandlerId_t fitHandlerId;
 static void fitDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t *pMsg;
+  uint16_t len;
 
-  if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+  len = DmSizeOfEvt(pDmEvt);
+
+  if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(fitHandlerId, pMsg);
   }
 }
@@ -275,6 +295,47 @@ static void fitCccCback(attsCccEvt_t *pEvt)
   }
 }
 
+
+/*************************************************************************************************/
+/*!
+*  \fn     fitSendRunningSpeedMeasurement
+*
+*  \brief  Send a Running Speed and Cadence Measurement Notification.
+*
+*  \param  connId    connection ID
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void fitSendRunningSpeedMeasurement(dmConnId_t connId)
+{
+  if (AttsCccEnabled(connId, FIT_RSCS_SM_CCC_IDX))
+  {
+    static uint8_t walk_run = 1;
+
+    /* TODO: Set Running Speed and Cadence Measurement Parameters */
+
+    RscpsSetParameter(RSCP_SM_PARAM_SPEED, 1);
+    RscpsSetParameter(RSCP_SM_PARAM_CADENCE, 2);
+    RscpsSetParameter(RSCP_SM_PARAM_STRIDE_LENGTH, 3);
+    RscpsSetParameter(RSCP_SM_PARAM_TOTAL_DISTANCE, 4);
+    
+    /* Toggle running/walking */
+    walk_run = walk_run? 0 : 1;
+    RscpsSetParameter(RSCP_SM_PARAM_STATUS, walk_run);
+
+    RscpsSendSpeedMeasurement(connId);
+  }
+
+  /* Configure and start timer to send the next measurement */
+  fitRscmTimer.msg.event = FIT_RUNNING_TIMER_IND;
+  fitRscmTimer.msg.status = FIT_RSCS_SM_CCC_IDX;
+  fitRscmTimer.handlerId = fitHandlerId;
+  fitRscmTimer.msg.param = connId;
+
+  WsfTimerStartSec(&fitRscmTimer, fitRscmPeriod);
+}
+
 /*************************************************************************************************/
 /*!
  *  \fn     fitProcCccState
@@ -300,6 +361,20 @@ static void fitProcCccState(fitMsg_t *pMsg)
     else
     {
       HrpsMeasStop((dmConnId_t) pMsg->ccc.hdr.param);
+    }
+    return;
+  }
+
+  /* handle running speed and cadence measurement CCC */
+  if (pMsg->ccc.idx == FIT_RSCS_SM_CCC_IDX)
+  {
+    if (pMsg->ccc.value == ATT_CLIENT_CFG_NOTIFY)
+    {
+      fitSendRunningSpeedMeasurement((dmConnId_t)pMsg->ccc.hdr.param);
+    }
+    else
+    {
+      WsfTimerStop(&fitRscmTimer);
     }
     return;
   }
@@ -337,6 +412,9 @@ static void fitClose(fitMsg_t *pMsg)
 
   /* stop battery measurement */
   BasMeasBattStop((dmConnId_t) pMsg->hdr.param);
+
+  /* Stop running speed and cadence timer */
+  WsfTimerStop(&fitRscmTimer);
 }
 
 /*************************************************************************************************/
@@ -452,6 +530,10 @@ static void fitProcMsg(fitMsg_t *pMsg)
 
   switch(pMsg->hdr.event)
   {
+    case FIT_RUNNING_TIMER_IND:
+      fitSendRunningSpeedMeasurement((dmConnId_t)pMsg->ccc.hdr.param);
+      break;
+
     case FIT_HR_TIMER_IND:
       HrpsProcMsg(&pMsg->hdr);
       break;
@@ -470,6 +552,7 @@ static void fitProcMsg(fitMsg_t *pMsg)
       break;
 
     case DM_RESET_CMPL_IND:
+      DmSecGenerateEccKeyReq();
       fitSetup(pMsg);
       uiEvent = APP_UI_RESET_CMPL;
       break;
@@ -513,6 +596,14 @@ static void fitProcMsg(fitMsg_t *pMsg)
       AppHandlePasskey(&pMsg->dm.authReq);
       break;
 
+    case DM_SEC_ECC_KEY_IND:
+      DmSecSetEccKey(&pMsg->dm.eccMsg.data.key);
+      break;
+
+    case DM_SEC_COMPARE_IND:
+      AppHandleNumericComparison(&pMsg->dm.cnfInd);
+      break;
+      
     default:
       break;
   }
@@ -549,6 +640,9 @@ void FitHandlerInit(wsfHandlerId_t handlerId)
 
   /* Initialize application framework */
   AppSlaveInit();
+
+  /* Set stack configuration pointers */
+  pSmpCfg = (smpCfg_t *) &fitSmpCfg;
 
   /* initialize heart rate profile sensor */
   HrpsInit(handlerId, (hrpsCfg_t *) &fitHrpsCfg);
@@ -618,6 +712,10 @@ void FitStart(void)
   SvcDisAddGroup();
   SvcBattCbackRegister(BasReadCback, NULL);
   SvcBattAddGroup();
+  SvcRscsAddGroup();
+
+  /* Set running speed and cadence features */
+  RscpsSetFeatures(RSCS_ALL_FEATURES);
 
   /* Reset the device */
   DmDevReset();

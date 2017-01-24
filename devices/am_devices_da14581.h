@@ -63,12 +63,26 @@ am_devices_da14581_t;
 
 //*****************************************************************************
 //
-// External Function Declarations
+// External function definitions
 //
 //*****************************************************************************
+// #### INTERNAL BEGIN ####
+extern bool am_devices_da14581_init(am_devices_da14581_t *psDevice);
+// #### INTERNAL END ####
 extern void am_devices_da14581_mac_set(const uint8_t *pui8MacAddress);
-extern bool am_devices_da14581_uart_boot(const uint8_t *pui8BinData, uint32_t ui32NumBytes,
-                             uint32_t ui32UartModule);
+extern bool am_devices_da14581_uart_boot(const uint8_t *pui8BinData,
+                                         uint32_t ui32NumBytes,
+                                         uint32_t ui32UartModule);
+// #### INTERNAL BEGIN ####
+extern void am_devices_da14581_spi_send(am_devices_da14581_t *psDevice,
+                                        uint32_t options,
+                                        uint8_t type, uint8_t *pData,
+                                        uint16_t len);
+extern void am_devices_da14581_spi_receive_bytes(
+                                        am_devices_da14581_t *psDevice,
+                                        uint32_t options,
+                                        uint8_t *pData, uint16_t len);
+// #### INTERNAL END ####
 #ifdef __cplusplus
 }
 #endif

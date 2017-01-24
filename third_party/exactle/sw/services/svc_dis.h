@@ -4,8 +4,8 @@
  *        
  *  \brief  Example Device Information Service implementation.
  *
- *          $Date: 2011-10-14 21:35:03 -0700 (Fri, 14 Oct 2011) $
- *          $Revision: 191 $
+ *          $Date: 2016-04-14 12:23:02 -0700 (Thu, 14 Apr 2016) $
+ *          $Revision: 6778 $
  *  
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -61,6 +61,43 @@ enum
   DIS_RCD_HDL,                      /* Registration certificate data */
   DIS_MAX_HDL
 };
+
+/**************************************************************************************************
+Macros
+**************************************************************************************************/
+
+/* Sizes of attributes */
+#ifndef DIS_MAXSIZE_MFR_ATT
+#define DIS_MAXSIZE_MFR_ATT         20  /* Size of manufacturer name string attribute */
+#endif
+
+#ifndef DIS_MAXSIZE_MN_ATT
+#define DIS_MAXSIZE_MN_ATT          20  /* Size of model number string attribute */
+#endif
+
+#ifndef DIS_MAXSIZE_SN_ATT
+#define DIS_MAXSIZE_SN_ATT          20  /* Size of serial number string attribute */
+#endif
+
+#ifndef DIS_MAXSIZE_FWR_ATT
+#define DIS_MAXSIZE_FWR_ATT         16  /* Size of firmware revision string attribute */
+#endif
+
+#ifndef DIS_MAXSIZE_HWR_ATT
+#define DIS_MAXSIZE_HWR_ATT         16  /* Size of hardware revision string attribute */
+#endif
+
+#ifndef DIS_MAXSIZE_SWR_ATT
+#define DIS_MAXSIZE_SWR_ATT         16  /* Size of software revision string attribute */
+#endif
+
+#ifndef DIS_SIZE_SID_ATT
+#define DIS_SIZE_SID_ATT            8   /* Size of system id attribute */
+#endif
+
+#ifndef DIS_SIZE_RCD_ATT
+#define DIS_SIZE_RCD_ATT            6   /* Size of registration certificate data attribute */
+#endif
 
 /**************************************************************************************************
   Function Declarations

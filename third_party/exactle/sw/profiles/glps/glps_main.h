@@ -4,8 +4,8 @@
  *
  *  \brief  Glucose profile sensor internal interfaces.
  *
- *          $Date: 2012-06-07 11:59:12 -0700 (Thu, 07 Jun 2012) $
- *          $Revision: 331 $
+ *          $Date: 2016-04-19 13:50:01 -0700 (Tue, 19 Apr 2016) $
+ *          $Revision: 6868 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -89,7 +89,7 @@ void glpsDbInit(void);
 uint8_t glpsDbGetNextRecord(uint8_t oper, uint8_t *pFilter, glpsRec_t *pCurrRec,  glpsRec_t **pRec);
 uint8_t glpsDbDeleteRecords(uint8_t oper, uint8_t *pFilter);
 uint8_t glpsDbGetNumRecords(uint8_t oper, uint8_t *pFilter, uint8_t *pNumRec);
-
+void glpsDbGenerateRecord(void);
 #ifdef __cplusplus
 };
 #endif

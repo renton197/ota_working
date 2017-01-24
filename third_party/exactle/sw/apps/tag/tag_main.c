@@ -7,8 +7,8 @@
  *            Find Me profile target
  *            Find Me profile locator
  *
- *          $Date: 2015-08-25 14:50:13 -0700 (Tue, 25 Aug 2015) $
- *          $Revision: 3694 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -32,14 +32,17 @@
 #include "hci_api.h"
 #include "dm_api.h"
 #include "att_api.h"
+#include "smp_api.h"
 #include "app_cfg.h"
 #include "app_api.h"
+#include "app_main.h"
 #include "app_db.h"
 #include "app_ui.h"
 #include "svc_core.h"
 #include "svc_px.h"
 #include "svc_ch.h"
 #include "gatt_api.h"
+#include "gap_api.h"
 #include "fmpl_api.h"
 
 /**************************************************************************************************
@@ -70,6 +73,8 @@ static struct
   uint8_t           discState;
   wsfTimer_t        rssiTimer;                    /* Read RSSI value timer */
   bool_t            inProgress;                   /* Read RSSI value in progress */
+  bdAddr_t          peerAddr;                     /* Peer address */
+  uint8_t           addrType;                     /* Peer address type */
 } tagCb;
 
 /**************************************************************************************************
@@ -93,8 +98,8 @@ static const appSlaveCfg_t tagSlaveCfg =
 static const appSecCfg_t tagSecCfg =
 {
   DM_AUTH_BOND_FLAG,                      /*! Authentication and bonding flags */
-  0,                                      /*! Initiator key distribution flags */
-  DM_KEY_DIST_LTK,                        /*! Responder key distribution flags */
+  DM_KEY_DIST_IRK,                        /*! Initiator key distribution flags */
+  DM_KEY_DIST_LTK | DM_KEY_DIST_IRK,      /*! Responder key distribution flags */
   FALSE,                                  /*! TRUE if Out-of-band pairing data is present */
   FALSE                                   /*! TRUE to initiate security upon connection */
 };
@@ -117,6 +122,29 @@ static const appDiscCfg_t tagDiscCfg =
   FALSE                                   /*! TRUE to wait for a secure connection before initiating discovery */
 };
 
+/*! SMP security parameter configuration */
+static const smpCfg_t tagSmpCfg =
+{
+  3000,                                   /*! 'Repeated attempts' timeout in msec */
+  SMP_IO_NO_IN_NO_OUT,                    /*! I/O Capability */
+  7,                                      /*! Minimum encryption key length */
+  16,                                     /*! Maximum encryption key length */
+  3,                                      /*! Attempts to trigger 'repeated attempts' timeout */
+  0                                       /*! Device authentication requirements */
+};
+
+static const appCfg_t tagAppCfg =
+{
+  TRUE,                                   /*! TRUE to abort service discovery if service not found */
+  TRUE                                    /*! TRUE to disconnect if ATT transaction times out */
+};
+
+/*! local IRK */
+static uint8_t localIrk[] = 
+{ 
+  0x95, 0xC8, 0xEE, 0x6F, 0xC5, 0x0D, 0xEF, 0x93, 0x35, 0x4E, 0x7C, 0x57, 0x08, 0xE2, 0xA3, 0x85 
+};
+
 /**************************************************************************************************
   Advertising Data
 **************************************************************************************************/
@@ -136,21 +164,11 @@ static const uint8_t tagAdvDataDisc[] =
   0,                                      /*! tx power */
 
   /*! device name */
-  14,                                     /*! length */
+  4,                                      /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
-  'i',
-  'c',
-  'e',
-  'n',
-  't',
-  'r',
-  'i',
-  'c',
-  ' ',
+  'T',
   'a',
-  'p',
-  'p'
+  'g'
 };
 
 /*! scan data */
@@ -173,6 +191,7 @@ enum
 {
   TAG_DISC_IAS_SVC,       /* Immediate Alert service */
   TAG_DISC_GATT_SVC,      /* GATT service */
+  TAG_DISC_GAP_SVC,       /* GAP service */
   TAG_DISC_SVC_MAX        /* Discovery complete */
 };
 
@@ -184,17 +203,21 @@ enum
  *  | GATT svc changed handle     |
  *  -------------------------------
  *  | GATT svc changed ccc handle |
+ *  ------------------------------- <- TAG_DISC_GAP_START
+ *  | GAP central addr res handle |
  *  -------------------------------
  */
 
 /*! Start of each service's handles in the the handle list */
 #define TAG_DISC_IAS_START        0
 #define TAG_DISC_GATT_START       (TAG_DISC_IAS_START + FMPL_IAS_HDL_LIST_LEN)
-#define TAG_DISC_HDL_LIST_LEN     (TAG_DISC_GATT_START + GATT_HDL_LIST_LEN)
+#define TAG_DISC_GAP_START        (TAG_DISC_GATT_START + GATT_HDL_LIST_LEN)
+#define TAG_DISC_HDL_LIST_LEN     (TAG_DISC_GAP_START + GAP_HDL_LIST_LEN)
 
 /*! Pointers into handle list for each service's handles */
-static uint16_t *pTagIasHdlList = &tagCb.hdlList[TAG_DISC_IAS_START];
+static uint16_t *pTagIasHdlList  = &tagCb.hdlList[TAG_DISC_IAS_START];
 static uint16_t *pTagGattHdlList = &tagCb.hdlList[TAG_DISC_GATT_START];
+static uint16_t *pTagGapHdlList  = &tagCb.hdlList[TAG_DISC_GAP_START];
 
 /* sanity check:  make sure handle list length is <= app db handle list length */
 WSF_CT_ASSERT(TAG_DISC_HDL_LIST_LEN <= APP_DB_HDL_LIST_LEN);
@@ -210,7 +233,10 @@ static const uint8_t tagGattScCccVal[] = {UINT16_TO_BYTES(ATT_CLIENT_CFG_INDICAT
 static const attcDiscCfg_t tagDiscCfgList[] = 
 {
   /* Write:  GATT service changed ccc descriptor */
-  {tagGattScCccVal, sizeof(tagGattScCccVal), (GATT_SC_CCC_HDL_IDX + TAG_DISC_GATT_START)}
+  {tagGattScCccVal, sizeof(tagGattScCccVal), (GATT_SC_CCC_HDL_IDX + TAG_DISC_GATT_START)},
+
+  /* Read: GAP central address resolution attribute */
+  {NULL, 0, (GAP_CAR_HDL_IDX + TAG_DISC_GAP_START)}
 };
 
 /* Characteristic configuration list length */
@@ -279,10 +305,13 @@ static void tagAlert(uint8_t alert)
 static void tagDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t *pMsg;
-  
-  if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+  uint16_t  len;
+
+  len = DmSizeOfEvt(pDmEvt);
+
+  if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(tagCb.handlerId, pMsg);
   }
 }
@@ -366,6 +395,23 @@ static uint8_t tagIasWriteCback(dmConnId_t connId, uint16_t handle, uint8_t oper
   return ATT_SUCCESS;
 }
 
+/*************************************************************************************************/
+/*!
+*  \fn     tagOpen
+*
+*  \brief  Perform actions on connection open.
+*
+*  \param  pMsg    Pointer to DM callback event message.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void tagOpen(dmEvt_t *pMsg)
+{
+  /* Update peer address info */
+  tagCb.addrType = pMsg->connOpen.addrType;
+  BdaCpy(tagCb.peerAddr, pMsg->connOpen.peerAddr);
+}
 
 /*************************************************************************************************/
 /*!
@@ -404,6 +450,38 @@ static void tagClose(dmEvt_t *pMsg)
 
 /*************************************************************************************************/
 /*!
+*  \fn     tagSecPairCmpl
+*
+*  \brief  Handle pairing complete.
+*
+*  \param  pMsg    Pointer to DM callback event message.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void tagSecPairCmpl(dmEvt_t *pMsg)
+{
+  appConnCb_t *pCb;
+  dmSecKey_t *pPeerKey;
+
+  /* if LL Privacy has been enabled */
+  if (DmLlPrivEnabled())
+  {
+    /* look up app connection control block from DM connection ID */
+    pCb = &appConnCb[pMsg->hdr.param - 1];
+
+    /* if database record handle valid */
+    if ((pCb->dbHdl != APP_DB_HDL_NONE) && ((pPeerKey = AppDbGetKey(pCb->dbHdl, DM_KEY_IRK, NULL)) != NULL))
+    {
+      /* store peer identity info */
+      BdaCpy(tagCb.peerAddr, pPeerKey->irk.bdAddr);
+      tagCb.addrType = pPeerKey->irk.addrType;
+    }
+  }
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     tagSetup
  *        
  *  \brief  Set up advertising and other procedures that need to be performed after
@@ -423,7 +501,7 @@ static void tagSetup(dmEvt_t *pMsg)
   /* set advertising and scan response data for connectable mode */
   AppAdvSetData(APP_ADV_DATA_CONNECTABLE, 0, NULL);
   AppAdvSetData(APP_SCAN_DATA_CONNECTABLE, sizeof(tagScanData), (uint8_t *) tagScanData);
-  
+
   /* start advertising; automatically set connectable/discoverable mode and bondable mode */
   AppAdvStart(APP_MODE_AUTO_INIT);
 }
@@ -447,6 +525,12 @@ static void tagValueUpdate(attEvt_t *pMsg)
 
     /* GATT */
     if (GattValueUpdate(pTagGattHdlList, pMsg) == ATT_SUCCESS)    
+    {
+      return;
+    }
+
+    /* GAP */
+    if (GapValueUpdate(pTagGapHdlList, pMsg) == ATT_SUCCESS)
     {
       return;
     }
@@ -572,8 +656,24 @@ static void tagBtnCback(uint8_t btn)
         break;
         
       case APP_UI_BTN_1_LONG:
-        /* clear bonded device info and restart advertising */
+        /* clear bonded device info */
         AppDbDeleteAllRecords();
+
+        /* if LL Privacy is supported */
+        if (HciLlPrivacySupported())
+        {
+          /* if LL Privacy has been enabled */
+          if (DmLlPrivEnabled())
+          {
+            /* make sure LL Privacy is disabled before restarting advertising */
+            DmPrivSetAddrResEnable(FALSE);
+          }
+
+          /* clear resolving list */
+          DmPrivClearResList();
+        }
+
+        /* restart advertising */
         AppAdvStart(APP_MODE_AUTO_INIT);
         break;
        
@@ -583,6 +683,21 @@ static void tagBtnCback(uint8_t btn)
 
         /* set Advertising filter policy to None */
         DmDevSetFilterPolicy(DM_FILT_POLICY_MODE_ADV, HCI_ADV_FILT_NONE);
+        break;
+
+      case APP_UI_BTN_2_SHORT:
+        /* stop advertising */
+        AppAdvStop();
+        break;
+
+      case APP_UI_BTN_2_LONG:
+        /* start directed advertising using peer address */
+        AppConnAccept(DM_ADV_CONN_DIRECT_LO_DUTY, tagCb.addrType, tagCb.peerAddr);
+        break;
+
+      case APP_UI_BTN_2_EX_LONG:
+        /* enable device privacy -- start generating local RPAs every 15 minutes */
+        DmAdvPrivStart(15 * 60);
         break;
 
       default:
@@ -626,12 +741,15 @@ static void tagDiscCback(dmConnId_t connId, uint8_t status)
       break;
       
     case APP_DISC_FAILED:
-      /* if immediate alert service not found */
-      if (tagCb.discState == TAG_DISC_IAS_SVC)
+      if (pAppCfg->abortDisc)
       {
-        /* discovery failed */
-        AppDiscComplete(connId, APP_DISC_FAILED);
-        break;
+        /* if immediate alert service not found */
+        if (tagCb.discState == TAG_DISC_IAS_SVC)
+        {
+          /* discovery failed */
+          AppDiscComplete(connId, APP_DISC_FAILED);
+          break;
+        }
       }
       /* else fall through to continue discovery */
       
@@ -643,6 +761,11 @@ static void tagDiscCback(dmConnId_t connId, uint8_t status)
       {
         /* discover GATT service */
         GattDiscover(connId, pTagGattHdlList);
+      }
+      else if (tagCb.discState == TAG_DISC_GAP_SVC)
+      {
+        /* discover GAP service */
+        GapDiscover(connId, pTagGapHdlList);
       }
       else
       {    
@@ -691,6 +814,7 @@ static void tagProcMsg(dmEvt_t *pMsg)
   
   switch(pMsg->hdr.event)
   {
+    case ATTC_READ_RSP:
     case ATTC_HANDLE_VALUE_IND:
       tagValueUpdate((attEvt_t *) pMsg);
       break;
@@ -709,6 +833,7 @@ static void tagProcMsg(dmEvt_t *pMsg)
       break;
           
     case DM_CONN_OPEN_IND:
+      tagOpen(pMsg);
       uiEvent = APP_UI_CONN_OPEN;
       break;
          
@@ -718,6 +843,7 @@ static void tagProcMsg(dmEvt_t *pMsg)
       break;
        
     case DM_SEC_PAIR_CMPL_IND:
+      tagSecPairCmpl(pMsg);
       uiEvent = APP_UI_SEC_PAIR_CMPL;
       break;
      
@@ -735,6 +861,9 @@ static void tagProcMsg(dmEvt_t *pMsg)
 
     case DM_SEC_AUTH_REQ_IND:
       AppHandlePasskey(&pMsg->authReq);
+      break;
+
+    case DM_ADV_NEW_ADDR_IND:
       break;
 
     case TAG_RSSI_TIMER_IND:
@@ -789,10 +918,17 @@ void TagHandlerInit(wsfHandlerId_t handlerId)
   pAppSecCfg = (appSecCfg_t *) &tagSecCfg;
   pAppUpdateCfg = (appUpdateCfg_t *) &tagUpdateCfg;
   pAppDiscCfg = (appDiscCfg_t *) &tagDiscCfg;
+  pAppCfg = (appCfg_t *) &tagAppCfg;
+
+  /* Set stack configuration pointers */
+  pSmpCfg = (smpCfg_t *)&tagSmpCfg;
 
   /* Initialize application framework */
   AppSlaveInit();
   AppDiscInit();
+
+  /* Set IRK for the local device */
+  DmSecSetLocalIrk(localIrk);
 }
 
 /*************************************************************************************************/

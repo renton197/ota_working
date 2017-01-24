@@ -4,8 +4,8 @@
  *
  *  \brief  HCI subsystem API.
  *
- *          $Date: 2015-08-24 15:34:11 -0700 (Mon, 24 Aug 2015) $
- *          $Revision: 3684 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -36,28 +36,54 @@ extern "C" {
 **************************************************************************************************/
 
 /*! Internal event values for the HCI event and sec callbacks */
-#define HCI_RESET_SEQ_CMPL_CBACK_EVT                    0   /*! Reset sequence complete */
-#define HCI_LE_CONN_CMPL_CBACK_EVT                      1   /*! LE connection complete */
-#define HCI_DISCONNECT_CMPL_CBACK_EVT                   2   /*! LE disconnect complete */
-#define HCI_LE_CONN_UPDATE_CMPL_CBACK_EVT               3   /*! LE connection update complete */
-#define HCI_LE_CREATE_CONN_CANCEL_CMD_CMPL_CBACK_EVT    4   /*! LE create connection cancel command complete */
-#define HCI_LE_ADV_REPORT_CBACK_EVT                     5   /*! LE advertising report */
-#define HCI_READ_RSSI_CMD_CMPL_CBACK_EVT                6   /*! Read RSSI command complete */
-#define HCI_LE_READ_CHAN_MAP_CMD_CMPL_CBACK_EVT         7   /*! LE Read channel map command complete */
-#define HCI_READ_TX_PWR_LVL_CMD_CMPL_CBACK_EVT          8   /*! Read transmit power level command complete */
-#define HCI_READ_REMOTE_VER_INFO_CMPL_CBACK_EVT         9   /*! Read remote version information complete */
-#define HCI_LE_READ_REMOTE_FEAT_CMPL_CBACK_EVT          10  /*! LE read remote features complete */
-#define HCI_LE_LTK_REQ_REPL_CMD_CMPL_CBACK_EVT          11  /*! LE LTK request reply command complete */
-#define HCI_LE_LTK_REQ_NEG_REPL_CMD_CMPL_CBACK_EVT      12  /*! LE LTK request negative reply command complete */
-#define HCI_ENC_KEY_REFRESH_CMPL_CBACK_EVT              13  /*! Encryption key refresh complete */
-#define HCI_ENC_CHANGE_CBACK_EVT                        14  /*! Encryption change */
-#define HCI_LE_LTK_REQ_CBACK_EVT                        15  /*! LE LTK request */
-#define HCI_VENDOR_SPEC_CMD_STATUS_CBACK_EVT            16  /*! Vendor specific command status */
-#define HCI_VENDOR_SPEC_CMD_CMPL_CBACK_EVT              17  /*! Vendor specific command complete */
-#define HCI_VENDOR_SPEC_CBACK_EVT                       18  /*! Vendor specific */
-#define HCI_HW_ERROR_CBACK_EVT                          19  /*! Hardware error */
-#define HCI_LE_ENCRYPT_CMD_CMPL_CBACK_EVT               20  /*! LE encrypt command complete */
-#define HCI_LE_RAND_CMD_CMPL_CBACK_EVT                  21  /*! LE rand command complete */
+#define HCI_RESET_SEQ_CMPL_CBACK_EVT                     0   /*! Reset sequence complete */
+#define HCI_LE_CONN_CMPL_CBACK_EVT                       1   /*! LE connection complete */
+#define HCI_LE_ENHANCED_CONN_CMPL_CBACK_EVT              2   /*! LE enhanced connection complete */
+#define HCI_DISCONNECT_CMPL_CBACK_EVT                    3   /*! LE disconnect complete */
+#define HCI_LE_CONN_UPDATE_CMPL_CBACK_EVT                4   /*! LE connection update complete */
+#define HCI_LE_CREATE_CONN_CANCEL_CMD_CMPL_CBACK_EVT     5   /*! LE create connection cancel command complete */
+#define HCI_LE_ADV_REPORT_CBACK_EVT                      6   /*! LE advertising report */
+#define HCI_READ_RSSI_CMD_CMPL_CBACK_EVT                 7   /*! Read RSSI command complete */
+#define HCI_LE_READ_CHAN_MAP_CMD_CMPL_CBACK_EVT          8   /*! LE Read channel map command complete */
+#define HCI_READ_TX_PWR_LVL_CMD_CMPL_CBACK_EVT           9   /*! Read transmit power level command complete */
+#define HCI_READ_REMOTE_VER_INFO_CMPL_CBACK_EVT          10  /*! Read remote version information complete */
+#define HCI_LE_READ_REMOTE_FEAT_CMPL_CBACK_EVT           11  /*! LE read remote features complete */
+#define HCI_LE_LTK_REQ_REPL_CMD_CMPL_CBACK_EVT           12  /*! LE LTK request reply command complete */
+#define HCI_LE_LTK_REQ_NEG_REPL_CMD_CMPL_CBACK_EVT       13  /*! LE LTK request negative reply command complete */
+#define HCI_ENC_KEY_REFRESH_CMPL_CBACK_EVT               14  /*! Encryption key refresh complete */
+#define HCI_ENC_CHANGE_CBACK_EVT                         15  /*! Encryption change */
+#define HCI_LE_LTK_REQ_CBACK_EVT                         16  /*! LE LTK request */
+#define HCI_VENDOR_SPEC_CMD_STATUS_CBACK_EVT             17  /*! Vendor specific command status */
+#define HCI_VENDOR_SPEC_CMD_CMPL_CBACK_EVT               18  /*! Vendor specific command complete */
+#define HCI_VENDOR_SPEC_CBACK_EVT                        19  /*! Vendor specific */
+#define HCI_HW_ERROR_CBACK_EVT                           20  /*! Hardware error */
+#define HCI_LE_ADD_DEV_TO_RES_LIST_CMD_CMPL_CBACK_EVT    21  /*! LE add device to resolving list command complete */
+#define HCI_LE_REM_DEV_FROM_RES_LIST_CMD_CMPL_CBACK_EVT  22  /*! LE remove device from resolving command complete */
+#define HCI_LE_CLEAR_RES_LIST_CMD_CMPL_CBACK_EVT         23  /*! LE clear resolving list command complete */
+#define HCI_LE_READ_PEER_RES_ADDR_CMD_CMPL_CBACK_EVT     24  /*! LE read peer resolving address command complete */
+#define HCI_LE_READ_LOCAL_RES_ADDR_CMD_CMPL_CBACK_EVT    25  /*! LE read local resolving address command complete */
+#define HCI_LE_SET_ADDR_RES_ENABLE_CMD_CMPL_CBACK_EVT    26  /*! LE set address resolving enable command complete */
+#define HCI_LE_ENCRYPT_CMD_CMPL_CBACK_EVT                27  /*! LE encrypt command complete */
+#define HCI_LE_RAND_CMD_CMPL_CBACK_EVT                   28  /*! LE rand command complete */
+#define HCI_LE_REM_CONN_PARAM_REP_CMD_CMPL_CBACK_EVT     29  /*! LE remote connection parameter request reply complete */
+#define HCI_LE_REM_CONN_PARAM_NEG_REP_CMD_CMPL_CBACK_EVT 30  /*! LE remote connection parameter request negative reply complete */
+#define HCI_LE_READ_DEF_DATA_LEN_CMD_CMPL_CBACK_EVT      31  /*! LE read suggested default data length command complete */
+#define HCI_LE_WRITE_DEF_DATA_LEN_CMD_CMPL_CBACK_EVT     32  /*! LE write suggested default data length command complete */
+#define HCI_LE_SET_DATA_LEN_CMD_CMPL_CBACK_EVT           33  /*! LE set data length command complete */
+#define HCI_LE_READ_MAX_DATA_LEN_CMD_CMPL_CBACK_EVT      34  /*! LE read maximum data length command complete */
+#define HCI_LE_REM_CONN_PARAM_REQ_CBACK_EVT              35  /*! LE remote connection parameter request */
+#define HCI_LE_DATA_LEN_CHANGE_CBACK_EVT                 36  /*! LE data length change */
+#define HCI_LE_READ_LOCAL_P256_PUB_KEY_CMPL_CBACK_EVT    37  /*! LE read local P-256 public key */
+#define HCI_LE_GENERATE_DHKEY_CMPL_CBACK_EVT             38  /*! LE generate DHKey complete */
+#define HCI_WRITE_AUTH_PAYLOAD_TO_CMD_CMPL_CBACK_EVT     39  /*! Write authenticated payload timeout command complete */
+#define HCI_AUTH_PAYLOAD_TO_EXPIRED_CBACK_EVT            40  /*! Authenticated payload timeout expired event */
+#define HCI_LE_READ_PHY_CMD_CMPL_CBACK_EVT               41  /*! LE read phy command complete */
+#define HCI_LE_SET_DEF_PHY_CMD_CMPL_CBACK_EVT            42  /*! LE set default phy command complete */
+#define HCI_LE_PHY_UPDATE_CMPL_CBACK_EVT                 43  /*! LE phy update complete */
+#define HCI_LE_EXT_ADV_REPORT_CBACK_EVT                  44  /*! LE extended advertising report */
+#define HCI_LE_SCAN_TIMEOUT_CBACK_EVT                    45  /*! LE scan timeout event */
+#define HCI_LE_ADV_SET_TERM_CBACK_EVT                    46  /*! LE advertising set terminated event */
+#define HCI_LE_SCAN_REQ_RCVD_CBACK_EVT                   47  /*! LE scan request received event */
 
 /**************************************************************************************************
   Data Types
@@ -74,6 +100,52 @@ typedef struct
   uint16_t            maxCeLen;
 } hciConnSpec_t;
 
+/*! Extended create connection parameters */
+typedef struct
+{
+  uint16_t            scanInterval;    /*! Scan interval. */
+  uint16_t            scanWindow;      /*! Scan window. */
+  uint8_t             initFiltPolicy;  /*! Initiator filter policy. */
+  uint8_t             ownAddrType;     /*! Address type used by this device. */
+} hciExtCreateConnParam_t;
+
+/*! Extended advertising parameters */
+typedef struct
+{
+  uint16_t            advEventProp;    /*! Advertising Event Properties. */
+  uint32_t            priAdvInterMin;  /*! Primary Advertising Interval Minimum. */
+  uint32_t            priAdvInterMax;  /*! Primary Advertising Interval Maximum. */
+  uint8_t             priAdvChanMap;   /*! Primary Advertising Channel Map. */
+  uint8_t             ownAddrType;     /*! Own Address Type. */
+  uint8_t             peerAddrType;    /*! Peer Address Type. */
+  uint8_t             *pPeerAddr;      /*! Peer Address. */
+  uint8_t             advFiltPolicy;   /*! Advertising Filter Policy. */
+  int8_t              advTxPwr;        /*! Advertising Tx Power. */
+  uint8_t             priAdvPhy;       /*! Primary Advertising PHY. */
+  uint8_t             secAdvMaxSkip;   /*! Secondary Advertising Maximum Skip. */
+  uint8_t             secAdvPhy;       /*! Secondary Advertising PHY. */
+  uint8_t             advSetId;        /*! Advertising set ID. */
+  uint8_t             scanReqNotifEna; /*! Scan Request Notification Enable. */
+} hciExtAdvParam_t;
+
+/*! Extended advertising enable parameters */
+typedef struct
+{
+  uint8_t             advHandle;       /*! Advertising handle. */
+  uint16_t            duration;        /*! Advertising duration in 10 ms units. */
+  uint8_t             maxEaEvents;     /*! Maximum number of extended advertising events. */
+} hciExtAdvEnableParam_t;
+
+/*! Extended scanning parameters */
+typedef struct
+{
+  uint8_t             scanType;        /*! Scan type. */
+  uint16_t            scanInterval;    /*! Scan interval. */
+  uint16_t            scanWindow;      /*! Scan window. */
+  uint8_t             ownAddrType;     /*! Address type used by this device. */
+  uint8_t             scanFiltPolicy;  /*! Scan filter policy. */
+} hciExtScanParam_t;
+
 /*! LE connection complete event */
 typedef struct
 {
@@ -87,6 +159,10 @@ typedef struct
   uint16_t            connLatency;
   uint16_t            supTimeout;
   uint8_t             clockAccuracy;
+
+  /* enhanced fields */
+  bdAddr_t            localRpa;
+  bdAddr_t            peerRpa;
 } hciLeConnCmplEvt_t;
 
 /*! Disconnect complete event */
@@ -126,7 +202,55 @@ typedef struct
   uint8_t             eventType;
   uint8_t             addrType;
   bdAddr_t            addr;
+
+  /* direct fields */
+  uint8_t             directAddrType;
+  bdAddr_t            directAddr;
 } hciLeAdvReportEvt_t;
+
+/*! LE extended advertising report */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;            /*!< Event header. */
+  uint16_t            eventType;      /*!< Event type. */
+  uint8_t             addrType;       /*!< Address type. */
+  bdAddr_t            addr;           /*!< Address. */
+  uint8_t             priPhy;         /*!< Primary PHY. */
+  uint8_t             secPhy;         /*!< Secondary PHY. */
+  uint8_t             advSid;         /*!< Advertising SID. */
+  int8_t              txPower;        /*!< Tx Power. */
+  int8_t              rssi;           /*!< RSSI. */
+  int16_t             perAdvInter;    /*!< Periodic advertising interval. */
+  uint8_t             directAddrType; /*!< Directed address type. */
+  bdAddr_t            directAddr;     /*!< Directed address. */
+  uint8_t             len;            /*!< Data buffer length. */
+  uint8_t             *pData;         /*!< Data buffer. */
+} hciLeExtAdvReportEvt_t;
+
+/*! LE scan timeout */
+typedef struct
+{
+  wsfMsgHdr_t   hdr;            /*!< Event header. */
+} hciLeScanTimeoutEvt_t;
+
+/*! LE advertising set terminated */
+typedef struct
+{
+  wsfMsgHdr_t   hdr;            /*!< Event header. */
+  uint8_t       status;         /*!< Status. */
+  uint8_t       advHandle;      /*!< Advertising handle. */
+  uint16_t      handle;         /*!< Connection handle. */
+  uint8_t       numComplEvts;   /*!< Number of completed extended advertising events. */
+} hciLeAdvSetTermEvt_t;
+
+/*! LE scan request received */
+typedef struct
+{
+  wsfMsgHdr_t   hdr;            /*!< Event header. */
+  uint8_t       advHandle;      /*!< Advertising handle. */
+  uint8_t       scanAddrType;   /*!< Scanner address type. */
+  bdAddr_t      scanAddr;       /*!< Scanner address. */
+} hciLeScanReqRcvdEvt_t;
 
 /*! Read RSSI command complete event */
 typedef struct
@@ -163,7 +287,7 @@ typedef struct
   uint16_t            handle;
   uint8_t             version;
   uint16_t            mfrName;
-  uint16_t            subversion; 
+  uint16_t            subversion;
 } hciReadRemoteVerInfoCmplEvt_t;
 
 /*! LE read remote features complete event */
@@ -262,33 +386,230 @@ typedef struct
   uint8_t            randNum[HCI_RAND_LEN];
 } hciLeRandCmdCmplEvt_t;
 
+/*! LE remote connection parameter request reply command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            handle;
+} hciLeRemConnParamRepEvt_t;
+
+/*! LE remote connection parameter request negative reply command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            handle;
+} hciLeRemConnParamNegRepEvt_t;
+
+/*! LE read suggested default data len command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            suggestedMaxTxOctets;
+  uint16_t            suggestedMaxTxTime;
+} hciLeReadDefDataLenEvt_t;
+
+/*! LE write suggested default data len command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+} hciLeWriteDefDataLenEvt_t;
+
+/*! LE set data len command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            handle;
+} hciLeSetDataLenEvt_t;
+
+/*! LE read maximum data len command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            supportedMaxTxOctets;
+  uint16_t            supportedMaxTxTime;
+  uint16_t            supportedMaxRxOctets;
+  uint16_t            supportedMaxRxTime;
+} hciLeReadMaxDataLenEvt_t;
+
+/*! LE remote connetion parameter request event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint16_t            handle;
+  uint16_t            intervalMin;
+  uint16_t            intervalMax;
+  uint16_t            latency;
+  uint16_t            timeout;
+} hciLeRemConnParamReqEvt_t;
+
+/*! LE data length change event */
+typedef struct
+{
+  wsfMsgHdr_t        hdr;
+  uint16_t           handle;
+  uint16_t           maxTxOctets;
+  uint16_t           maxTxTime;
+  uint16_t           maxRxOctets;
+  uint16_t           maxRxTime;
+} hciLeDataLenChangeEvt_t;
+
+/*! LE local  p256 ecc key command complete event */
+typedef struct
+{
+  wsfMsgHdr_t        hdr;
+  uint8_t            status;
+  uint8_t            key[HCI_P256_KEY_LEN];
+} hciLeP256CmplEvt_t;
+
+/*! LE generate DH key command complete event */
+typedef struct
+{
+  wsfMsgHdr_t        hdr;
+  uint8_t            status;
+  uint8_t            key[HCI_DH_KEY_LEN];
+} hciLeGenDhKeyEvt_t;
+
+/*! LE read peer resolving address command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint8_t             peerRpa[BDA_ADDR_LEN];
+} hciLeReadPeerResAddrCmdCmplEvt_t;
+
+/*! LE read local resolving address command complete event */
+typedef struct
+{
+  wsfMsgHdr_t        hdr;
+  uint8_t            status;
+  uint8_t            localRpa[BDA_ADDR_LEN];
+} hciLeReadLocalResAddrCmdCmplEvt_t;
+
+/*! LE set address resolving enable command complete event */
+typedef struct
+{
+  wsfMsgHdr_t        hdr;
+  uint8_t            status;
+} hciLeSetAddrResEnableCmdCmplEvt_t;
+
+/*! LE add device to resolving list command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+} hciLeAddDevToResListCmdCmplEvt_t;
+
+/*! LE remove device from resolving list command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+} hciLeRemDevFromResListCmdCmplEvt_t;
+
+/*! LE clear resolving list command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+} hciLeClearResListCmdCmplEvt_t;
+
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            handle;
+} hciWriteAuthPayloadToCmdCmplEvt_t;
+
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint16_t            handle;
+} hciAuthPayloadToExpiredEvt_t;
+
+/*! LE read PHY command complete event */
+  typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            handle;
+  uint8_t             txPhy;
+  uint8_t             rxPhy;
+} hciLeReadPhyCmdCmplEvt_t;
+
+/*! LE set default PHY command complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+} hciLeSetDefPhyCmdCmplEvt_t;
+
+/*! LE PHY update complete event */
+typedef struct
+{
+  wsfMsgHdr_t         hdr;
+  uint8_t             status;
+  uint16_t            handle;
+  uint8_t             txPhy;
+  uint8_t             rxPhy;
+} hciLePhyUpdateEvt_t;
 
 /*! Union of all event types */
 typedef union
 {
-  wsfMsgHdr_t                       hdr;
-  wsfMsgHdr_t                       resetSeqCmpl;
-  hciLeConnCmplEvt_t                leConnCmpl;
-  hciDisconnectCmplEvt_t            disconnectCmpl;
-  hciLeConnUpdateCmplEvt_t          leConnUpdateCmpl;
-  hciLeCreateConnCancelCmdCmplEvt_t leCreateConnCancelCmdCmpl;
-  hciLeAdvReportEvt_t               leAdvReport;
-  hciReadRssiCmdCmplEvt_t           readRssiCmdCmpl;
-  hciReadChanMapCmdCmplEvt_t        readChanMapCmdCmpl;    
-  hciReadTxPwrLvlCmdCmplEvt_t       readTxPwrLvlCmdCmpl;   
-  hciReadRemoteVerInfoCmplEvt_t     readRemoteVerInfoCmpl;  
-  hciLeReadRemoteFeatCmplEvt_t      leReadRemoteFeatCmpl;  
-  hciLeLtkReqReplCmdCmplEvt_t       leLtkReqReplCmdCmpl;   
-  hciLeLtkReqNegReplCmdCmplEvt_t    leLtkReqNegReplCmdCmpl;
-  hciEncKeyRefreshCmpl_t            encKeyRefreshCmpl;       
-  hciEncChangeEvt_t                 encChange;             
-  hciLeLtkReqEvt_t                  leLtkReq;                 
-  hciVendorSpecCmdStatusEvt_t       vendorSpecCmdStatus;   
-  hciVendorSpecCmdCmplEvt_t         vendorSpecCmdCmpl;     
-  hciVendorSpecEvt_t                vendorSpec;            
-  hciHwErrorEvt_t                   hwError;
-  hciLeEncryptCmdCmplEvt_t          leEncryptCmdCmpl;
-  hciLeRandCmdCmplEvt_t             leRandCmdCmpl;
+  wsfMsgHdr_t                        hdr;
+  wsfMsgHdr_t                        resetSeqCmpl;
+  hciLeConnCmplEvt_t                 leConnCmpl;
+  hciDisconnectCmplEvt_t             disconnectCmpl;
+  hciLeConnUpdateCmplEvt_t           leConnUpdateCmpl;
+  hciLeCreateConnCancelCmdCmplEvt_t  leCreateConnCancelCmdCmpl;
+  hciLeAdvReportEvt_t                leAdvReport;
+  hciReadRssiCmdCmplEvt_t            readRssiCmdCmpl;
+  hciReadChanMapCmdCmplEvt_t         readChanMapCmdCmpl;
+  hciReadTxPwrLvlCmdCmplEvt_t        readTxPwrLvlCmdCmpl;
+  hciReadRemoteVerInfoCmplEvt_t      readRemoteVerInfoCmpl;
+  hciLeReadRemoteFeatCmplEvt_t       leReadRemoteFeatCmpl;
+  hciLeLtkReqReplCmdCmplEvt_t        leLtkReqReplCmdCmpl;
+  hciLeLtkReqNegReplCmdCmplEvt_t     leLtkReqNegReplCmdCmpl;
+  hciEncKeyRefreshCmpl_t             encKeyRefreshCmpl;
+  hciEncChangeEvt_t                  encChange;
+  hciLeLtkReqEvt_t                   leLtkReq;
+  hciVendorSpecCmdStatusEvt_t        vendorSpecCmdStatus;
+  hciVendorSpecCmdCmplEvt_t          vendorSpecCmdCmpl;
+  hciVendorSpecEvt_t                 vendorSpec;
+  hciHwErrorEvt_t                    hwError;
+  hciLeEncryptCmdCmplEvt_t           leEncryptCmdCmpl;
+  hciLeRandCmdCmplEvt_t              leRandCmdCmpl;
+  hciLeReadPeerResAddrCmdCmplEvt_t   leReadPeerResAddrCmdCmpl;
+  hciLeReadLocalResAddrCmdCmplEvt_t  leReadLocalResAddrCmdCmpl;
+  hciLeSetAddrResEnableCmdCmplEvt_t  leSetAddrResEnableCmdCmpl;
+  hciLeAddDevToResListCmdCmplEvt_t   leAddDevToResListCmdCmpl;
+  hciLeRemDevFromResListCmdCmplEvt_t leRemDevFromResListCmdCmpl;
+  hciLeClearResListCmdCmplEvt_t      leClearResListCmdCmpl;
+  hciLeRemConnParamRepEvt_t          leRemConnParamRepCmdCmpl;
+  hciLeRemConnParamNegRepEvt_t       leRemConnParamNegRepCmdCmpl;
+  hciLeReadDefDataLenEvt_t           leReadDefDataLenCmdCmpl;
+  hciLeWriteDefDataLenEvt_t          leWriteDefDataLenCmdCmpl;
+  hciLeSetDataLenEvt_t               leSetDataLenCmdCmpl;
+  hciLeReadMaxDataLenEvt_t           leReadMaxDataLenCmdCmpl;
+  hciLeRemConnParamReqEvt_t          leRemConnParamReq;
+  hciLeDataLenChangeEvt_t            leDataLenChange;
+  hciLeP256CmplEvt_t                 leP256;
+  hciLeGenDhKeyEvt_t                 leGenDHKey;
+  hciWriteAuthPayloadToCmdCmplEvt_t  writeAuthPayloadToCmdCmpl;
+  hciAuthPayloadToExpiredEvt_t       authPayloadToExpired;
+  hciLeReadPhyCmdCmplEvt_t           leReadPhyCmdCmpl;
+  hciLeSetDefPhyCmdCmplEvt_t         leSetDefPhyCmdCmpl;
+  hciLePhyUpdateEvt_t                lePhyUpdate;
+  hciLeExtAdvReportEvt_t             leExtAdvReport;
+  hciLeScanTimeoutEvt_t              leScanTimeout;
+  hciLeAdvSetTermEvt_t               leAdvSetTerm;
+  hciLeScanReqRcvdEvt_t              leScanReqRcvd;
 } hciEvt_t;
 
 /**************************************************************************************************
@@ -314,6 +635,7 @@ void HciCoreInit(void);
 void HciCoreHandler(wsfEventMask_t event, wsfMsgHdr_t *pMsg);
 void HciSetMaxRxAclLen(uint16_t len);
 void HciSetAclQueueWatermarks(uint8_t queueHi, uint8_t queueLo);
+void HciSetLeSupFeat(uint16_t feat, bool_t flag);
 
 /*! Optimization interface */
 uint8_t *HciGetBdAddr(void);
@@ -322,7 +644,13 @@ int8_t HciGetAdvTxPwr(void);
 uint16_t HciGetBufSize(void);
 uint8_t HciGetNumBufs(void);
 uint8_t *HciGetSupStates(void);
-uint8_t HciGetLeSupFeat(void);
+uint16_t HciGetLeSupFeat(void);
+uint16_t HciGetMaxRxAclLen(void);
+uint8_t HciGetResolvingListSize(void);
+bool_t HciLlPrivacySupported(void);
+uint16_t HciGetMaxAdvDataLen(void);
+uint8_t HciGetNumSupAdvSets(void);
+bool_t HciLeAdvExtSupported(void);
 
 /*! ACL data interface */
 void HciSendAclData(uint8_t *pAclData);
@@ -351,7 +679,7 @@ void HciLeRemoveDevWhiteListCmd(uint8_t addrType, uint8_t *pAddr);
 void HciLeSetAdvEnableCmd(uint8_t enable);
 void HciLeSetAdvDataCmd(uint8_t len, uint8_t *pData);
 void HciLeSetAdvParamCmd(uint16_t advIntervalMin, uint16_t advIntervalMax, uint8_t advType,
-                         uint8_t ownAddrType, uint8_t directAddrType, uint8_t *pDirectAddr,
+                         uint8_t ownAddrType, uint8_t peerAddrType, uint8_t *pPeerAddr,
                          uint8_t advChanMap, uint8_t advFiltPolicy);
 void HciLeSetEventMaskCmd(uint8_t *pLeEventMask);
 void HciLeSetHostChanClassCmd(uint8_t *pChanMap);
@@ -370,7 +698,53 @@ void HciReadRssiCmd(uint16_t handle);
 void HciReadTxPwrLvlCmd(uint16_t handle, uint8_t type);
 void HciResetCmd(void);
 void HciSetEventMaskCmd(uint8_t *pEventMask);
+void HciSetEventMaskPage2Cmd(uint8_t *pEventMask);
+void HciReadAuthPayloadTimeout(uint16_t handle);
+void HciWriteAuthPayloadTimeout(uint16_t handle, uint16_t timeout);
+void HciLeAddDeviceToResolvingListCmd(uint8_t peerAddrType, const uint8_t *pPeerIdentityAddr,
+                                      const uint8_t *pPeerIrk, const uint8_t *pLocalIrk);
+void HciLeRemoveDeviceFromResolvingList(uint8_t peerAddrType, const uint8_t *pPeerIdentityAddr);
+void HciLeClearResolvingList(void);
+void HciLeReadResolvingListSize(void);
+void HciLeReadPeerResolvableAddr(uint8_t addrType, const uint8_t *pIdentityAddr);
+void HciLeReadLocalResolvableAddr(uint8_t addrType, const uint8_t *pIdentityAddr);
+void HciLeSetAddrResolutionEnable(uint8_t enable);
+void HciLeSetResolvablePrivateAddrTimeout(uint16_t rpaTimeout);
+void HciLeReadPhyCmd(uint16_t handle);
+void HciLeSetDefaultPhyCmd(uint8_t allPhys, uint8_t txPhys, uint8_t rxPhys);
+void HciLeSetPhyCmd(uint16_t handle, uint8_t allPhys, uint8_t txPhys, uint8_t rxPhys, uint16_t phyOptions);
 void HciVendorSpecificCmd(uint16_t opcode, uint8_t len, uint8_t *pData);
+
+void HciLeRemoteConnParamReqReply(uint16_t handle, uint16_t intervalMin, uint16_t intervalMax, uint16_t latency,
+                                  uint16_t timeout, uint16_t minCeLen, uint16_t maxCeLen);
+void HciLeRemoteConnParamReqNegReply(uint16_t handle, uint8_t reason);
+void HciLeSetDataLen(uint16_t handle, uint16_t txOctets, uint16_t txTime);
+void HciLeReadDefDataLen(void);
+void HciLeWriteDefDataLen(uint16_t suggestedMaxTxOctets, uint16_t suggestedMaxTxTime);
+void HciLeReadLocalP256PubKey(void);
+void HciLeGenerateDHKey(uint8_t *pPubKeyX, uint8_t *pPubKeyY);
+void HciLeReadMaxDataLen(void);
+void HciWriteAuthPayloadTimeout(uint16_t handle, uint16_t timeout);
+
+/* AE */
+void HciLeSetAdvSetRandAddrCmd(uint8_t advHandle, const uint8_t *pAddr);
+void HciLeSetExtAdvParamCmd(uint8_t advHandle, hciExtAdvParam_t *pExtAdvParam);
+void HciLeSetExtAdvDataCmd(uint8_t advHandle, uint8_t op, uint8_t fragPref, uint8_t len,
+                           const uint8_t *pData);
+void HciLeSetExtScanRespDataCmd(uint8_t advHandle, uint8_t op, uint8_t fragPref, uint8_t len,
+                                const uint8_t *pData);
+void HciLeSetExtAdvEnableCmd(uint8_t enable, uint8_t numSets, hciExtAdvEnableParam_t *pEnableParam);
+void HciLeReadMaxAdvDataLen(void);
+void HciLeReadNumSupAdvSets(void);
+void HciLeRemoveAdvSet(uint8_t advHandle);
+void HciLeClearAdvSets(void);
+void HciLeReadTxPower(void);
+void HciLeReadRfPathComp(void);
+void HciLeWriteRfPathComp(int16_t txPathComp, int16_t rxPathComp);
+void HciLeSetExtScanParamCmd(uint8_t scanPhys, hciExtScanParam_t *pScanParam);
+void HciLeExtScanEnableCmd(uint8_t enable, uint8_t filterDup, uint16_t duration, uint16_t period);
+void HciLeExtCreateConnCmd(uint8_t initPhys, hciExtCreateConnParam_t *pConnParam, uint8_t peerAddrType,
+                           uint8_t *pPeerAddr, hciConnSpec_t *pConnSpec);
 
 #ifdef __cplusplus
 };

@@ -18,51 +18,33 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "hal/am_hal_clkgen.h"
+#include "hal/am_hal_flash.h"
 #include "am_util_delay.h"
 
 //*****************************************************************************
 //
-//! @brief Delays for a desired amount of cycles.
+//! @brief Delays for a desired amount of loops.
 //!
-//! @param ui32Cycles - Desired number of cycles to delay for.
+//! @param ui32CycleLoops - Desired number of cycle loops to delay for.
 //!
-//! This function will delay for a number of cycles.
+//! This function will delay for a number of cycle loops.
 //!
-//! @note - the number of cycles this function takes to execute is
-//! approximately ~3. Therefore, ui32Cycles will be ~3x what is passed.
+//! @note - the number of cycles each loops takes to execute is approximately 3.
+//! Therefore the actual number of cycles executed will be ~3x ui32CycleLoops.
 //!
-//! For example, a ui32Cycles value of 100 will delay for 300 cycles.
+//! For example, a ui32CycleLoops value of 100 will delay for 300 cycles.
 //!
 //! @returns None
 //
 //*****************************************************************************
-#ifdef gcc
-void __attribute__((naked))
-am_util_delay_cycles(uint32_t ui32Cycles)
-{
-    __asm("    subs    r0, #1\n"
-          "    bne     am_util_delay_cycles\n"
-          "    bx      lr");
-}
-#endif
-#ifdef keil
-__asm void
-am_util_delay_cycles(uint32_t ui32Cycles)
-{
-    SUBS    R0, #1
-    BNE     am_util_delay_cycles
-    BX      LR
-}
-#endif
-#ifdef iar
 void
-am_util_delay_cycles(uint32_t ui32Cycles)
+am_util_delay_cycles(uint32_t ui32Iterations)
 {
-    asm("SUBS    R0, #1");
-    asm("BNE.N     am_util_delay_cycles");
-    asm("BX      LR");
+    //
+    // Call the BOOTROM cycle delay function
+    //
+    am_hal_flash_delay(ui32Iterations);
 }
-#endif
 
 //*****************************************************************************
 //
@@ -78,12 +60,13 @@ am_util_delay_cycles(uint32_t ui32Cycles)
 void
 am_util_delay_ms(uint32_t ui32MilliSeconds)
 {
-    uint32_t ui32Cycles = ui32MilliSeconds * (am_hal_clkgen_sysclk_get() / 3000);
+    uint32_t ui32Loops = ui32MilliSeconds *
+                          (am_hal_clkgen_sysclk_get() / 3000);
 
     //
-    // Call the cycle delay
+    // Call the BOOTROM cycle delay function
     //
-    am_util_delay_cycles(ui32Cycles);
+    am_hal_flash_delay(ui32Loops);
 }
 
 //*****************************************************************************
@@ -100,10 +83,11 @@ am_util_delay_ms(uint32_t ui32MilliSeconds)
 void
 am_util_delay_us(uint32_t ui32MicroSeconds)
 {
-    uint32_t ui32Cycles = ui32MicroSeconds * (am_hal_clkgen_sysclk_get() / 3000000);
+    uint32_t ui32Loops = ui32MicroSeconds *
+                          (am_hal_clkgen_sysclk_get() / 3000000);
 
     //
-    // Call the cycle delay
+    // Call the BOOTROM cycle delay function
     //
-    am_util_delay_cycles(ui32Cycles);
+    am_hal_flash_delay(ui32Loops);
 }

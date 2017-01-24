@@ -4,8 +4,8 @@
  *
  *  \brief  Health/medical collector sample application.
  *
- *          $Date: 2012-12-27 12:15:33 -0800 (Thu, 27 Dec 2012) $
- *          $Revision: 403 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -39,7 +39,8 @@ enum
   MEDC_ID_BLP,      /*! Blood pressure profile */
   MEDC_ID_GLP,      /*! Glucose profile */
   MEDC_ID_WSP,      /*! Weight scale profile */
-  MEDC_ID_HTP       /*! Health thermometer profile */
+  MEDC_ID_HTP,      /*! Health thermometer profile */
+  MEDC_ID_PLX       /*! Pulse oximeter profile */
 };
 
 /**************************************************************************************************

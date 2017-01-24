@@ -4,8 +4,8 @@
  *
  *  \brief  Glucose profile sensor.
  *
- *          $Date: 2012-06-07 11:59:12 -0700 (Thu, 07 Jun 2012) $
- *          $Revision: 331 $
+ *          $Date: 2016-08-18 13:33:13 -0700 (Thu, 18 Aug 2016) $
+ *          $Revision: 8391 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -25,6 +25,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**************************************************************************************************
+  Macros
+**************************************************************************************************/
+
+/*! All supported features of the glucose profile */
+#define GLP_ALL_SUPPORTED_FEATURES      0x000F
 
 /*************************************************************************************************/
 /*!
@@ -50,6 +57,20 @@ void GlpsInit(void);
  */
 /*************************************************************************************************/
 void GlpsProcMsg(wsfMsgHdr_t *pMsg);
+
+/*************************************************************************************************/
+/*!
+*  \fn     GlpsBtn
+*
+*  \brief  Handle a button press.
+*
+*  \param  connId    Connection identifier.
+*  \param  btn       Button press.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void GlpsBtn(dmConnId_t connId, uint8_t btn);
 
 /*************************************************************************************************/
 /*!

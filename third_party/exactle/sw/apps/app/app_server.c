@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework module for attribute server.
  *
- *          $Date: 2011-12-22 13:59:04 -0800 (Thu, 22 Dec 2011) $
- *          $Revision: 227 $
+ *          $Date: 2016-03-22 07:45:42 -0700 (Tue, 22 Mar 2016) $
+ *          $Revision: 6426 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -29,6 +29,32 @@
 
 /*************************************************************************************************/
 /*!
+*  \fn     appServerSetSigningInfo
+*
+*  \brief  Set the peer's CSRK and sign counter on this connection.
+*
+*  \param  connId      DM connection ID.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void appServerSetSigningInfo(dmConnId_t connId)
+{
+  appDbHdl_t  dbHdl;
+  dmSecKey_t  *pPeerKey;
+
+  /* if peer's CSRK is available */
+  if (((dbHdl = AppDbGetHdl(connId)) != APP_DB_HDL_NONE) &&
+      ((pPeerKey = AppDbGetKey(dbHdl, DM_KEY_CSRK, NULL)) != NULL))
+  {
+    /* set peer's CSRK and sign counter on this connection */
+    AttsSetCsrk(connId, pPeerKey->csrk.key);
+    AttsSetSignCounter(connId, AppDbGetPeerSignCounter(dbHdl));
+  }
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppServerConnCback
  *        
  *  \brief  ATT connection callback for app framework.
@@ -48,6 +74,9 @@ void AppServerConnCback(dmEvt_t *pDmEvt)
   {
     /* set up CCC table with uninitialized (all zero) values */
     AttsCccInitTable(connId, NULL);
+
+    /* set peer's data signing info */
+    appServerSetSigningInfo(connId);
   }
   else if (pDmEvt->hdr.event == DM_SEC_PAIR_CMPL_IND)
   {
@@ -61,6 +90,9 @@ void AppServerConnCback(dmEvt_t *pDmEvt)
         AttsCccInitTable(connId, AppDbGetCccTbl(dbHdl));
       }
     }      
+
+    /* set peer's data signing info */
+    appServerSetSigningInfo(connId);
   }
   else if (pDmEvt->hdr.event == DM_SEC_ENCRYPT_IND)
   {
@@ -77,5 +109,11 @@ void AppServerConnCback(dmEvt_t *pDmEvt)
   {
     /* clear CCC table on connection close */
     AttsCccClearTable(connId);
+
+    if ((dbHdl = AppDbGetHdl(connId)) != APP_DB_HDL_NONE)
+    {
+      /* remember peer's sign counter */
+      AppDbSetPeerSignCounter(dbHdl, AttsGetSignCounter(connId));
+    }
   }
 }

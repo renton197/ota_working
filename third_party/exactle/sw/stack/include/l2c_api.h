@@ -4,8 +4,8 @@
  *        
  *  \brief  L2CAP subsystem API.
  *
- *          $Date: 2015-06-22 16:15:44 -0700 (Mon, 22 Jun 2015) $
- *          $Revision: 3217 $
+ *          $Date: 2015-10-09 09:08:23 -0700 (Fri, 09 Oct 2015) $
+ *          $Revision: 4164 $
  *  
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -308,8 +308,8 @@ void L2cCocInit(void);
  *          After registering a connection can be established by the client using this
  *          registration instance.
  *
- *  \param  pReg    Registration parameter structure.
  *  \param  cback   Client callback function.
+ *  \param  pReg    Registration parameter structure.
  *
  *  \return Registration instance ID or L2C_COC_REG_ID_NONE if registration failed.
  */

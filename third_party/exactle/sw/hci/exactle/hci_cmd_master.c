@@ -1,11 +1,11 @@
 /*************************************************************************************************/
 /*!
- *  \file   hci_cmd.c
+ *  \file   hci_cmd_master.c
  *
- *  \brief  HCI command module.
+ *  \brief  HCI command module for master.
  *
- *          $Date: 2013-08-25 14:47:01 -0700 (Sun, 25 Aug 2013) $
- *          $Revision: 906 $
+ *          $Date: 2016-08-25 15:41:57 -0700 (Thu, 25 Aug 2016) $
+ *          $Revision: 8575 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -61,14 +61,53 @@ void HciLeSetScanEnableCmd(uint8_t enable, uint8_t filterDup)
 void HciLeSetScanParamCmd(uint8_t scanType, uint16_t scanInterval, uint16_t scanWindow,
                           uint8_t ownAddrType, uint8_t scanFiltPolicy)
 {
+  LlScanParam_t param;
   uint8_t status;
   (void)status;
 
-  status = LlSetScanParam(scanType,
-                          scanInterval,
-                          scanWindow,
-                          ownAddrType,
-                          scanFiltPolicy);
+  param.scanType = scanType;
+  param.scanInterval = scanInterval;
+  param.scanWindow = scanWindow;
+  param.ownAddrType = ownAddrType;
+  param.scanFiltPolicy = scanFiltPolicy;
+  
+  status = LlSetScanParam(&param);
 
   WSF_ASSERT(status == LL_SUCCESS);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     HciLeCreateConnCmd
+ *
+ *  \brief  HCI LE create connection command.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void HciLeCreateConnCmd(uint16_t scanInterval, uint16_t scanWindow, uint8_t filterPolicy,
+                        uint8_t peerAddrType, uint8_t *pPeerAddr, uint8_t ownAddrType,
+                        hciConnSpec_t *pConnSpec)
+{
+  LlCreateConn(scanInterval,
+               scanWindow,
+               filterPolicy,
+               peerAddrType,
+               pPeerAddr,
+               ownAddrType,
+               (llConnSpec_t *)pConnSpec);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     HciLeCreateConnCancelCmd
+ *
+ *  \brief  HCI LE create connection cancel command.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void HciLeCreateConnCancelCmd(void)
+{
+  LlCreateConnCancel();
 }

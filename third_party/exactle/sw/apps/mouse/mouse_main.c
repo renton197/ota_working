@@ -4,8 +4,8 @@
  *
  *  \brief  HID Mouse sample application.
  *
- *          $Date: 2015-10-01 12:19:36 -0700 (Thu, 01 Oct 2015) $
- *          $Revision: 4073 $
+ *          $Date: 2016-08-03 13:30:39 -0700 (Wed, 03 Aug 2016) $
+ *          $Revision: 8135 $
  *
  *  Copyright (c) 2015 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -90,6 +90,17 @@ static const basCfg_t mouseBasCfg =
   30,       /*! Battery measurement timer expiration period in seconds */
   1,        /*! Perform battery measurement after this many timer periods */
   100       /*! Send battery level notification to peer when below this level. */
+};
+
+/*! SMP security parameter configuration */
+static const smpCfg_t mouseSmpCfg =
+{
+  3000,                                   /*! 'Repeated attempts' timeout in msec */
+  SMP_IO_NO_IN_NO_OUT,                    /*! I/O Capability */
+  7,                                      /*! Minimum encryption key length */
+  16,                                     /*! Maximum encryption key length */
+  3,                                      /*! Attempts to trigger 'repeated attempts' timeout */
+  0                                       /*! Device authentication requirements */
 };
 
 /**************************************************************************************************
@@ -276,12 +287,12 @@ static void mouseDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t   *pMsg;
   uint16_t  len;
-  
-  len = sizeof(dmEvt_t);
+
+  len = DmSizeOfEvt(pDmEvt);
 
   if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(mouseCb.handlerId, pMsg);
   }
 }
@@ -650,6 +661,9 @@ void MouseHandlerInit(wsfHandlerId_t handlerId)
   pAppAdvCfg = (appAdvCfg_t *) &mouseAdvCfg;
   pAppSecCfg = (appSecCfg_t *) &mouseSecCfg;
   pAppUpdateCfg = (appUpdateCfg_t *) &mouseUpdateCfg;
+
+  /* Set stack configuration pointers */
+  pSmpCfg = (smpCfg_t *) &mouseSmpCfg;
 
   /* Initialize application framework */
   AppSlaveInit();

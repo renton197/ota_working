@@ -4,8 +4,8 @@
  *
  *  \brief  Glucose profile sensor.
  *
- *          $Date: 2012-06-07 11:59:12 -0700 (Thu, 07 Jun 2012) $
- *          $Revision: 331 $
+ *          $Date: 2016-04-19 13:50:01 -0700 (Tue, 19 Apr 2016) $
+ *          $Revision: 6868 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -29,6 +29,7 @@
 #include "svc_ch.h"
 #include "svc_gls.h"
 #include "app_api.h"
+#include "app_ui.h"
 #include "glps_api.h"
 #include "glps_main.h"
 
@@ -429,7 +430,7 @@ static uint8_t glpsRacpOperCheck(uint8_t oper, uint16_t len, uint8_t *pOperand)
       }
       else
       {
-        status = CH_RACP_RSP_INV_OPERAND;
+        status = CH_RACP_RSP_OPERAND_NOT_SUP;
       }
     
       if (status == CH_RACP_RSP_SUCCESS)
@@ -626,6 +627,55 @@ void GlpsProcMsg(wsfMsgHdr_t *pMsg)
       
     default:
       break;
+  }
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     GlpsBtn
+*
+*  \brief  Handle a button press.
+*
+*  \param  connId    Connection identifier.
+*  \param  btn       Button press.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void GlpsBtn(dmConnId_t connId, uint8_t btn)
+{
+  /* button actions when connected */
+  if (connId != DM_CONN_ID_NONE)
+  {
+    switch (btn)
+    {
+      case APP_UI_BTN_2_LONG:
+        /* generate a new record */
+        glpsDbGenerateRecord();
+        break;
+
+      default:
+        break;
+    }
+  }
+  /* button actions when not connected */
+  else
+  {
+    switch (btn)
+    {
+      case APP_UI_BTN_2_LONG:
+        /* generate a new record */
+        glpsDbGenerateRecord();
+        break;
+
+      case APP_UI_BTN_2_EX_LONG:
+        /* delete all records */
+        glpsDbDeleteRecords(CH_RACP_OPERATOR_ALL, NULL);
+        break;
+
+      default:
+        break;
+    }
   }
 }
 

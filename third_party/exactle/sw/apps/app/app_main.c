@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework main module.
  *
- *          $Date: 2014-10-16 07:18:36 -0700 (Thu, 16 Oct 2014) $
- *          $Revision: 1885 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -20,9 +20,10 @@
  */
 /*************************************************************************************************/
 
+#include <string.h>
 #include "wsf_types.h"
 #include "wsf_msg.h"
-#include "wsf_sec.h"
+#include "sec_api.h"
 #include "wsf_trace.h"
 #include "wsf_timer.h"
 #include "wsf_assert.h"
@@ -39,6 +40,9 @@
 /*! Configuration pointer for advertising */
 appAdvCfg_t *pAppAdvCfg;
 
+/*! Configuration pointer for extended advertising */
+appExtAdvCfg_t *pAppExtAdvCfg;
+
 /*! Configuration pointer for slave */
 appSlaveCfg_t *pAppSlaveCfg;
 
@@ -54,6 +58,9 @@ appUpdateCfg_t *pAppUpdateCfg;
 /*! Configuration pointer for discovery */
 appDiscCfg_t *pAppDiscCfg;
 
+/*! Configuration pointer for application */
+appCfg_t *pAppCfg;
+
 /*! Connection control block array */
 appConnCb_t appConnCb[DM_CONN_MAX];
 
@@ -62,6 +69,18 @@ wsfHandlerId_t appHandlerId;
 
 /*! Main control block */
 appCb_t appCb;
+
+/*! Configuration structure for incoming request actions */
+const appReqActCfg_t appReqActCfg =
+{
+  APP_ACT_ACCEPT        /*! Action for the remote connection parameter request */
+};
+
+/*! Configuration pointer for incoming request actions on master */
+appReqActCfg_t *pAppMasterReqActCfg = (appReqActCfg_t *) &appReqActCfg;
+
+/*! Configurable pointer for incoming request actions on slave */
+appReqActCfg_t *pAppSlaveReqActCfg = (appReqActCfg_t *) &appReqActCfg;
 
 /*************************************************************************************************/
 /*!
@@ -232,7 +251,7 @@ void AppHandlePasskey(dmSecAuthReqIndEvt_t *pAuthReq)
   if (pAuthReq->display)
   {
     /* generate random passkey, limit to 6 digit max */
-    WsfSecRand((uint8_t *) &passkey, sizeof(uint32_t));
+    SecRand((uint8_t *) &passkey, sizeof(uint32_t));
     passkey %= 1000000;
     
     /* convert to byte buffer */
@@ -251,6 +270,30 @@ void AppHandlePasskey(dmSecAuthReqIndEvt_t *pAuthReq)
     /* prompt user to enter passkey */
     AppUiAction(APP_UI_PASSKEY_PROMPT);
   } 
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppHandleNumericComparison
+*
+*  \brief  Handle a numeric comparison indication during pairing.  The confirmation value is
+*          displayed and the user is prompted to verify that the local and peer confirmation
+*          values match.
+*
+*  \param  pCnfInd  DM confirmation indication event structure.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppHandleNumericComparison(dmSecCnfIndEvt_t *pCnfInd)
+{
+  uint32_t confirm = DmSecGetCompareValue(pCnfInd->confirm);
+
+  /* display confirmation value */
+  AppUiDisplayConfirmValue(confirm);
+
+  /* TODO: Verify that local and peer confirmation values match */
+  DmSecCompareRsp((dmConnId_t)pCnfInd->hdr.param, TRUE);
 }
 
 /*************************************************************************************************/
@@ -308,4 +351,66 @@ dmConnId_t AppConnIsOpen(void)
 appDbHdl_t AppDbGetHdl(dmConnId_t connId)
 {
   return appConnCb[connId-1].dbHdl;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppAddDevToResList
+*
+*  \brief  Add device to resolving list.
+*
+*  \param  pMsg    Pointer to DM callback event message.
+*  \param  connId  Connection identifier.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppAddDevToResList(dmEvt_t *pMsg, dmConnId_t connId)
+{
+  dmSecKey_t *pPeerKey;
+  appDbHdl_t hdl = appConnCb[connId - 1].dbHdl;
+
+  /* if LL Privacy is supported and the peer device has distributed its IRK */
+  if (HciLlPrivacySupported() && ((pPeerKey = AppDbGetKey(hdl, DM_KEY_IRK, NULL))!= NULL))
+  {
+    uint8_t *pPeerIrk;
+    uint8_t *pLocalIrk;
+    uint8_t zeroIrk[SMP_KEY_LEN] = { 0 };
+
+    /* if the peer device uses RPA and non-zero IRK */
+    if ((!BdaIsZeros(DmConnPeerRpa(connId)) ||
+         DM_RAND_ADDR_RPA(DmConnPeerAddr(connId), DmConnPeerAddrType(connId))) &&
+        (memcmp(pPeerKey->irk.key, zeroIrk, SMP_KEY_LEN) != 0))
+    {
+      /* use peer's IRK */
+      pPeerIrk = pPeerKey->irk.key;
+    }
+    else
+    {
+      /* use all zeros for peer's IRK so the LL will use or accept the peer Identity Address */
+      pPeerIrk = zeroIrk;
+    }
+
+    /* if the local device uses RPA and non-zero IRK */
+    if ((!BdaIsZeros(DmConnLocalRpa(connId)) ||
+         DM_RAND_ADDR_RPA(DmConnLocalAddr(connId), DmConnLocalAddrType(connId))) &&
+        (memcmp(DmSecGetLocalIrk(), zeroIrk, SMP_KEY_LEN) != 0))
+    {
+      /* use local IRK */
+      pLocalIrk = DmSecGetLocalIrk();
+    }
+    else
+    {
+      /* use all zeros for local IRK so the LL will use or accept the local Identity Address */
+      pLocalIrk = zeroIrk;
+    }
+
+    /* if either of devices uses non-zero IRK */
+    if ((pPeerIrk != zeroIrk) || (pLocalIrk != zeroIrk))
+    {
+      /* add device to resolving list */
+      DmPrivAddDevToResList(pPeerKey->irk.addrType, pPeerKey->irk.bdAddr,
+                            pPeerIrk, pLocalIrk, TRUE, pMsg->hdr.param);
+    }
+  }
 }

@@ -4,8 +4,8 @@
  *
  *  \brief  Data transmitter sample application.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-31 11:07:48 -0700 (Wed, 31 Aug 2016) $
+ *          $Revision: 8685 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -22,12 +22,12 @@
 
 #include <string.h>
 #include "wsf_types.h"
-#include "wsf_efs.h"
 #include "bstream.h"
 #include "wsf_msg.h"
 #include "wsf_trace.h"
 #include "wsf_buf.h"
 #include "hci_api.h"
+#include "sec_api.h"
 #include "dm_api.h"
 #include "att_api.h"
 #include "app_api.h"
@@ -38,6 +38,7 @@
 #include "svc_wp.h"
 #include "calc128.h"
 #if DATS_WDXS_INCLUDED  == TRUE
+#include "wsf_efs.h"
 #include "svc_wdxs.h"
 #include "wdxs_api.h"
 #include "wdxs_main.h"
@@ -83,9 +84,8 @@ static const appSlaveCfg_t datsSlaveCfg =
 static const appSecCfg_t datsSecCfg =
 {
   DM_AUTH_BOND_FLAG | SMP_AUTH_SC_FLAG,   /*! Authentication and bonding flags */
-  //DM_AUTH_BOND_FLAG,                      /*! Authentication and bonding flags */
-  0,                                      /*! Initiator key distribution flags */
-  DM_KEY_DIST_LTK,                        /*! Responder key distribution flags */
+  DM_KEY_DIST_IRK,                        /*! Initiator key distribution flags */
+  DM_KEY_DIST_LTK | DM_KEY_DIST_IRK,      /*! Responder key distribution flags */
   FALSE,                                  /*! TRUE if Out-of-band pairing data is present */
   TRUE                                   /*! TRUE to initiate security upon connection */
 };
@@ -102,6 +102,11 @@ static const appUpdateCfg_t datsUpdateCfg =
   5                                       /*! Number of update attempts before giving up */
 };
 
+/*! local IRK */
+static uint8_t localIrk[] =
+{
+  0x95, 0xC8, 0xEE, 0x6F, 0xC5, 0x0D, 0xEF, 0x93, 0x35, 0x4E, 0x7C, 0x57, 0x08, 0xE2, 0xA3, 0x85
+};
 
 /**************************************************************************************************
   Advertising Data
@@ -126,21 +131,15 @@ static const uint8_t datsAdvDataDisc[] =
 static const uint8_t datsScanDataDisc[] =
 {
   /*! device name */
-  14,                                     /*! length */
+  8,                                      /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
-  'i',
-  'c',
-  'e',
-  'n',
-  't',
-  'r',
-  'i',
-  'c',
-  ' ',
+  'D',
   'a',
-  'p',
-  'p'
+  't',
+  'a',
+  ' ',
+  'T',
+  'X'
 };
 
 /**************************************************************************************************
@@ -209,8 +208,9 @@ static void datsSendData(dmConnId_t connId)
 /*************************************************************************************************/
 static void datsDmCback(dmEvt_t *pDmEvt)
 {
-  dmEvt_t *pMsg;
-  
+  dmEvt_t   *pMsg;
+  uint16_t  len;
+
     if (pDmEvt->hdr.event == DM_SEC_ECC_KEY_IND)
   {
     DmSecSetEccKey(&pDmEvt->eccMsg.data.key);
@@ -218,7 +218,7 @@ static void datsDmCback(dmEvt_t *pDmEvt)
     if (datsSecCfg.oob)
     {
       uint8_t oobLocalRandom[SMP_RAND_LEN];
-      WsfSecRand(oobLocalRandom, SMP_RAND_LEN);
+      SecRand(oobLocalRandom, SMP_RAND_LEN);
       DmSecCalcOobReq(oobLocalRandom, pDmEvt->eccMsg.data.key.pubKey_x);
     }
   }
@@ -234,9 +234,11 @@ static void datsDmCback(dmEvt_t *pDmEvt)
   }
   else 
   {
-    if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+    len = DmSizeOfEvt(pDmEvt);
+
+    if ((pMsg = WsfMsgAlloc(len)) != NULL)
     {
-      memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+      memcpy(pMsg, pDmEvt, len);
       WsfMsgSend(datsCb.handlerId, pMsg);
     }
   }
@@ -405,8 +407,7 @@ static void datsProcMsg(dmEvt_t *pMsg)
       break;
 
     case DM_SEC_COMPARE_IND:
-      /* TODO: Verify compare value */
-      DmSecCompareRsp((dmConnId_t) pMsg->hdr.param, TRUE);
+      AppHandleNumericComparison(&pMsg->cnfInd);
       break;
 
     default:
@@ -445,6 +446,9 @@ void DatsHandlerInit(wsfHandlerId_t handlerId)
   
   /* Initialize application framework */
   AppSlaveInit();
+
+  /* Set IRK for the local device */
+  DmSecSetLocalIrk(localIrk);
 }
 
 #if DATS_WDXS_INCLUDED == TRUE

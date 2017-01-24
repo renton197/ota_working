@@ -4,8 +4,8 @@
  *
  *  \brief  Glucose profile collector.
  *
- *          $Date: 2012-06-18 15:08:22 -0700 (Mon, 18 Jun 2012) $
- *          $Revision: 333 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -195,7 +195,7 @@ void glpcGlsParseGlm(uint8_t *pValue, uint16_t len)
     UINT16_TO_SFLT(mantissa, exponent, glucose);
     APP_TRACE_INFO2("  Glucose concentration: %de%d", mantissa, exponent);
     BSTREAM_TO_UINT8(typeLoc, pValue);
-    APP_TRACE_INFO2("  Type: %d Location: %d", (typeLoc >> 4), (typeLoc & 0x0F));
+    APP_TRACE_INFO2("  Type: %d Location: %d", (typeLoc & 0x0F), (typeLoc >> 4));
   }
   
   /* sensor status */
@@ -311,7 +311,7 @@ void glpcGlsParseGlmc(uint8_t *pValue, uint16_t len)
   if (flags & CH_GLMC_FLAG_TESTER)
   {
     BSTREAM_TO_UINT8(testerHealth, pValue);
-    APP_TRACE_INFO2("  Tester: %d Health: %d", (testerHealth >> 4), (testerHealth & 0x0F));  
+    APP_TRACE_INFO2("  Tester: %d Health: %d", (testerHealth & 0x0F), (testerHealth >> 4));
   }
   
   /* exercise duration and exercise intensity */

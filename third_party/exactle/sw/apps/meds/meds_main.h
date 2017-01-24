@@ -4,8 +4,8 @@
  *        
  *  \brief  Health/medical sensor sample application interface file.
  *
- *          $Date: 2012-12-27 12:15:33 -0800 (Thu, 27 Dec 2012) $
- *          $Revision: 403 $
+ *          $Date: 2016-08-18 13:33:13 -0700 (Thu, 18 Aug 2016) $
+ *          $Revision: 8391 $
  *  
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -75,6 +75,8 @@ extern medsCb_t medsCb;
 extern medsIf_t medsBlpIf;          /* blood pressure profile */
 extern medsIf_t medsWspIf;          /* weight scale profile */
 extern medsIf_t medsHtpIf;          /* health thermometer profile */
+extern medsIf_t medsPlxIf;          /* pulse oximeter profile */
+extern medsIf_t medsGlpIf;          /* glucose profile */
 
 /**************************************************************************************************
   Function Declarations

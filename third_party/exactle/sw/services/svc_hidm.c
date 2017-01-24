@@ -4,8 +4,8 @@
  *        
  *  \brief  Human Interface Device service implementation for Mouse devices.
  *
- *          $Date: 2015-09-30 13:33:59 -0700 (Wed, 30 Sep 2015) $
- *          $Revision: 4057 $
+ *          $Date: 2016-04-14 13:47:49 -0700 (Thu, 14 Apr 2016) $
+ *          $Revision: 6784 $
  *  
  *  Copyright (c) 2015 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -142,7 +142,7 @@ static const attsAttr_t hidmList[] =
     (uint16_t *) &hidmLenSvc, 
     sizeof(hidmValSvc),
     0,
-    HIDM_SEC_PERMIT_READ
+    ATTS_PERMIT_READ
   },
 
   {

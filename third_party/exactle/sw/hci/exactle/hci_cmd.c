@@ -4,8 +4,8 @@
  *
  *  \brief  HCI command module.
  *
- *          $Date: 2015-06-17 19:13:24 -0700 (Wed, 17 Jun 2015) $
- *          $Revision: 3141 $
+ *          $Date: 2016-08-25 15:41:57 -0700 (Thu, 25 Aug 2016) $
+ *          $Revision: 8575 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -84,42 +84,6 @@ void HciLeClearWhiteListCmd(void)
 void HciLeConnUpdateCmd(uint16_t handle, hciConnSpec_t *pConnSpec)
 {
   LlConnUpdate(handle, (llConnSpec_t *)pConnSpec);
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     HciLeCreateConnCmd
- *
- *  \brief  HCI LE create connection command.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-void HciLeCreateConnCmd(uint16_t scanInterval, uint16_t scanWindow, uint8_t filterPolicy,
-                        uint8_t peerAddrType, uint8_t *pPeerAddr, uint8_t ownAddrType,
-                        hciConnSpec_t *pConnSpec)
-{
-  LlCreateConn(scanInterval,
-               scanWindow,
-               filterPolicy,
-               peerAddrType,
-               pPeerAddr,
-               ownAddrType,
-               (llConnSpec_t *)pConnSpec);
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     HciLeCreateConnCancelCmd
- *
- *  \brief  HCI LE create connection cancel command.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-void HciLeCreateConnCancelCmd(void)
-{
-  LlCreateConnCancel();
 }
 
 /*************************************************************************************************/
@@ -305,15 +269,15 @@ void HciLeSetAdvDataCmd(uint8_t len, uint8_t *pData)
  */
 /*************************************************************************************************/
 void HciLeSetAdvParamCmd(uint16_t advIntervalMin, uint16_t advIntervalMax, uint8_t advType,
-                         uint8_t ownAddrType, uint8_t directAddrType, uint8_t *pDirectAddr,
+                         uint8_t ownAddrType, uint8_t peerAddrType, uint8_t *pPeerAddr,
                          uint8_t advChanMap, uint8_t advFiltPolicy)
 {
   LlSetAdvParam(advIntervalMin,
                 advIntervalMax,
                 advType,
                 ownAddrType,
-                directAddrType,
-                pDirectAddr,
+                peerAddrType,
+                pPeerAddr,
                 advChanMap,
                 advFiltPolicy);
 }
@@ -520,6 +484,186 @@ void HciSetEventMaskCmd(uint8_t *pEventMask)
 
 /*************************************************************************************************/
 /*!
+*  \fn     HciLeAddDeviceToResolvingListCmd
+*
+*  \brief  HCI add device to resolving list command.
+*
+*  \param  peerAddrType        Peer identity address type.
+*  \param  pPeerIdentityAddr   Peer identity address.
+*  \param  pPeerIrk            Peer IRK.
+*  \param  pLocalIrk           Local IRK.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeAddDeviceToResolvingListCmd(uint8_t peerAddrType, const uint8_t *pPeerIdentityAddr,
+                                      const uint8_t *pPeerIrk, const uint8_t *pLocalIrk)
+{ 
+  hciLeAddDevToResListCmdCmplEvt_t evt;
+
+  evt.hdr.param = 0;
+  evt.hdr.event = HCI_LE_ADD_DEV_TO_RES_LIST_CMD_CMPL_CBACK_EVT;
+  evt.hdr.status = LlAddDeviceToResolvingList(peerAddrType, pPeerIdentityAddr, pPeerIrk, pLocalIrk);
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeRemoveDeviceFromResolvingList
+*
+*  \brief  HCI remove device from resolving list command.
+*
+*  \param  peerAddrType        Peer identity address type.
+*  \param  pPeerIdentityAddr   Peer identity address.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeRemoveDeviceFromResolvingList(uint8_t peerAddrType, const uint8_t *pPeerIdentityAddr)
+{
+  hciLeRemDevFromResListCmdCmplEvt_t evt;
+
+  evt.hdr.param = 0;
+  evt.hdr.event = HCI_LE_REM_DEV_FROM_RES_LIST_CMD_CMPL_CBACK_EVT;
+  evt.hdr.status = LlRemoveDeviceFromResolvingList(peerAddrType, pPeerIdentityAddr);
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeClearResolvingList
+*
+*  \brief  HCI clear resolving list command.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeClearResolvingList(void)
+{ 
+  hciLeClearResListCmdCmplEvt_t evt;
+
+  evt.hdr.param = 0;
+  evt.hdr.event = HCI_LE_CLEAR_RES_LIST_CMD_CMPL_CBACK_EVT;
+  evt.hdr.status = LlClearResolvingList();
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeReadResolvingListSize
+*
+*  \brief  HCI read resolving list command.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeReadResolvingListSize(void)
+{
+  /* unused */
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeReadPeerResolvableAddr
+*
+*  \brief  HCI read peer resolvable address command.
+*
+*  \param  addrType        Peer identity address type.
+*  \param  pIdentityAddr   Peer identity address.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeReadPeerResolvableAddr(uint8_t addrType, const uint8_t *pIdentityAddr)
+{
+  hciLeReadPeerResAddrCmdCmplEvt_t evt;
+
+  evt.hdr.param = 0;
+  evt.hdr.event = HCI_LE_READ_PEER_RES_ADDR_CMD_CMPL_CBACK_EVT;
+  evt.hdr.status = LlReadPeerResolvableAddr(addrType, pIdentityAddr, evt.peerRpa);
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeReadLocalResolvableAddr
+*
+*  \brief  HCI read local resolvable address command.
+*
+*  \param  addrType        Peer identity address type.
+*  \param  pIdentityAddr   Peer identity address.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeReadLocalResolvableAddr(uint8_t addrType, const uint8_t *pIdentityAddr)
+{
+  hciLeReadLocalResAddrCmdCmplEvt_t evt;
+
+  evt.hdr.param = 0;
+  evt.hdr.event = HCI_LE_READ_LOCAL_RES_ADDR_CMD_CMPL_CBACK_EVT;
+  evt.hdr.status = LlReadLocalResolvableAddr(addrType, pIdentityAddr, evt.localRpa);
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeSetAddrResolutionEnable
+*
+*  \brief  HCI enable or disable address resolution command.
+*
+*  \param  enable      Set to TRUE to enable address resolution or FALSE to disable address
+*                      resolution.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeSetAddrResolutionEnable(uint8_t enable)
+{
+  hciLeSetAddrResEnableCmdCmplEvt_t evt;
+
+  evt.hdr.param = 0;
+  evt.hdr.event = HCI_LE_SET_ADDR_RES_ENABLE_CMD_CMPL_CBACK_EVT;
+  evt.hdr.status = LlSetAddrResolutionEnable(enable);
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeSetResolvablePrivateAddrTimeout
+*
+*  \brief  HCI set resolvable private address timeout command.
+*
+*  \param  rpaTimeout    Timeout measured in seconds.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeSetResolvablePrivateAddrTimeout(uint16_t rpaTimeout)
+{
+  LlSetResolvablePrivateAddrTimeout(rpaTimeout);
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     HciVendorSpecificCmd
  *
  *  \brief  HCI vencor specific command.
@@ -530,4 +674,181 @@ void HciSetEventMaskCmd(uint8_t *pEventMask)
 void HciVendorSpecificCmd(uint16_t opcode, uint8_t len, uint8_t *pData)
 {
   /* not used */
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeRemoteConnParamReqReply
+*
+*  \brief  HCI Remote Connection Parameter Request Reply.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeRemoteConnParamReqReply(uint16_t handle, uint16_t intervalMin, uint16_t intervalMax, uint16_t latency,
+                                  uint16_t timeout, uint16_t minCeLen, uint16_t maxCeLen)
+{
+  llConnSpec_t connSpec;
+
+  connSpec.connIntervalMax = intervalMax;
+  connSpec.connIntervalMin = intervalMin;
+  connSpec.connLatency = latency;
+  connSpec.maxCeLen = maxCeLen;
+  connSpec.minCeLen = minCeLen;
+  connSpec.supTimeout = timeout;
+  
+  LlRemoteConnParamReqReply(handle, &connSpec);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeRemoteConnParamReqNegReply
+*
+*  \brief  HCI Remote Connection Parameter Request Negative Reply.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeRemoteConnParamReqNegReply(uint16_t handle, uint8_t reason)
+{
+  LlRemoteConnParamReqNegReply(handle, reason);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeSetDataLen
+*
+*  \brief  HCI LE Set Data Length.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeSetDataLen(uint16_t handle, uint16_t txOctets, uint16_t txTime)
+{
+  LlSetDataLen(handle, txOctets, txTime);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeReadDefDataLen
+*
+*  \brief  HCI LE Read Default Data Length.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeReadDefDataLen(void)
+{
+  /* not used */
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeWriteDefDataLen
+*
+*  \brief  HCI LE Write Default Data Length.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeWriteDefDataLen(uint16_t suggestedMaxTxOctets, uint16_t suggestedMaxTxTime)
+{
+  LlWriteDefaultDataLen(suggestedMaxTxOctets, suggestedMaxTxTime);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeReadLocalP256PubKey
+*
+*  \brief  HCI LE Read Local P-256 Public Key.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeReadLocalP256PubKey(void)
+{
+  LlGenerateP256KeyPair();
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeGenerateDHKey
+*
+*  \brief  HCI LE Generate DH Key.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeGenerateDHKey(uint8_t *pPubKeyX, uint8_t *pPubKeyY)
+{
+  LlGenerateDhKey(pPubKeyX, pPubKeyY);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciLeReadMaxDataLen
+*
+*  \brief  HCI LE Read Maximum Data Length.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciLeReadMaxDataLen(void)
+{
+  /* not used */
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciReadAuthPayloadTimeout
+*
+*  \brief  HCI read authenticated payload timeout command.
+*
+*  \param  handle    Connection handle.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciReadAuthPayloadTimeout(uint16_t handle)
+{
+  /* not used */
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     HciWriteAuthPayloadTimeout
+*
+*  \brief  HCI write authenticated payload timeout command.
+*
+*  \param  handle    Connection handle.
+*  \param  timeout   Timeout value.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void HciWriteAuthPayloadTimeout(uint16_t handle, uint16_t timeout)
+{
+  hciWriteAuthPayloadToCmdCmplEvt_t evt;
+
+  evt.status = LlWriteAuthPayloadTimeout(handle, timeout);
+  evt.hdr.event = HCI_WRITE_AUTH_PAYLOAD_TO_CMD_CMPL_CBACK_EVT;
+  evt.handle = handle;
+
+  evt.status = evt.hdr.status;
+
+  hciCb.evtCback((hciEvt_t *)&evt);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     HciSetEventMaskPage2Cmd
+ *
+ *  \brief  HCI set event page 2 mask command.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void HciSetEventMaskPage2Cmd(uint8_t *pEventMask)
+{
+  /* unused */
 }

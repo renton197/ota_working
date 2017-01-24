@@ -27,7 +27,8 @@
 #define AM_BOOTLOADER_DISABLE_OVERRIDE_PIN      (0xFFFFFFFF)
 #define AM_BOOTLOADER_OVERRIDE_HIGH             (0x1)
 #define AM_BOOTLOADER_OVERRIDE_LOW              (0x0)
-#define AM_BOOTLOADER_FLASH_ADDRESS_MAX         (AM_HAL_FLASH_TOTAL_SIZE)
+#define APOLLO_BOOTLOADER_FLASH_ADDRESS_MAX     (0x080000)
+#define APOLLO2_BOOTLOADER_FLASH_ADDRESS_MAX    (0x100000)
 
 #ifdef __cplusplus
 extern "C"
@@ -67,27 +68,27 @@ typedef struct
     // Reset vector location.
     uint32_t *pui32ResetVector;
 
-    // Boot Options. -- RMA
+    // Boot Options.
     uint32_t ui32Options;
 
-    // Version Informatin of the Current Image -- RMA
+    // Version Informatin of the Current Image
     uint32_t ui32Version;
 
-    // Version Informatin of the New Image -- RMA
+    // Version Informatin of the New Image
     // Only used to confirm the image being received.
     uint32_t ui32VersionNewImage;
 
-    // Starting address where the new image was stored. -- RMA
+    // Starting address where the new image was stored
     uint32_t *pui32StorageAddressNewImage;
 
-    // Length of the new image being received in bytes. -- RMA
+    // Length of the new image being received in bytes
     // Only used to confirm the image being received.
     uint32_t ui32TotalNumBytesNewImage;
 
-    // Bytes already received and stored. -- RMA
+    // Bytes already received and stored
     uint32_t ui32StoredNumBytesNewImage;
 
-    // CRC-32 Value for the new image being received. -- RMA
+    // CRC-32 Value for the new image being received
     // Only used to confirm the image being received.
     uint32_t ui32CRCNewImage;
 
@@ -95,13 +96,6 @@ typedef struct
     bool bEncrypted;
 }
 am_bootloader_image_t;
-
-//*****************************************************************************
-//
-// External Variable declarations.
-//
-//*****************************************************************************
-extern am_bootloader_image_t *g_psBootImage;
 
 //*****************************************************************************
 //
@@ -114,18 +108,8 @@ extern void am_bootloader_partial_crc32(const void *pvData, uint32_t ui32NumByte
 extern bool am_bootloader_image_check(am_bootloader_image_t *psImage);
 extern bool am_bootloader_flash_check(am_bootloader_image_t *psImage);
 extern int am_bootloader_flag_page_update(am_bootloader_image_t *psImage, uint32_t *pui32FlagPage);
-
-#ifdef gcc
-extern void __attribute__((naked)) am_bootloader_image_run(am_bootloader_image_t *psImage);
-#endif
-
-#ifdef keil
-extern __asm void am_bootloader_image_run(am_bootloader_image_t *psImage);
-#endif
-
-#ifdef iar
+extern bool am_hal_bootloader_override_check(am_bootloader_image_t *psImage);
 extern void am_bootloader_image_run(am_bootloader_image_t *psImage);
-#endif
 
 #ifdef __cplusplus
 }

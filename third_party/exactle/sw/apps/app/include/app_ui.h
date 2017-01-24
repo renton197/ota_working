@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework user interface.
  *
- *          $Date: 2015-09-20 11:19:39 -0700 (Sun, 20 Sep 2015) $
- *          $Revision: 3979 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -51,7 +51,10 @@ enum
   APP_UI_PASSKEY_PROMPT,                  /*! Prompt user to enter passkey */
   APP_UI_ALERT_CANCEL,                    /*! Cancel a low or high alert */
   APP_UI_ALERT_LOW,                       /*! Low alert */
-  APP_UI_ALERT_HIGH                       /*! High alert */
+  APP_UI_ALERT_HIGH,                      /*! High alert */
+  APP_UI_ADV_SET_START_IND,               /*! Advertising set(s) started */
+  APP_UI_ADV_SET_STOP_IND,                /*! Advertising set(s) stopped */
+  APP_UI_SCAN_REQ_RCVD_IND,               /*! Scan request received */
 };
 
 /*! Button press enumeration */
@@ -110,7 +113,7 @@ typedef struct
 /*************************************************************************************************/
 /*!
  *  \fn     AppUiAction
- *        
+ *
  *  \brief  Perform a user interface action based on the event value passed to the function.
  *
  *  \param  event   User interface event value.
@@ -123,7 +126,7 @@ void AppUiAction(uint8_t event);
 /*************************************************************************************************/
 /*!
  *  \fn     AppUiDisplayPasskey
- *        
+ *
  *  \brief  Display a passkey.
  *
  *  \param  passkey   Passkey to display.
@@ -135,8 +138,21 @@ void AppUiDisplayPasskey(uint32_t passkey);
 
 /*************************************************************************************************/
 /*!
+*  \fn     AppUiDisplayConfirmValue
+*
+*  \brief  Display a confirmation value.
+*
+*  \param  confirm    Confirm value to display.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppUiDisplayConfirmValue(uint32_t confirm);
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppUiDisplayRssi
- *        
+ *
  *  \brief  Display an RSSI value.
  *
  *  \param  rssi   Rssi value to display.
@@ -149,7 +165,7 @@ void AppUiDisplayRssi(int8_t rssi);
 /*************************************************************************************************/
 /*!
  *  \fn     AppUiBtnRegister
- *        
+ *
  *  \brief  Register a callback function to receive button presses.
  *
  *  \param  cback   Application button callback function.
@@ -162,7 +178,7 @@ void AppUiBtnRegister(appUiBtnCback_t cback);
 /*************************************************************************************************/
 /*!
  *  \fn     AppUiBtnPressed
- *        
+ *
  *  \brief  Handle a hardware button press.  This function is called to handle WSF
  *          event APP_BTN_DOWN_EVT.
  *
@@ -174,7 +190,7 @@ void AppUiBtnPressed(void);
 /*************************************************************************************************/
 /*!
  *  \fn     AppUiSoundPlay
- *        
+ *
  *  \brief  Play a sound.
  *
  *  \param  pSound   Pointer to sound tone/duration array.
@@ -187,7 +203,7 @@ void AppUiSoundPlay(const appUiSound_t *pSound);
 /*************************************************************************************************/
 /*!
  *  \fn     AppUiSoundStop
- *        
+ *
  *  \brief  Stop the sound that is currently playing.
  *
  *  \return None.
@@ -198,7 +214,7 @@ void AppUiSoundStop(void);
 /*************************************************************************************************/
 /*
  *  \fn     AppUiLedStart
- *        
+ *
  *  \brief  Start LED blinking.
  *
  *  \param  pLed   Pointer to LED data structure.
@@ -211,13 +227,24 @@ void AppUiLedStart(const appUiLed_t *pLed);
 /*************************************************************************************************/
 /*
  *  \fn     AppUiLedStop
- *        
+ *
  *  \brief  Stop LED blinking.
  *
- *  \return None. 
+ *  \return None.
  */
 /*************************************************************************************************/
 void AppUiLedStop(void);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppUiBtnTest
+ *
+ *  \brief  Button test function-- for test purposes only.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppUiBtnTest(uint8_t btn);
 
 #ifdef __cplusplus
 };

@@ -94,7 +94,9 @@ am_devices_led_array_disable(am_devices_led_t *psLEDs, uint32_t ui32NumLEDs)
     // Loop through the list of LEDs, configuring each one individually.
     //
     for ( uint32_t i = 0; i < ui32NumLEDs; i++ )
+    {
         am_hal_gpio_pin_config((psLEDs + i)->ui32GPIONumber, AM_HAL_GPIO_DISABLE);
+    }
 }
 
 //*****************************************************************************

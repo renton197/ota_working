@@ -4,8 +4,8 @@
  *        
  *  \brief  Characteristic constants.
  *
- *          $Date: 2015-07-16 16:14:43 -0700 (Thu, 16 Jul 2015) $
- *          $Revision: 3381 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *  
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -418,6 +418,69 @@ extern "C" {
 #define CH_WSM_TIMESTAMP_LEN                  7
 #define CH_WSM_USER_ID_LEN                    1
 #define CH_WSM_BMI_HEIGHT_LEN                 4
+
+/* Scan Parameter Profile field lengths */
+#define CH_SCPP_INTERVAL_WINDOW_LEN           4
+#define CH_SCPP_REFRESH_LEN                   0
+
+/* Cycle Power Profile field lengths */
+#define CH_CPS_MEASUREMENT_LEN                34
+
+/* Cycle Speed Profile field lengths */
+#define CH_CSCS_MEASUREMENT_LEN               11
+
+/* Running Speed Profile field lengths */
+#define CH_RSCS_MEASUREMENT_LEN               10
+
+/* Pulse Oximiter profile field lengths */
+#define CH_PLXS_SPOT_CHECK_LEN                19
+#define CH_PLXS_CONTINUOUS_LEN                16
+
+/* Pulse Oximeter common field lenths */
+#define CH_PLX_FLAGS_LEN                      1
+#define CH_PLX_SPO2_LEN                       2
+#define CH_PLX_PULSE_LEN                      2
+#define CH_PLX_MEASUREMENT_STATUS_LEN         2
+#define CH_PLX_SENSOR_STATUS_LEN              3
+#define CH_PLX_PULSE_AMP_INDX_LEN             2
+
+/* Pulse Oximeter spot check measurement field lenths */
+#define CH_PLXSC_TIMESTAMP_LEN                7
+
+/* Pulse Oximeter continuous measurement field lenths */
+#define CH_PLXC_SPO2PR_FAST_LEN               2
+#define CH_PLXC_SPO2PR_SLOW_LEN               2
+
+/* Pulse Oximeter features field lenths */
+#define CH_PLXF_MIN_FEATURES_LEN              2
+#define CH_PLXF_MAX_FEATURES_LEN              7
+#define CH_PLXF_SENSOR_SUPPORT_LEN            2
+#define CH_PLXF_MEASUREMENT_SUPPORT_LEN       2
+
+/* Pulse Oximeter spot check measurement flags */
+#define CH_PLXSC_FLAG_TIMESTAMP               0x01    /* Timestamp field is present */
+#define CH_PLXSC_FLAG_MEASUREMENT_STATUS      0x02    /* Measurement Status Field Present */
+#define CH_PLXSC_FLAG_SENSOR_STATUS           0x04    /* Device and Sensor Status Field Present */
+#define CH_PLXSC_FLAG_PULSE_AMP_INDX          0x08    /* Pulse Amplitude Index field is present */
+#define CH_PLXSC_FLAG_CLOCK_NOT_SET           0x10    /* Device Clock is Not Set */
+
+/* Pulse Oximeter continuous measurement flags */
+#define CH_PLXC_FLAG_SPO2PR_FAST              0x01    /* SpO2PR–Fast field is present */
+#define CH_PLXC_FLAG_SPO2PR_SLOW              0x02    /* SpO2PR-Slow field is present */
+#define CH_PLXC_FLAG_MEASUREMENT_STATUS       0x04    /* Measurement Status Field Present */
+#define CH_PLXC_FLAG_SENSOR_STATUS            0x08    /* Device and Sensor Status Field Present */
+#define CH_PLXC_FLAG_PULSE_AMP_INDX           0x10    /* Pulse Amplitude Index field is present */
+
+/* Pulse Oximeter features */
+#define CH_PLF_FLAG_MEAS_STATUS_SUP           0x01    /* Measurement Status support is present */
+#define CH_PLF_FLAG_SENSOR_STATUS_SUP         0x02    /* Device and Sensor Status support is present */
+#define CH_PLF_FLAG_SPOT_CHECK_STORAGE_SUP    0x04    /* Measurement Storage for Spot-check measurements is supported */
+#define CH_PLF_FLAG_SPOT_CHECK_SUP            0x08    /* Timestamp for Spot-check measurements is supported */
+#define CH_PLF_FLAG_SPO2PR_FAST_SUP           0x10    /* SpO2PR-Fast metric is supported */
+#define CH_PLF_FLAG_SPO2PR_SLOW_SUP           0x20    /* SpO2PR-Slow metric is supported */
+#define CH_PLF_FLAG_PULSE_AMP_SUP             0x40    /* Pulse Amplitude Index field is supported */
+#define CH_PLF_FLAG_MULTI_BOND_SUP            0x80    /* Multiple Bonds Supported */
+
 
 #ifdef __cplusplus
 };

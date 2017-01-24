@@ -8,9 +8,10 @@
  *            Glucose profile collector
  *            Weight scale profile collector
  *            Health Thermometer profile collector
+ *            Pulse Oximeter profile collector
  *
- *          $Date: 2013-05-22 14:29:02 -0700 (Wed, 22 May 2013) $
- *          $Revision: 657 $
+ *          $Date: 2016-08-30 15:28:02 -0700 (Tue, 30 Aug 2016) $
+ *          $Revision: 8663 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -74,6 +75,11 @@
 #define MEDC_HTP_INCLUDED TRUE
 #endif
 
+/* Pulse oximeter profile included */
+#ifndef MEDC_PLX_INCLUDED
+#define MEDC_PLX_INCLUDED TRUE
+#endif
+
 /* Default profile to use */
 #ifndef MEDC_PROFILE
 #define MEDC_PROFILE MEDC_ID_HRP
@@ -84,7 +90,7 @@
 **************************************************************************************************/
 
 /*! configurable parameters for master */
-static const appMasterCfg_t medcMasterCfg =
+const appMasterCfg_t medcMasterCfg =
 {
   96,                                      /*! The scan interval, in 0.625 ms units */
   48,                                      /*! The scan window, in 0.625 ms units  */
@@ -129,6 +135,12 @@ static const hciConnSpec_t medcConnCfg =
 static const appDiscCfg_t medcDiscCfg =
 {
   FALSE                                   /*! TRUE to wait for a secure connection before initiating discovery */
+};
+
+static const appCfg_t medcAppCfg =
+{
+  TRUE,                                   /*! TRUE to abort service discovery if service not found */
+  TRUE                                    /*! TRUE to disconnect if ATT transaction times out */
 };
 
 /**************************************************************************************************
@@ -232,23 +244,26 @@ static void medcDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t   *pMsg;
   uint16_t  len;
-  
+  uint16_t  reportLen;
+
+  len = DmSizeOfEvt(pDmEvt);
+
   if (pDmEvt->hdr.event == DM_SCAN_REPORT_IND)
   {
-    len = sizeof(dmEvt_t) + pDmEvt->scanReport.len;
+    reportLen = pDmEvt->scanReport.len;
   }
   else
   {
-    len = sizeof(dmEvt_t);
+    reportLen = 0;
   }
-  
-  if ((pMsg = WsfMsgAlloc(len)) != NULL)
+
+  if ((pMsg = WsfMsgAlloc(len + reportLen)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     if (pDmEvt->hdr.event == DM_SCAN_REPORT_IND)
     {
-      pMsg->scanReport.pData = (uint8_t *) (pMsg + 1);
-      memcpy(pMsg->scanReport.pData, pDmEvt->scanReport.pData, pDmEvt->scanReport.len);
+      pMsg->scanReport.pData = (uint8_t *) ((uint8_t *) pMsg + len);
+      memcpy(pMsg->scanReport.pData, pDmEvt->scanReport.pData, reportLen);
     }
     WsfMsgSend(medcCb.handlerId, pMsg);
   }
@@ -326,8 +341,9 @@ static void medcScanReport(dmEvt_t *pMsg)
 {
   uint8_t *pData;
   uint8_t len;
+  appDbHdl_t dbHdl;
   bool_t  connect = FALSE;
-  
+
   /* disregard if not scanning or autoconnecting */
   if (!medcCb.scanning || !medcCb.autoConnect)
   {
@@ -335,7 +351,7 @@ static void medcScanReport(dmEvt_t *pMsg)
   }
   
   /* if we already have a bond with this device then connect to it */
-  if (AppDbFindByAddr(pMsg->scanReport.addrType, pMsg->scanReport.addr) != APP_DB_HDL_NONE)
+  if ((dbHdl = AppDbFindByAddr(pMsg->scanReport.addrType, pMsg->scanReport.addr)) != APP_DB_HDL_NONE)
   {
     connect = TRUE;
   }
@@ -374,7 +390,7 @@ static void medcScanReport(dmEvt_t *pMsg)
     /* stop scanning and connect */
     medcCb.autoConnect = FALSE;
     AppScanStop();
-    AppConnOpen(pMsg->scanReport.addrType, pMsg->scanReport.addr);
+    AppConnOpen(pMsg->scanReport.addrType, pMsg->scanReport.addr, dbHdl);
   }
 }
 
@@ -510,11 +526,14 @@ static void medcDiscCback(dmConnId_t connId, uint8_t status)
       break;
       
     case APP_DISC_FAILED:
-      /* if discovery failed for desired service then disconnect */
-      if (medcCb.discState == MEDC_DISC_MED_SVC)
+      if (pAppCfg->abortDisc)
       {
-        AppConnClose(connId);
-        break;
+        /* if discovery failed for desired service then disconnect */
+        if (medcCb.discState == MEDC_DISC_MED_SVC)
+        {
+          AppConnClose(connId);
+          break;
+        }
       }
       /* else fall through and continue discovery */
       
@@ -647,10 +666,12 @@ static void medcProcMsg(dmEvt_t *pMsg)
       break;
      
     case DM_SEC_ENCRYPT_IND:
+      medcCb.pIf->procMsg(&pMsg->hdr);
       uiEvent = APP_UI_SEC_ENCRYPT;
       break;
        
     case DM_SEC_ENCRYPT_FAIL_IND:
+      medcCb.pIf->procMsg(&pMsg->hdr);
       uiEvent = APP_UI_SEC_ENCRYPT_FAIL;
       break;
 
@@ -690,7 +711,8 @@ void MedcHandlerInit(wsfHandlerId_t handlerId)
   pAppMasterCfg = (appMasterCfg_t *) &medcMasterCfg;
   pAppSecCfg = (appSecCfg_t *) &medcSecCfg;
   pAppDiscCfg = (appDiscCfg_t *) &medcDiscCfg;
-  
+  pAppCfg = (appCfg_t *) &medcAppCfg;
+
   /* Set stack configuration pointers */
   pSmpCfg = (smpCfg_t *) &medcSmpCfg;
   
@@ -815,6 +837,12 @@ void MedcSetProfile(uint8_t profile)
 #if MEDC_HTP_INCLUDED == TRUE
     case MEDC_ID_HTP:
       medcCb.pIf = &medcHtpIf;
+      medcCb.pIf->init();
+      break;
+#endif
+#if MEDC_PLX_INCLUDED == TRUE
+    case MEDC_ID_PLX:
+      medcCb.pIf = &medcPlxpIf;
       medcCb.pIf->init();
       break;
 #endif

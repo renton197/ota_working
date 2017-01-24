@@ -4,8 +4,8 @@
  *
  *  \brief  GATT profile.
  *
- *          $Date: 2012-09-14 10:54:57 -0700 (Fri, 14 Sep 2012) $
- *          $Revision: 350 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

@@ -4,8 +4,8 @@
  *        
  *  \brief  Example GATT and GAP service implementations.
  *
- *          $Date: 2012-05-11 21:14:08 -0700 (Fri, 11 May 2012) $
- *          $Revision: 318 $
+ *          $Date: 2016-04-14 12:23:02 -0700 (Thu, 14 Apr 2016) $
+ *          $Revision: 6778 $
  *  
  *  Copyright (c) 2009-2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -42,6 +42,12 @@
 #define CORE_SEC_PERMIT_WRITE SVC_SEC_PERMIT_WRITE
 #endif
 
+/*! Default device name */
+#define CORE_DEFAULT_DEV_NAME       "Cordio"
+
+/*! Length of default device name */
+#define CORE_DEFAULT_DEV_NAME_LEN   6
+
 /**************************************************************************************************
  GAP group
 **************************************************************************************************/
@@ -55,8 +61,8 @@ static const uint8_t gapValDnCh[] = {ATT_PROP_READ, UINT16_TO_BYTES(GAP_DN_HDL),
 static const uint16_t gapLenDnCh = sizeof(gapValDnCh);
 
 /* device name */
-static uint8_t gapValDn[ATT_DEFAULT_PAYLOAD_LEN] = "wicentric app";
-static uint16_t gapLenDn = 13;
+static uint8_t gapValDn[ATT_DEFAULT_PAYLOAD_LEN] = CORE_DEFAULT_DEV_NAME;
+static uint16_t gapLenDn = CORE_DEFAULT_DEV_NAME_LEN;
 
 /* appearance characteristic */
 static const uint8_t gapValApCh[] = {ATT_PROP_READ, UINT16_TO_BYTES(GAP_AP_HDL), UINT16_TO_BYTES(ATT_UUID_APPEARANCE)};
@@ -65,6 +71,14 @@ static const uint16_t gapLenApCh = sizeof(gapValApCh);
 /* appearance */
 static uint8_t gapValAp[] = {UINT16_TO_BYTES(CH_APPEAR_UNKNOWN)};
 static const uint16_t gapLenAp = sizeof(gapValAp);
+
+/* central address resolution characteristic */
+static const uint8_t gapValCarCh[] = { ATT_PROP_READ, UINT16_TO_BYTES(GAP_AR_HDL), UINT16_TO_BYTES(ATT_UUID_CAR) };
+static const uint16_t gapLenCarCh = sizeof(gapValCarCh);
+
+/* central address resolution */
+static uint8_t gapValCar[] = { FALSE };
+static const uint16_t gapLenCar = sizeof(gapValCar);
 
 /* Attribute list for GAP group */
 static const attsAttr_t gapList[] =
@@ -107,6 +121,22 @@ static const attsAttr_t gapList[] =
     (uint16_t *) &gapLenAp,
     sizeof(gapValAp),
     0,
+    ATTS_PERMIT_READ
+  },
+  {
+    attChUuid,
+    (uint8_t *)gapValCarCh,
+    (uint16_t *)&gapLenCarCh,
+    sizeof(gapValCarCh),
+    0,
+    ATTS_PERMIT_READ
+  },
+  {
+    attCarChUuid,
+    gapValCar,
+    (uint16_t *)&gapLenCar,
+    sizeof(gapValCar),
+    ATTS_SET_READ_CBACK,
     ATTS_PERMIT_READ
   }
 };
@@ -254,4 +284,20 @@ void SvcCoreGattCbackRegister(attsReadCback_t readCback, attsWriteCback_t writeC
 {
   svcGattGroup.readCback = readCback;
   svcGattGroup.writeCback = writeCback;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     SvcCoreGapCentAddrResUpdate
+*
+*  \brief  Update the central address resolution attribute value.
+*
+*  \param  value   New value.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void SvcCoreGapCentAddrResUpdate(bool_t value)
+{
+  gapValCar[0] = value;
 }

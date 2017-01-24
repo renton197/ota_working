@@ -4,8 +4,8 @@
  *
  *  \brief  Health/medical collector, Health Thermometer profile
  *
- *          $Date: 2012-12-27 12:15:33 -0800 (Thu, 27 Dec 2012) $
- *          $Revision: 403 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

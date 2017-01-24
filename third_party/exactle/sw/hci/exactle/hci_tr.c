@@ -4,8 +4,8 @@
  *
  *  \brief  HCI transport module.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-18 13:08:06 -0700 (Thu, 18 Aug 2016) $
+ *          $Revision: 8387 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -51,7 +51,7 @@ void hciTrSendAclData(void *pContext, uint8_t *pData)
   len += HCI_ACL_HDR_LEN;
   
   /* allocate LL buffer */
-  if ((p = WsfMsgAlloc(len + BB_PDU_TAILROOM)) != NULL)
+  if ((p = WsfMsgAlloc(len + BB_DATA_PDU_TAILROOM)) != NULL)
   {
     /* copy data */
     memcpy(p, pData, len);

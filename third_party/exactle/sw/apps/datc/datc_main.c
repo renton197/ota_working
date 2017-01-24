@@ -4,8 +4,8 @@
  *
  *  \brief  Proprietary data transfer client sample application.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-03 13:30:39 -0700 (Wed, 03 Aug 2016) $
+ *          $Revision: 8135 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -29,17 +29,23 @@
 #include "wsf_buf.h"
 #include "hci_api.h"
 #include "dm_api.h"
+#include "dm_priv.h"
 #include "att_api.h"
 #include "smp_api.h"
 #include "app_cfg.h"
 #include "app_api.h"
 #include "app_db.h"
 #include "app_ui.h"
+#include "svc_core.h"
 #include "svc_ch.h"
 #include "gatt_api.h"
 #include "wpc_api.h"
 #include "datc_api.h"
 #include "calc128.h"
+
+/**************************************************************************************************
+Macros
+**************************************************************************************************/
 
 /**************************************************************************************************
   Local Variables
@@ -74,11 +80,10 @@ static const appMasterCfg_t datcMasterCfg =
 static const appSecCfg_t datcSecCfg =
 {
   DM_AUTH_BOND_FLAG | SMP_AUTH_SC_FLAG,   /*! Authentication and bonding flags */
-//  DM_AUTH_BOND_FLAG,                      /*! Authentication and bonding flags */
-  0,                                      /*! Initiator key distribution flags */
-  DM_KEY_DIST_LTK,                        /*! Responder key distribution flags */
+  DM_KEY_DIST_IRK,                        /*! Initiator key distribution flags */
+  DM_KEY_DIST_LTK | DM_KEY_DIST_IRK,      /*! Responder key distribution flags */
   FALSE,                                  /*! TRUE if Out-of-band pairing data is present */
-  TRUE                                   /*! TRUE to initiate security upon connection */
+  TRUE                                    /*! TRUE to initiate security upon connection */
 };
 
 /*! Connection parameters */
@@ -96,6 +101,18 @@ static const hciConnSpec_t datcConnCfg =
 static const appDiscCfg_t datcDiscCfg =
 {
   FALSE                                   /*! TRUE to wait for a secure connection before initiating discovery */
+};
+
+static const appCfg_t datcAppCfg =
+{
+  TRUE,                                   /*! TRUE to abort service discovery if service not found */
+  TRUE                                    /*! TRUE to disconnect if ATT transaction times out */
+};
+
+/*! local IRK */
+static uint8_t localIrk[] =
+{
+  0xA6, 0xD9, 0xFF, 0x70, 0xD6, 0x1E, 0xF0, 0xA4, 0x46, 0x5F, 0x8D, 0x68, 0x19, 0xF3, 0xB4, 0x96
 };
 
 /**************************************************************************************************
@@ -178,7 +195,8 @@ static void datcDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t   *pMsg;
   uint16_t  len;
-  
+  uint16_t  reportLen;
+
   if (pDmEvt->hdr.event == DM_SEC_ECC_KEY_IND)
   {
     DmSecSetEccKey(&pDmEvt->eccMsg.data.key);
@@ -186,7 +204,7 @@ static void datcDmCback(dmEvt_t *pDmEvt)
     if (datcSecCfg.oob)
     {
       uint8_t oobLocalRandom[SMP_RAND_LEN];
-      WsfSecRand(oobLocalRandom, SMP_RAND_LEN);
+      SecRand(oobLocalRandom, SMP_RAND_LEN);
       DmSecCalcOobReq(oobLocalRandom, pDmEvt->eccMsg.data.key.pubKey_x);
     }
   }
@@ -202,22 +220,24 @@ static void datcDmCback(dmEvt_t *pDmEvt)
   }
   else 
   {
+    len = DmSizeOfEvt(pDmEvt);
+
     if (pDmEvt->hdr.event == DM_SCAN_REPORT_IND)
     {
-      len = sizeof(dmEvt_t) + pDmEvt->scanReport.len;
+      reportLen = pDmEvt->scanReport.len;
     }
     else
     {
-      len = sizeof(dmEvt_t);
+      reportLen = 0;
     }
   
-    if ((pMsg = WsfMsgAlloc(len)) != NULL)
+    if ((pMsg = WsfMsgAlloc(len + reportLen)) != NULL)
     {
-      memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+      memcpy(pMsg, pDmEvt, len);
       if (pDmEvt->hdr.event == DM_SCAN_REPORT_IND)
       {
-        pMsg->scanReport.pData = (uint8_t *) (pMsg + 1);
-        memcpy(pMsg->scanReport.pData, pDmEvt->scanReport.pData, pDmEvt->scanReport.len);
+        pMsg->scanReport.pData = (uint8_t *) ((uint8_t *) pMsg + len);
+        memcpy(pMsg->scanReport.pData, pDmEvt->scanReport.pData, reportLen);
       }
       WsfMsgSend(datcCb.handlerId, pMsg);
     }
@@ -295,19 +315,35 @@ static void datcScanStop(dmEvt_t *pMsg)
 static void datcScanReport(dmEvt_t *pMsg)
 {
   uint8_t *pData;
+  appDbHdl_t dbHdl;
   bool_t  connect = FALSE;
-  
+
   /* disregard if not scanning or autoconnecting */
   if (!datcCb.scanning || !datcCb.autoConnect)
   {
     return;
   }
-  
+
   /* if we already have a bond with this device then connect to it */
-  if (AppDbFindByAddr(pMsg->scanReport.addrType, pMsg->scanReport.addr) != APP_DB_HDL_NONE)
+  if ((dbHdl = AppDbFindByAddr(pMsg->scanReport.addrType, pMsg->scanReport.addr)) != APP_DB_HDL_NONE)
   {
-    connect = TRUE;
-  }  
+    /* if this is a directed advertisement where the initiator address is an RPA */
+    if (DM_RAND_ADDR_RPA(pMsg->scanReport.directAddr, pMsg->scanReport.directAddrType))
+    {
+      /* resolve direct address to see if it's addressed to us */
+      AppMasterResolveAddr(pMsg, dbHdl, APP_RESOLVE_DIRECT_RPA);
+    }
+    else
+    {
+      connect = TRUE;
+    }
+  }
+  /* if the peer device uses an RPA */
+  else if (DM_RAND_ADDR_RPA(pMsg->scanReport.addr, pMsg->scanReport.addrType))
+  {
+    /* reslove advertiser's RPA to see if we already have a bond with this device */
+    AppMasterResolveAddr(pMsg, APP_DB_HDL_NONE, APP_RESOLVE_ADV_RPA);
+  }
   /* find vendor-specific advertising data */
   else if ((pData = DmFindAdType(DM_ADV_TYPE_MANUFACTURER, pMsg->scanReport.len,
                                  pMsg->scanReport.pData)) != NULL)
@@ -324,7 +360,7 @@ static void datcScanReport(dmEvt_t *pMsg)
     /* stop scanning and connect */
     datcCb.autoConnect = FALSE;
     AppScanStop();
-    AppConnOpen(pMsg->scanReport.addrType, pMsg->scanReport.addr);
+    AppConnOpen(pMsg->scanReport.addrType, pMsg->scanReport.addr, dbHdl);
   }
 }
 
@@ -341,7 +377,6 @@ static void datcScanReport(dmEvt_t *pMsg)
 /*************************************************************************************************/
 static void datcOpen(dmEvt_t *pMsg)
 {
-
 }
 
 /*************************************************************************************************/
@@ -358,7 +393,7 @@ static void datcOpen(dmEvt_t *pMsg)
 static void datcValueNtf(attEvt_t *pMsg)
 {
   /* print the received data */
-  APP_TRACE_INFO0(pMsg->pValue);
+  APP_TRACE_INFO0((const char *) pMsg->pValue);
 }
 
 /*************************************************************************************************/
@@ -457,7 +492,15 @@ static void datcBtnCback(uint8_t btn)
         /* clear bonded device info */
         AppDbDeleteAllRecords();
         break;
-        
+
+      case APP_UI_BTN_2_EX_LONG:
+        /* enable device privacy -- start generating local RPAs every 15 minutes */
+        DmAdvPrivStart(15 * 60);
+
+        /* set Scanning filter policy to accept directed advertisements with RPAs */
+        DmDevSetFilterPolicy(DM_FILT_POLICY_MODE_SCAN, HCI_FILT_RES_INIT);
+        break;
+
       default:
         break;
     }
@@ -499,11 +542,14 @@ static void datcDiscCback(dmConnId_t connId, uint8_t status)
       break;
       
     case APP_DISC_FAILED:
-      /* if discovery failed for proprietary data service then disconnect */
-      if (datcCb.discState == DATC_DISC_WP_SVC)
+      if (pAppCfg->abortDisc)
       {
-        AppConnClose(connId);
-        break;
+        /* if discovery failed for proprietary data service then disconnect */
+        if (datcCb.discState == DATC_DISC_WP_SVC)
+        {
+          AppConnClose(connId);
+          break;
+        }
       }
       /* else fall through and continue discovery */
       
@@ -588,7 +634,6 @@ static void datcProcMsg(dmEvt_t *pMsg)
       break;
       
     case DM_CONN_OPEN_IND:
-      
       if (datcSecCfg.oob)
       {
         dmConnId_t connId = (dmConnId_t) pMsg->hdr.param;
@@ -630,9 +675,11 @@ static void datcProcMsg(dmEvt_t *pMsg)
       AppHandlePasskey(&pMsg->authReq);
       break;
 
-    case DM_SEC_COMPARE_IND:
-      /* TODO: Verify compare value */
-      DmSecCompareRsp((dmConnId_t) pMsg->hdr.param, TRUE);
+    case DM_SEC_COMPARE_IND:       
+      AppHandleNumericComparison(&pMsg->cnfInd);
+      break;
+
+    case DM_ADV_NEW_ADDR_IND:
       break;
 
     default:
@@ -662,16 +709,19 @@ void DatcHandlerInit(wsfHandlerId_t handlerId)
   
   /* store handler ID */
   datcCb.handlerId = handlerId;
-  
+
   /* Set configuration pointers */
   pAppMasterCfg = (appMasterCfg_t *) &datcMasterCfg;
   pAppSecCfg = (appSecCfg_t *) &datcSecCfg;
   pAppDiscCfg = (appDiscCfg_t *) &datcDiscCfg;
+  pAppCfg = (appCfg_t *)&datcAppCfg;
 
-  
   /* Initialize application framework */
   AppMasterInit();
   AppDiscInit();
+
+  /* Set IRK for the local device */
+  DmSecSetLocalIrk(localIrk);
 }
 
 /*************************************************************************************************/
@@ -738,6 +788,9 @@ void DatcStart(void)
   /* Register for app framework discovery callbacks */
   AppDiscRegister(datcDiscCback);
   
+  /* Initialize attribute server database */
+  SvcCoreAddGroup();
+
   /* Reset the device */
   DmDevReset();  
 }

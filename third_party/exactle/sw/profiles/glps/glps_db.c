@@ -4,8 +4,8 @@
  *
  *  \brief  Glucose profile example record database and access functions.
  *
- *          $Date: 2012-06-18 15:08:22 -0700 (Mon, 18 Jun 2012) $
- *          $Revision: 333 $
+ *          $Date: 2016-04-19 13:50:01 -0700 (Tue, 19 Apr 2016) $
+ *          $Revision: 6868 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -170,7 +170,7 @@ static glpsRec_t *glpsDbGetEnd(void)
     return NULL;
   }
   
-  return (glpsRec_t *) &glpsDb[GLPS_DB_NUM_RECORDS - 1];
+  return (glpsRec_t *) &glpsDb[glpsDbCb.numRec - 1];
 }
 
 /*************************************************************************************************/
@@ -333,6 +333,10 @@ uint8_t glpsDbGetNextRecord(uint8_t oper, uint8_t *pFilter, glpsRec_t *pCurrRec,
       status = glpsDbOpLast(pCurrRec, pRec);
       break;
 
+    case CH_RACP_OPERATOR_NULL:
+      status = CH_RACP_RSP_INV_OPERATOR;
+      break;
+
     default:
       status = CH_RACP_RSP_OPERATOR_NOT_SUP;
       break;
@@ -400,4 +404,21 @@ uint8_t glpsDbGetNumRecords(uint8_t oper, uint8_t *pFilter, uint8_t *pNumRec)
   }
   
   return status;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     glpsDbGenerateRecord
+*
+*  \brief  Generate a new record.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void glpsDbGenerateRecord(void)
+{
+  if (glpsDbCb.numRec < GLPS_DB_NUM_RECORDS)
+  {
+    glpsDbCb.numRec++;
+  }
 }

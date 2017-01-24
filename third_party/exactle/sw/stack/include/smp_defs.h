@@ -4,8 +4,8 @@
  *        
  *  \brief  Security manager constants and definitions from the Bluetooth specification.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2015-10-15 10:06:43 -0700 (Thu, 15 Oct 2015) $
+ *          $Revision: 4216 $
  *  
  *  Copyright (c) 2010 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -121,6 +121,13 @@ extern "C" {
 #define SMP_KEY_DIST_SIGN             0x04      /*! Distribute CSRK */
 #define SMP_KEY_DIST_MASK             (SMP_KEY_DIST_ENC | SMP_KEY_DIST_ID | SMP_KEY_DIST_SIGN)
 
+/*! LESC Passkey keypress types */
+#define SMP_PASSKEY_ENTRY_STARTED     0x00      /*! Passkey entry started keypress type */
+#define SMP_PASSKEY_DIGIT_ENTERED     0x01      /*! Passkey digit entered keypress type */
+#define SMP_PASSKEY_DIGIT_ERASED      0x02      /*! Passkey digit erased keypress type */
+#define SMP_PASSKEY_CLEARED           0x03      /*! Passkey cleared keypress type */
+#define SMP_PASSKEY_ENTRY_COMPLETED   0x04      /*! Passkey entry complete keypress type */
+
 /*! Various parameter lengths */
 #define SMP_RAND_LEN                  16
 #define SMP_CONFIRM_LEN               16
@@ -132,11 +139,11 @@ extern "C" {
 #define SMP_DHKEY_CHECK_LEN           16
 
 /* CMAC Input Lengths */
-#define SMP_F4_TEXT_LEN           (SMP_PUB_KEY_LEN * 2 + 1)
-#define SMP_G2_TEXT_LEN           (SMP_PUB_KEY_LEN * 2 + SMP_RAND_LEN)
-#define SMP_F5_TKEY_TEXT_LEN      (SMP_DHKEY_LEN)
-#define SMP_F5_TEXT_LEN           (9 + 2*BDA_ADDR_LEN + 2*SMP_RAND_LEN)
-#define SMP_F6_TEXT_LEN           (2*BDA_ADDR_LEN + 3*SMP_RAND_LEN + 5)
+#define SMP_F4_TEXT_LEN               (SMP_PUB_KEY_LEN * 2 + 1)
+#define SMP_G2_TEXT_LEN               (SMP_PUB_KEY_LEN * 2 + SMP_RAND_LEN)
+#define SMP_F5_TKEY_TEXT_LEN          (SMP_DHKEY_LEN)
+#define SMP_F5_TEXT_LEN               (9 + 2*BDA_ADDR_LEN + 2*SMP_RAND_LEN)
+#define SMP_F6_TEXT_LEN               (2*BDA_ADDR_LEN + 3*SMP_RAND_LEN + 5)
 
 #ifdef __cplusplus
 };

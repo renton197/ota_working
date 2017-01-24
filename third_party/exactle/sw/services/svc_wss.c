@@ -4,8 +4,8 @@
  *        
  *  \brief  Example Weight Scale service implementation.
  *
- *          $Date: 2014-02-06 11:36:43 -0800 (Thu, 06 Feb 2014) $
- *          $Revision: 1113 $
+ *          $Date: 2016-04-15 10:33:56 -0700 (Fri, 15 Apr 2016) $
+ *          $Revision: 6823 $
  *  
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -68,7 +68,7 @@ static const uint8_t wssValWsfCh[] = {ATT_PROP_READ, UINT16_TO_BYTES(WSS_WSF_HDL
 static const uint16_t wssLenWsfCh = sizeof(wssValWsfCh);
 
 /* Weight scale feature */
-static uint8_t wssValWsf[] = {UINT16_TO_BYTES(CH_WSF_FLAG_TIMESTAMP)};
+static uint8_t wssValWsf[] = {UINT16_TO_BYTES(CH_WSF_FLAG_TIMESTAMP), 0x00, 0x00};
 static const uint16_t wssLenWsf = sizeof(wssValWsf);
 
 /* Attribute list for WSS group */

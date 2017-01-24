@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework hardware interfaces.
  *
- *          $Date: 2014-04-28 16:12:47 -0700 (Mon, 28 Apr 2014) $
- *          $Revision: 1427 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -20,6 +20,7 @@
  */
 /*************************************************************************************************/
 
+#include <string.h>
 #include "wsf_types.h"
 #include "wsf_os.h"
 #include "wsf_trace.h"
@@ -187,6 +188,40 @@ static uint8_t appHwTmUnits = CH_TM_FLAG_UNITS_C;
 
 /* weight units */
 static uint8_t appHwWmUnits = CH_WSM_FLAG_UNITS_LBS;
+
+/* pulse oximeter continuous measurement */
+static const appPlxCm_t appHwPlxCm =
+{
+  0,                                /*! Flags */
+  SFLT_TO_UINT16(98, 0),            /*! SpO2PR-Spot-Check - SpO2 */
+  SFLT_TO_UINT16(60, 0),            /*! SpO2PR-Spot-Check - Pulse Rate */
+  SFLT_TO_UINT16(98, 0),            /*! SpO2PR-Spot-Check Fast - SpO2 */
+  SFLT_TO_UINT16(60, 0),            /*! SpO2PR-Spot-Check Fast - Pulse Rate */
+  SFLT_TO_UINT16(98, 0),            /*! SpO2PR-Spot-Check Slow - SpO2 */
+  SFLT_TO_UINT16(60, 0),            /*! SpO2PR-Spot-Check Slow - Pulse Rate */
+  0,                                /*! Measurement Status */
+  0,                                /*! Device and Sensor Status */
+  SFLT_TO_UINT16(60, 0)             /*! Pulse Amplitude Index */
+};
+
+/* pulse oximeter spot check measurement */
+static const appPlxScm_t appHwPlxScm =
+{
+  0,                                /*! Flags */
+  SFLT_TO_UINT16(98, 0),            /*! SpO2PR-Spot-Check - SpO2 */
+  SFLT_TO_UINT16(60, 0),            /*! SpO2PR-Spot-Check - Pulse Rate */
+  {
+    2016,                           /*! Year */
+    7,                              /*! Month */
+    18,                             /*! Day */
+    13,                             /*! Hour */
+    10,                             /*! Minutes */
+    0                               /*! Seconds */
+  },
+  0,                                /*! Measurement Status */
+  0,                                /*! Device and Sensor Status */
+  SFLT_TO_UINT16(60, 0)             /*! Pulse Amplitude Index */
+};
 
 /*************************************************************************************************/
 /*!
@@ -435,3 +470,34 @@ void AppHwWmSetUnits(uint8_t units)
   appHwWmUnits = units;
 }
 
+/*************************************************************************************************/
+/*!
+ *  \fn     AppHwPlxcmRead
+ *        
+ *  \brief  Perform a pulse oximeter measurement.
+ *
+ *  \param  pPlxcm   Pulse Oximeter measurement return value.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppHwPlxcmRead(appPlxCm_t *pPlxcm)
+{
+  memcpy(pPlxcm, &appHwPlxCm, sizeof(appPlxCm_t));
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppHwPlxscmRead
+ *        
+ *  \brief  Perform a pulse oximeter spot check measurement.
+ *
+ *  \param  pPlxcm   Pulse Oximeter spot check measurement return value.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppHwPlxscmRead(appPlxScm_t *pPlxscm)
+{
+  memcpy(pPlxscm, &appHwPlxScm, sizeof(appPlxScm_t));
+}

@@ -4,8 +4,8 @@
  *
  *  \brief  Health/medical collector, Heart Rate profile
  *
- *          $Date: 2012-06-22 14:22:10 -0700 (Fri, 22 Jun 2012) $
- *          $Revision: 335 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

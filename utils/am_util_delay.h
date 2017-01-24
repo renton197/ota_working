@@ -26,7 +26,7 @@ extern "C"
 // External function definitions
 //
 //*****************************************************************************
-extern void am_util_delay_cycles(uint32_t ui32Cycles);
+extern void am_util_delay_cycles(uint32_t ui32Iterations);
 extern void am_util_delay_ms(uint32_t ui32MilliSeconds);
 extern void am_util_delay_us(uint32_t ui32MicroSeconds);
 

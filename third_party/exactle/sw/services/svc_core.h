@@ -4,8 +4,8 @@
  *        
  *  \brief  Example GATT and GAP service implementations.
  *
- *          $Date: 2012-05-11 21:14:08 -0700 (Fri, 11 May 2012) $
- *          $Revision: 318 $
+ *          $Date: 2015-12-10 08:50:10 -0800 (Thu, 10 Dec 2015) $
+ *          $Revision: 4738 $
  *  
  *  Copyright (c) 2009-2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -53,6 +53,8 @@ enum
   GAP_DN_HDL,                       /* Device name */
   GAP_AP_CH_HDL,                    /* Appearance characteristic */
   GAP_AP_HDL,                       /* Appearance */
+  GAP_AR_CH_HDL,                    /* Address resolution characteristic */
+  GAP_AR_HDL,                       /* Address resolution */
   GAP_MAX_HDL
 };
 
@@ -74,6 +76,7 @@ void SvcCoreAddGroup(void);
 void SvcCoreRemoveGroup(void);
 void SvcCoreGattCbackRegister(attsReadCback_t readCback, attsWriteCback_t writeCback);
 void SvcCoreGapCbackRegister(attsReadCback_t readCback, attsWriteCback_t writeCback);
+void SvcCoreGapCentAddrResUpdate(bool_t value);
 
 #ifdef __cplusplus
 };

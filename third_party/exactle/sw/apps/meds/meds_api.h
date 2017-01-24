@@ -4,8 +4,8 @@
  *
  *  \brief  Medical sensor sample application interface.
  *
- *          $Date: 2012-12-27 12:15:33 -0800 (Thu, 27 Dec 2012) $
- *          $Revision: 403 $
+ *          $Date: 2016-08-18 13:33:13 -0700 (Thu, 18 Aug 2016) $
+ *          $Revision: 8391 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -37,7 +37,9 @@ enum
 {
   MEDS_ID_BLP,      /*! Blood pressure profile */
   MEDS_ID_WSP,      /*! Weight scale profile */
-  MEDS_ID_HTP       /*! Health thermometer profile */
+  MEDS_ID_HTP,      /*! Health thermometer profile */
+  MEDS_ID_PLX,      /*! Pulse Oximeter profile */
+  MEDS_ID_GLP       /*! Glucose profile */
 };
 
 /**************************************************************************************************

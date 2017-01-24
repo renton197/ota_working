@@ -4,8 +4,8 @@
  *        
  *  \brief  Attribute protocol UUIDs from the Bluetooth specification.
  *
- *          $Date: 2015-09-20 11:19:39 -0700 (Sun, 20 Sep 2015) $
- *          $Revision: 3979 $
+ *          $Date: 2016-08-04 09:05:28 -0700 (Thu, 04 Aug 2016) $
+ *          $Revision: 8148 $
  *  
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -53,6 +53,11 @@ extern "C" {
 #define ATT_UUID_ALERT_NOTIF_SERVICE        0x1811    /*! Alert Notification Service */
 #define ATT_UUID_HID_SERVICE                0x1812    /*! Human Interface Device Service */
 #define ATT_UUID_SCAN_PARAM_SERVICE         0x1813    /*! Scan Parameter Service */
+#define ATT_UUID_RUNNING_SPEED_SERVICE      0x1814    /*! Running Speed Service */
+#define ATT_UUID_CYCLING_SPEED_SERVICE      0x1816    /*! Cycling Speed Service */
+#define ATT_UUID_CYCLING_POWER_SERVICE      0x1818    /*! Cycling Power Service */
+#define ATT_UUID_IP_SUPPORT_SERVICE         0x1820    /*! IP Support Service */
+#define ATT_UUID_PULSE_OXIMITER_SERVICE     0x1822    /*! Pulse Oximeter Service */
 
 /*! GATT UUIDs */
 #define ATT_UUID_PRIMARY_SERVICE            0x2800    /*! Primary Service */
@@ -155,6 +160,17 @@ extern "C" {
 #define ATT_UUID_PNP_ID                     0x2A50    /*! PnP ID */                     
 #define ATT_UUID_GLUCOSE_FEATURE            0x2A51    /*! Glucose Feature */            
 #define ATT_UUID_RACP                       0x2A52    /*! Record Access Control Point */
+#define ATT_UUID_CAR                        0x2AA6    /*! Central Address Resolution */
+#define ATT_UUID_RUNNING_SPEED_FEATURE      0x2A54    /*! Running Speed Feature */
+#define ATT_UUID_RUNNING_SPEED_MEASUREMENT  0x2A53    /*! Running Speed Measurement */
+#define ATT_UUID_PULSE_OX_FEATURES          0x2A60    /*! Pulse Oximeter Features */
+#define ATT_UUID_PULSE_OX_SPOT_CHECK        0x2A5E    /*! Pulse Oximeter Features */
+#define ATT_UUID_PULSE_OX_CONTINUOUS        0x2A5F    /*! Pulse Oximeter Features */
+#define ATT_UUID_CYCLING_POWER_FEATURE      0x2A65    /*! Cycling Power Feature */
+#define ATT_UUID_CYCLING_POWER_MEASUREMENT  0x2A63    /*! Cycling Power Measurement */
+#define ATT_UUID_CYCLING_SPEED_FEATURE      0x2A5C    /*! Cycling Speed Feature */
+#define ATT_UUID_CYCLING_SPEED_MEASUREMENT  0x2A5B    /*! Cycling Speed Measurement */
+#define ATT_UUID_SENSOR_LOCATION            0x2A5D    /*! Sensor Location */
 
 /* remove when adopted */
 #define ATT_UUID_GENERIC_CTRL_SERVICE       0xF011
@@ -320,6 +336,7 @@ extern const uint8_t attBpsSvcUuid[ATT_16_UUID_LEN];     /*! Blood Pressure Serv
 extern const uint8_t attAnsSvcUuid[ATT_16_UUID_LEN];     /*! Alert Notification Service */
 extern const uint8_t attHidSvcUuid[ATT_16_UUID_LEN];     /*! Human Interface Device Service */
 extern const uint8_t attSpsSvcUuid[ATT_16_UUID_LEN];     /*! Scan Parameter Service */
+extern const uint8_t attPlxsSvcUuid[ATT_16_UUID_LEN];    /*! Pulse Oximeter Service */
 
 /*! GATT UUIDs */
 extern const uint8_t attPrimSvcUuid[ATT_16_UUID_LEN];    /*! Primary Service */
@@ -409,18 +426,30 @@ extern const uint8_t attNaChUuid[ATT_16_UUID_LEN];       /*! New Alert */
 extern const uint8_t attSnacChUuid[ATT_16_UUID_LEN];     /*! Supported New Alert Category */
 extern const uint8_t attSuacChUuid[ATT_16_UUID_LEN];     /*! Supported Unread Alert Category */
 extern const uint8_t attBpfChUuid[ATT_16_UUID_LEN];      /*! Blood Pressure Feature */
-extern const uint8_t attHidBmiChUuid[ATT_16_UUID_LEN];     /*! HID Information */            
-extern const uint8_t attHidBkiChUuid[ATT_16_UUID_LEN];     /*! HID Information */            
-extern const uint8_t attHidBkoChUuid[ATT_16_UUID_LEN];     /*! HID Information */            
+extern const uint8_t attHidBmiChUuid[ATT_16_UUID_LEN];   /*! HID Information */            
+extern const uint8_t attHidBkiChUuid[ATT_16_UUID_LEN];   /*! HID Information */            
+extern const uint8_t attHidBkoChUuid[ATT_16_UUID_LEN];   /*! HID Information */            
 extern const uint8_t attHidiChUuid[ATT_16_UUID_LEN];     /*! HID Information */            
-extern const uint8_t attHidRmChUuid[ATT_16_UUID_LEN];       /*! Report Map */                
+extern const uint8_t attHidRmChUuid[ATT_16_UUID_LEN];    /*! Report Map */                
 extern const uint8_t attHidcpChUuid[ATT_16_UUID_LEN];    /*! HID Control Point */          
-extern const uint8_t attHidRepChUuid[ATT_16_UUID_LEN];      /*! Report */                    
-extern const uint8_t attHidPmChUuid[ATT_16_UUID_LEN];       /*! Protocol Mode */              
+extern const uint8_t attHidRepChUuid[ATT_16_UUID_LEN];   /*! Report */                    
+extern const uint8_t attHidPmChUuid[ATT_16_UUID_LEN];    /*! Protocol Mode */              
 extern const uint8_t attSiwChUuid[ATT_16_UUID_LEN];      /*! Scan Interval Window */       
 extern const uint8_t attPnpChUuid[ATT_16_UUID_LEN];      /*! PnP ID */                     
 extern const uint8_t attGlfChUuid[ATT_16_UUID_LEN];      /*! Glucose Feature */            
 extern const uint8_t attRacpChUuid[ATT_16_UUID_LEN];     /*! Record Access Control Point */
+extern const uint8_t attCarChUuid[ATT_16_UUID_LEN];      /*! Central Address Resolution */
+extern const uint8_t attRsfChUuid[ATT_16_UUID_LEN];      /*! Running Speed Features */
+extern const uint8_t attRsmChUuid[ATT_16_UUID_LEN];      /*! Running Speed Measurement */
+extern const uint8_t attCpfChUuid[ATT_16_UUID_LEN];      /*! Cycling Power Features */
+extern const uint8_t attCpmChUuid[ATT_16_UUID_LEN];      /*! Cycling Power Measurement */
+extern const uint8_t attCsfChUuid[ATT_16_UUID_LEN];      /*! Cycling Speed Features */
+extern const uint8_t attCsmChUuid[ATT_16_UUID_LEN];      /*! Cycling Speed Measurement */
+extern const uint8_t attSlChUuid[ATT_16_UUID_LEN];       /*! Sensor Location */
+extern const uint8_t attPlxfChUuid[ATT_16_UUID_LEN];     /*! Pulse Oximeter Features */
+extern const uint8_t attPlxscmChUuid[ATT_16_UUID_LEN];   /*! Pulse Oximeter Spot Check Measurement */
+extern const uint8_t attPlxcmChUuid[ATT_16_UUID_LEN];    /*! Pulse Oximeter Continuous Measurement */
+
 
 /* remove when adopted */
 extern const uint8_t attWssSvcUuid[ATT_16_UUID_LEN];      /*! Weight scale service */

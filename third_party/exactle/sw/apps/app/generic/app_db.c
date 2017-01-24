@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework device database example, using simple RAM-based storage.
  *
- *          $Date: 2013-06-22 17:43:56 -0700 (Sat, 22 Jun 2013) $
- *          $Revision: 752 $
+ *          $Date: 2016-03-22 07:45:42 -0700 (Tue, 22 Mar 2016) $
+ *          $Revision: 6426 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -39,6 +39,8 @@ typedef struct
   /*! Common for all roles */
   bdAddr_t    peerAddr;                     /*! Peer address */
   uint8_t     addrType;                     /*! Peer address type */
+  dmSecIrk_t  peerIrk;                      /*! Peer IRK */
+  dmSecCsrk_t peerCsrk;                     /*! Peer CSRK */
   uint8_t     keyValidMask;                 /*! Valid keys in this record */
   bool_t      inUse;                        /*! TRUE if record in use */
   bool_t      valid;                        /*! TRUE if record is valid */
@@ -46,6 +48,7 @@ typedef struct
   /*! For slave local device */
   dmSecLtk_t  localLtk;                     /*! Local LTK */
   uint8_t     localLtkSecLevel;             /*! Local LTK security level */
+  bool_t      peerAddrRes;                  /*! TRUE if address resolution's supported on peer device (master) */
 
   /*! For master local device */
   dmSecLtk_t  peerLtk;                      /*! Peer LTK */
@@ -53,7 +56,8 @@ typedef struct
 
   /*! for ATT server local device */
   uint16_t    cccTbl[APP_DB_NUM_CCCD];      /*! Client characteristic configuration descriptors */
-  
+  uint32_t    peerSignCounter;              /*! Peer Sign Counter */
+
   /*! for ATT client */
   uint16_t    hdlList[APP_DB_HDL_LIST_LEN]; /*! Cached handle list */
   uint8_t     discStatus;                   /*! Service discovery and configuration status */
@@ -142,6 +146,57 @@ appDbHdl_t AppDbNewRecord(uint8_t addrType, uint8_t *pAddr)
 
 /*************************************************************************************************/
 /*!
+*  \fn     AppDbGetNextRecord
+*
+*  \brief  Get the next database record for a given record. For the first record, the function
+*          should be called with 'hdl' set to 'APP_DB_HDL_NONE'.
+*
+*  \param  hdl  Database record handle.
+*
+*  \return Next record handle found. APP_DB_HDL_NONE, otherwise.
+*/
+/*************************************************************************************************/
+appDbHdl_t AppDbGetNextRecord(appDbHdl_t hdl)
+{
+  appDbRec_t  *pRec;
+
+  /* if first record is requested */
+  if (hdl == APP_DB_HDL_NONE)
+  {
+    pRec = appDb.rec;
+  }
+  /* if valid record passed in */
+  else if (AppDbRecordInUse(hdl))
+  {
+    pRec = (appDbRec_t *)hdl;
+    pRec++;
+  }
+  /* invalid record passed in */
+  else
+  {
+    return APP_DB_HDL_NONE;
+  }
+
+  /* look for next valid record */
+  while (pRec <= &appDb.rec[APP_DB_NUM_RECS])
+  {
+    /* if record is in use */
+    if (pRec->inUse && pRec->valid)
+    {
+      /* record found */
+      return (appDbHdl_t)pRec;
+    }
+
+    /* look for next record */
+    pRec++;
+  }
+
+  /* end of records */
+  return APP_DB_HDL_NONE;
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppDbDeleteRecord
  *        
  *  \brief  Delete a new device database record.
@@ -193,6 +248,34 @@ void AppDbCheckValidRecord(appDbHdl_t hdl)
   {
     AppDbDeleteRecord(hdl);
   }
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbRecordInUse
+*
+*  \brief  Check if a database record is in use.
+
+*  \param  hdl       Database record handle.
+*
+*  \return TURE if record in use. FALSE, otherwise.
+*/
+/*************************************************************************************************/
+bool_t AppDbRecordInUse(appDbHdl_t hdl)
+{
+  appDbRec_t  *pRec = appDb.rec;
+  uint8_t     i;
+
+  /* see if record is in database record list */
+  for (i = APP_DB_NUM_RECS; i > 0; i--, pRec++)
+  {
+    if (pRec->inUse && pRec->valid && (pRec == ((appDbRec_t *)hdl)))
+    {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
 }
 
 /*************************************************************************************************/
@@ -259,12 +342,13 @@ void AppDbDeleteAllRecords(void)
 appDbHdl_t AppDbFindByAddr(uint8_t addrType, uint8_t *pAddr)
 {
   appDbRec_t  *pRec = appDb.rec;
+  uint8_t     peerAddrType = DmHostAddrType(addrType);
   uint8_t     i;
   
   /* find matching record */
   for (i = APP_DB_NUM_RECS; i > 0; i--, pRec++)
   {
-    if (pRec->inUse && (pRec->addrType == addrType) && BdaCmp(pRec->peerAddr, pAddr))
+    if (pRec->inUse && (pRec->addrType == peerAddrType) && BdaCmp(pRec->peerAddr, pAddr))
     {
       return (appDbHdl_t) pRec;
     }
@@ -336,9 +420,11 @@ dmSecKey_t *AppDbGetKey(appDbHdl_t hdl, uint8_t type, uint8_t *pSecLevel)
         break;
 
       case DM_KEY_IRK:
+        pKey = (dmSecKey_t *)&((appDbRec_t *)hdl)->peerIrk;
         break;
 
       case DM_KEY_CSRK:
+        pKey = (dmSecKey_t *)&((appDbRec_t *)hdl)->peerCsrk;
         break;
         
       default:
@@ -376,9 +462,18 @@ void AppDbSetKey(appDbHdl_t hdl, dmSecKeyIndEvt_t *pKey)
       break;
 
     case DM_KEY_IRK:
+      ((appDbRec_t *)hdl)->peerIrk = pKey->keyData.irk;
+
+      /* make sure peer record is stored using its identity address */
+      ((appDbRec_t *)hdl)->addrType = pKey->keyData.irk.addrType;
+      BdaCpy(((appDbRec_t *)hdl)->peerAddr, pKey->keyData.irk.bdAddr);
       break;
 
     case DM_KEY_CSRK:
+      ((appDbRec_t *)hdl)->peerCsrk = pKey->keyData.csrk;
+
+      /* sign counter must be initialized to zero when CSRK is generated */
+      ((appDbRec_t *)hdl)->peerSignCounter = 0;
       break;
       
     default:
@@ -532,4 +627,70 @@ void AppDbSetDevName(uint8_t len, char *pStr)
   len = (len <= sizeof(appDb.devName)) ? len : sizeof(appDb.devName);
   
   memcpy(appDb.devName, pStr, len);
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbGetPeerAddrRes
+*
+*  \brief  Get address resolution attribute value read from a peer device.
+*
+*  \param  hdl        Database record handle.
+*
+*  \return TRUE if address resolution is supported in peer device. FALSE, otherwise.
+*/
+/*************************************************************************************************/
+bool_t AppDbGetPeerAddrRes(appDbHdl_t hdl)
+{
+  return ((appDbRec_t *)hdl)->peerAddrRes;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbSetPeerAddrRes
+*
+*  \brief  Set address resolution attribute value for a peer device.
+*
+*  \param  hdl        Database record handle.
+*  \param  addrRes    Address resolution attribue value.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppDbSetPeerAddrRes(appDbHdl_t hdl, uint8_t addrRes)
+{
+  ((appDbRec_t *)hdl)->peerAddrRes = addrRes;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbGetPeerSignCounter
+*
+*  \brief  Get sign counter for a peer device.
+*
+*  \param  hdl        Database record handle.
+*
+*  \return Sign counter for peer device.
+*/
+/*************************************************************************************************/
+uint32_t AppDbGetPeerSignCounter(appDbHdl_t hdl)
+{
+  return ((appDbRec_t *)hdl)->peerSignCounter;
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppDbSetPeerSignCounter
+*
+*  \brief  Set sign counter for a peer device.
+*
+*  \param  hdl          Database record handle.
+*  \param  signCounter  Sign counter for peer device.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppDbSetPeerSignCounter(appDbHdl_t hdl, uint32_t signCounter)
+{
+  ((appDbRec_t *)hdl)->peerSignCounter = signCounter;
 }

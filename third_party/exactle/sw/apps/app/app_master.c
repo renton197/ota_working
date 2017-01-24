@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework module for master.
  *
- *          $Date: 2012-05-07 19:54:28 -0700 (Mon, 07 May 2012) $
- *          $Revision: 315 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -26,6 +26,8 @@
 #include "wsf_trace.h"
 #include "wsf_assert.h"
 #include "dm_api.h"
+#include "att_api.h"
+#include "svc_core.h"
 #include "app_api.h"
 #include "app_main.h"
 #include "app_cfg.h"
@@ -38,20 +40,11 @@
 #define APP_ADDR_NONE             0xFF
 
 /**************************************************************************************************
-  Data Types
+  Global Variables
 **************************************************************************************************/
 
-typedef struct
-{
-  appDevInfo_t  scanResults[APP_SCAN_RESULT_MAX]; /*! Scan result storage */
-  uint8_t       numScanResults;                   /*! Number of scan results */
-} appMasterCb_t;
-
-/**************************************************************************************************
-  Local Variables
-**************************************************************************************************/
-
-static appMasterCb_t appMasterCb;
+/* Master control block */
+appMasterCb_t appMasterCb;
 
 /*************************************************************************************************/
 /*!
@@ -131,6 +124,9 @@ static void appScanResultsClear(void)
   {
     pDev->addrType = APP_ADDR_NONE;
   }
+
+  /* end address resolution */
+  appMasterCb.inProgress = FALSE;
 }
 
 /*************************************************************************************************/
@@ -165,10 +161,43 @@ static void appScanResultAdd(dmEvt_t *pMsg)
       /* add device to list */
       pDev->addrType = pMsg->scanReport.addrType;
       BdaCpy(pDev->addr, pMsg->scanReport.addr);
+      pDev->directAddrType = pMsg->scanReport.directAddrType;
+      BdaCpy(pDev->directAddr, pMsg->scanReport.directAddr);
       appMasterCb.numScanResults++;
       break;
     }
   }
+}
+
+/*************************************************************************************************/
+/*!
+*  \fn     appScanResultFind
+*
+*  \brief  Find a scan report in the scan result list.
+*
+*  \param  pMsg    Pointer to DM callback event message.
+*
+*  \return Index of result in scan result list. APP_SCAN_RESULT_MAX, otherwise.
+*/
+/*************************************************************************************************/
+static uint8_t appScanResultFind(dmEvt_t *pMsg)
+{
+  uint8_t       i;
+  appDevInfo_t  *pDev = appMasterCb.scanResults;
+
+  /* see if device is in list already */
+  for (i = 0; i < APP_SCAN_RESULT_MAX; i++, pDev++)
+  {
+    /* if address matches list entry */
+    if ((pDev->addrType == pMsg->scanReport.addrType) &&
+        BdaCmp(pDev->addr, pMsg->scanReport.addr))
+    {
+      /* device already exists in list; we are done */
+      break;
+    }
+  }
+
+  return i;
 }
 
 /*************************************************************************************************/
@@ -178,12 +207,11 @@ static void appScanResultAdd(dmEvt_t *pMsg)
  *  \brief  Handle a DM_SCAN_START_IND event.
  *
  *  \param  pMsg    Pointer to DM callback event message.
- *  \param  pCb     Connection control block.
  *
  *  \return None.
  */
 /*************************************************************************************************/
-static void appMasterScanStart(dmEvt_t *pMsg, appConnCb_t *pCb)
+static void appMasterScanStart(dmEvt_t *pMsg)
 {
   /* clear current scan results */
   appScanResultsClear();
@@ -196,12 +224,11 @@ static void appMasterScanStart(dmEvt_t *pMsg, appConnCb_t *pCb)
  *  \brief  Handle a DM_SCAN_STOP_IND event.
  *
  *  \param  pMsg    Pointer to DM callback event message.
- *  \param  pCb     Connection control block.
  *
  *  \return None.
  */
 /*************************************************************************************************/
-static void appMasterScanStop(dmEvt_t *pMsg, appConnCb_t *pCb)
+static void appMasterScanStop(dmEvt_t *pMsg)
 {
   APP_TRACE_INFO1("Scan results: %d", AppScanGetNumResults());
 }
@@ -213,12 +240,11 @@ static void appMasterScanStop(dmEvt_t *pMsg, appConnCb_t *pCb)
  *  \brief  Handle a DM_SCAN_REPORT_IND event.
  *
  *  \param  pMsg    Pointer to DM callback event message.
- *  \param  pCb     Connection control block.
  *
  *  \return None.
  */
 /*************************************************************************************************/
-static void appMasterScanReport(dmEvt_t *pMsg, appConnCb_t *pCb)
+static void appMasterScanReport(dmEvt_t *pMsg)
 {
   /* add to scan result list */
   appScanResultAdd(pMsg);
@@ -257,6 +283,9 @@ static void appMasterConnClose(dmEvt_t *pMsg, appConnCb_t *pCb)
 {
   /* clear connection ID */
   pCb->connId = DM_CONN_ID_NONE;
+
+  /* cancel any address resolution in progress */
+  appMasterCb.inProgress = FALSE;
 }
 
 /*************************************************************************************************/
@@ -328,6 +357,25 @@ static void appMasterSecSlaveReq(dmEvt_t *pMsg, appConnCb_t *pCb)
 
 /*************************************************************************************************/
 /*!
+ *  \fn     appPrivSetAddrResEnableInd
+ *
+ *  \brief  Handle set address resolution enable indication.
+ *
+ *  \param  pMsg    Pointer to DM callback event message.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void appPrivSetAddrResEnableInd(dmEvt_t *pMsg)
+{
+  if (pMsg->hdr.status == HCI_SUCCESS)
+  {
+    SvcCoreGapCentAddrResUpdate(DmLlPrivEnabled());
+  }
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     appMasterSecStoreKey
  *        
  *  \brief  Store security key.
@@ -375,6 +423,12 @@ static void appMasterSecPairCmpl(dmEvt_t *pMsg, appConnCb_t *pCb)
     {
       AppDbValidateRecord(pCb->dbHdl, pCb->rcvdKeys);
     }    
+
+    /* if bonded, add device to resolving list */
+    if (pCb->dbHdl != APP_DB_HDL_NONE)
+    {
+      AppAddDevToResList(pMsg, pCb->connId);
+    }
   }
   
   pCb->initiatingSec = FALSE;
@@ -446,6 +500,109 @@ void appMasterProcMsg(wsfMsgHdr_t *pMsg)
 
 /*************************************************************************************************/
 /*!
+ *  \fn     appMasterResolvedAddrInd
+ *
+ *  \brief  Process a received privacy resolved address indication.
+ *
+ *  \param  pMsg    Pointer to DM message.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void appMasterResolvedAddrInd(dmEvt_t *pMsg)
+{
+  appDevInfo_t *pDev;
+  dmSecKey_t *pPeerKey;
+  
+  /* if address resolution is not in progress */
+  if (!appMasterCb.inProgress)
+  {
+    return;
+  }
+
+  /* get device record */
+  pDev = &appMasterCb.scanResults[appMasterCb.idx];
+
+  /* if RPA resolved */
+  if (pMsg->hdr.status == HCI_SUCCESS)
+  {
+    /* if resolved advertising was directed with an RPA initiator address */
+    if ((pMsg->hdr.param == APP_RESOLVE_ADV_RPA) && DM_RAND_ADDR_RPA(pDev->directAddr, pDev->directAddrType))
+    {
+      /* reslove initiator's RPA to see if directed advertisement was addressed to us */
+      DmPrivResolveAddr(pDev->directAddr, DmSecGetLocalIrk(), APP_RESOLVE_DIRECT_RPA);
+
+      /* not done yet */
+      return;
+    }
+
+    /* stop scanning */
+    AppScanStop();
+
+    /* connect to peer device using its advertising address */
+    AppConnOpen(pDev->addrType, pDev->addr, appMasterCb.dbHdl);
+  }
+  /* if RPA did not resolve and there're more bonded records to go through */
+  else if ((pMsg->hdr.status == HCI_ERR_AUTH_FAILURE) && (appMasterCb.dbHdl != APP_DB_HDL_NONE))
+  {
+    /* get the next database record */
+    appMasterCb.dbHdl = AppDbGetNextRecord(appMasterCb.dbHdl);
+
+    /* if there's another bond record */
+    if ((appMasterCb.dbHdl != APP_DB_HDL_NONE) && 
+        ((pPeerKey = AppDbGetKey(appMasterCb.dbHdl, DM_KEY_IRK, NULL)) != NULL))
+    {
+      /* reslove RPA using the next stored IRK */
+      DmPrivResolveAddr(pDev->addr, pPeerKey->irk.key, APP_RESOLVE_ADV_RPA);
+
+      /* not done yet */
+      return;
+    }
+  }
+
+  /* done with this address resolution */
+  appMasterCb.inProgress = FALSE;
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     appMasterRemoteConnParamReq
+ *
+ *  \brief  Handle a DM_REM_CONN_PARAM_REQ_IND event.
+ *
+ *  \param  pMsg    Pointer to DM callback event message.
+ *  \param  pCb     Connection control block.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void appMasterRemoteConnParamReq(dmEvt_t *pMsg, appConnCb_t *pCb)
+{
+  /* if configured to accept the remote connection parameter request */
+  if (pAppMasterReqActCfg->remConnParamReqAct == APP_ACT_ACCEPT)
+  {
+    hciConnSpec_t connSpec;
+
+    connSpec.connIntervalMin = pMsg->remConnParamReq.intervalMin;
+    connSpec.connIntervalMax = pMsg->remConnParamReq.intervalMax;
+    connSpec.connLatency = pMsg->remConnParamReq.latency;
+    connSpec.supTimeout = pMsg->remConnParamReq.timeout;
+    connSpec.minCeLen = connSpec.maxCeLen = 0;
+
+    /* accept the remote device’s request to change connection parameters */
+    DmRemoteConnParamReqReply(pCb->connId, &connSpec);
+  }
+  /* if configured to reject the remote connection parameter request */
+  else if (pAppMasterReqActCfg->remConnParamReqAct == APP_ACT_REJECT)
+  {
+    /* reject the remote device’s request to change connection parameters */
+    DmRemoteConnParamReqNegReply(pCb->connId, HCI_ERR_UNSUP_FEAT);
+  }
+  /* else - app will handle the remote connection parameter request */
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppMasterInit
  *        
  *  \brief  Initialize app framework master.
@@ -455,6 +612,8 @@ void appMasterProcMsg(wsfMsgHdr_t *pMsg)
 /*************************************************************************************************/
 void AppMasterInit(void)
 {
+  appMasterCb.inProgress = FALSE;
+
   /* set up callback from main */
   appCb.masterCback = appMasterProcMsg;
 }
@@ -476,8 +635,9 @@ void AppMasterProcDmMsg(dmEvt_t *pMsg)
   appConnCb_t *pCb = NULL;
   
   /* look up app connection control block from DM connection ID */
-  if (pMsg->hdr.event == DM_CONN_OPEN_IND ||
-      pMsg->hdr.event == DM_CONN_CLOSE_IND)
+  if (pMsg->hdr.event == DM_CONN_OPEN_IND  ||
+      pMsg->hdr.event == DM_CONN_CLOSE_IND ||
+      pMsg->hdr.event == DM_REM_CONN_PARAM_REQ_IND)
   {
     pCb = &appConnCb[pMsg->hdr.param - 1];
   }
@@ -485,15 +645,15 @@ void AppMasterProcDmMsg(dmEvt_t *pMsg)
   switch(pMsg->hdr.event)
   {
     case DM_SCAN_START_IND:
-      appMasterScanStart(pMsg, pCb);
+      appMasterScanStart(pMsg);
       break;  
 
     case DM_SCAN_STOP_IND:
-      appMasterScanStop(pMsg, pCb);
+      appMasterScanStop(pMsg);
       break;  
 
     case DM_SCAN_REPORT_IND:
-      appMasterScanReport(pMsg, pCb);
+      appMasterScanReport(pMsg);
       break;  
 
     case DM_CONN_OPEN_IND:
@@ -502,6 +662,14 @@ void AppMasterProcDmMsg(dmEvt_t *pMsg)
 
     case DM_CONN_CLOSE_IND:
       appMasterConnClose(pMsg, pCb);
+      break;
+
+    case DM_PRIV_RESOLVED_ADDR_IND:
+      appMasterResolvedAddrInd(pMsg);
+      break;
+
+    case DM_REM_CONN_PARAM_REQ_IND:
+      appMasterRemoteConnParamReq(pMsg, pCb);
       break;
 
     default:
@@ -561,45 +729,13 @@ void AppMasterSecProcDmMsg(dmEvt_t *pMsg)
       appMasterSecSlaveReq(pMsg, pCb);
       break;
 
+    case DM_PRIV_SET_ADDR_RES_ENABLE_IND:
+      appPrivSetAddrResEnableInd(pMsg);
+      break;
+
     default:
       break;
   }
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     AppScanStart
- *        
- *  \brief  Start scanning.   A scan is performed using the given discoverability mode,
- *          scan type, and duration.
- *
- *  \param  mode      Discoverability mode.
- *  \param  scanType  Scan type.
- *  \param  duration  The scan duration, in milliseconds.  If set to zero, scanning will
- *                    continue until AppScanStop() is called.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-void AppScanStart(uint8_t mode, uint8_t scanType, uint16_t duration)
-{
-  DmScanSetInterval(pAppMasterCfg->scanInterval, pAppMasterCfg->scanWindow);
-  
-  DmScanStart(mode, scanType, TRUE, duration);
-}
-
-/*************************************************************************************************/
-/*!
- *  \fn     AppScanStop
- *        
- *  \brief  Stop scanning.
- *
- *  \return None.
- */
-/*************************************************************************************************/
-void AppScanStop(void)
-{
-  DmScanStop();
 }
 
 /*************************************************************************************************/
@@ -641,31 +777,40 @@ uint8_t AppScanGetNumResults(void)
 
 /*************************************************************************************************/
 /*!
- *  \fn     AppConnOpen
- *        
- *  \brief  Open a connection to a peer device with the given address.
+ *  \fn     appConnOpen
  *
+ *  \brief  Open a connection to a peer device with the given initiator PHYs, and address.
+ *
+ *  \param  initPhys  Initiator PHYs.
  *  \param  addrType  Address type.
  *  \param  pAddr     Peer device address.
+ *  \param  dbHdl     Device database handle.
  *
  *  \return Connection identifier.
  */
 /*************************************************************************************************/
-dmConnId_t AppConnOpen(uint8_t addrType, uint8_t *pAddr)
+dmConnId_t appConnOpen(uint8_t initPhys, uint8_t addrType, uint8_t *pAddr, appDbHdl_t dbHdl)
 {
   dmConnId_t  connId;
   appConnCb_t *pCb;
-  
+
   /* open connection */
-  connId = DmConnOpen(DM_CLIENT_ID_APP, addrType, pAddr);
-  
+  connId = DmConnOpen(DM_CLIENT_ID_APP, initPhys, addrType, pAddr);
+
   /* set up conn. control block */
   pCb = &appConnCb[connId - 1];
   pCb->connId = connId;
-  
-  /* set device db handle */
-  pCb->dbHdl = AppDbFindByAddr(addrType, pAddr);
-  
+
+  /* if database record handle is in use */
+  if ((dbHdl != APP_DB_HDL_NONE) && AppDbRecordInUse(dbHdl))
+  {
+    pCb->dbHdl = dbHdl;
+  }
+  else
+  {
+    pCb->dbHdl = AppDbFindByAddr(addrType, pAddr);
+  }
+
   return connId;
 }
 
@@ -696,5 +841,60 @@ void AppMasterSecurityReq(dmConnId_t connId)
       (DmConnSecLevel(connId) == DM_SEC_LEVEL_NONE))
   {
     appMasterInitiateSec(connId, TRUE, pCb);
+  }
+}
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppMasterResolveAddr
+ *
+ *  \brief  Resolve the advertiser's RPA (AdvA) or the initiator's RPA (InitA) of a directed 
+ *          advertisement report. If the addresses resolved then a connection will be initiated.
+ *
+ *  \param  pMsg         Pointer to DM callback event message.
+ *  \param  dbHdl        Database record handle.
+ *  \param  resolveType  Which address in advertising report to be resolved.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppMasterResolveAddr(dmEvt_t *pMsg, appDbHdl_t dbHdl, uint8_t resolveType)
+{
+  uint8_t    idx;
+
+  /* if address resolution's in progress or scan record is not found */
+  if ((appMasterCb.inProgress) || ((idx = appScanResultFind(pMsg)) >= APP_SCAN_RESULT_MAX))
+  {
+    return;
+  }
+
+  /* if asked to resolve direct address */
+  if (resolveType == APP_RESOLVE_DIRECT_RPA)
+  {
+    /* reslove initiator's RPA to see if the directed advertisement is addressed to us */
+    DmPrivResolveAddr(pMsg->scanReport.directAddr, DmSecGetLocalIrk(), APP_RESOLVE_DIRECT_RPA);
+
+    /* store scan record index and database record handle for later */
+    appMasterCb.idx = idx;
+    appMasterCb.dbHdl = dbHdl;
+    appMasterCb.inProgress = TRUE;
+  }
+  /* if asked to resolve advertiser's address */
+  else if (resolveType == APP_RESOLVE_ADV_RPA)
+  {
+    dmSecKey_t *pPeerKey;
+    appDbHdl_t hdl = AppDbGetNextRecord(APP_DB_HDL_NONE);
+
+    /* if we have any bond records */
+    if ((hdl != APP_DB_HDL_NONE) && ((pPeerKey = AppDbGetKey(hdl, DM_KEY_IRK, NULL)) != NULL))
+    {
+      /* reslove advertiser's RPA to see if we already have a bond with this device */
+      DmPrivResolveAddr(pMsg->scanReport.addr, pPeerKey->irk.key, APP_RESOLVE_ADV_RPA);
+
+      /* store scan record index and database record handle for later */
+      appMasterCb.idx = idx;
+      appMasterCb.dbHdl = hdl;
+      appMasterCb.inProgress = TRUE;
+    }
   }
 }

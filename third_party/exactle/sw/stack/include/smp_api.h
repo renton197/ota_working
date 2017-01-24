@@ -4,8 +4,8 @@
  *        
  *  \brief  SMP subsystem API.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-05-27 10:16:39 -0700 (Fri, 27 May 2016) $
+ *          $Revision: 7240 $
  *  
  *  Copyright (c) 2010 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -65,6 +65,7 @@ enum
   SMP_MSG_INT_PK_CMPL,                    /*! Passkey operation complete */
   SMP_MSG_WSF_CMAC_CMPL,                  /*! WSF CMAC operation complete */
   SMP_MSG_DH_CHECK_FAILURE,               /*! WSF CMAC operation complete */
+  SMP_MSG_EARLY_CNF,                      /*! An early Confirm from the initiator in passkey pairing */
   SMP_NUM_MSGS
 };
 

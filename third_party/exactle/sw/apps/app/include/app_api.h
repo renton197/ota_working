@@ -4,8 +4,8 @@
  *        
  *  \brief  Application framework API.
  *
- *          $Date: 2015-09-16 13:12:41 -0700 (Wed, 16 Sep 2015) $
- *          $Revision: 3932 $
+ *          $Date: 2016-08-22 17:32:42 -0700 (Mon, 22 Aug 2016) $
+ *          $Revision: 8489 $
  *  
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -25,6 +25,7 @@
 #include "wsf_os.h"
 #include "dm_api.h"
 #include "att_api.h"
+#include "app_db.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,6 +79,17 @@ enum
   APP_DISC_CFG_CMPL,                      /*! Service configuration complete */
 };
 
+/*! Actions for incoming requests */
+enum
+{
+  APP_ACT_ACCEPT,                         /*! Accept incoming request */
+  APP_ACT_REJECT,                         /*! Reject incoming request */
+  APP_ACT_NONE                            /*! Do nothing - app will handle incoming request  */
+};
+
+#define APP_RESOLVE_ADV_RPA         0     /*! Resolving the advertiser's RPA (AdvA) */
+#define APP_RESOLVE_DIRECT_RPA      1     /*! Resolving RPA the directed advertisement is being directed to (InitA) */
+
 /**************************************************************************************************
   Data Types
 **************************************************************************************************/
@@ -86,11 +98,20 @@ enum
 typedef struct
 {
   uint16_t    advDuration[APP_ADV_NUM_CFG];  /*! Advertising durations in ms */
-  uint16_t    advInterval[APP_ADV_NUM_CFG];  /*! Advertising intervals in 0.625 ms units (20 ms to 10.24 s). 
-                                                 The minimum non-connectable advertising interval cannot be 
-                                                 set to less than 100ms (i.e., when advertising type is set 
-                                                 to DM_ADV_DISC_UNDIRECT or DM_ADV_NONCONN_UNDIRECT) */
+  uint16_t    advInterval[APP_ADV_NUM_CFG];  /*! Advertising intervals in 0.625 ms units (20 ms to 10.24 s). */
 } appAdvCfg_t;
+
+/*! Configurable parameters for extended advertising */
+typedef struct
+{
+  uint16_t    advDuration[DM_NUM_ADV_SETS];  /*! Advertising durations in ms */
+  uint16_t    advInterval[DM_NUM_ADV_SETS];  /*! Advertising intervals in 0.625 ms units (20 ms to 10.24 s). */
+  uint8_t     maxEaEvents[DM_NUM_ADV_SETS];  /*! Maximum number of extended advertising events Controller will
+                                                 send prior to terminating extended advertising */
+  bool_t      useLegacyPdu[DM_NUM_ADV_SETS]; /*! Whether to use legacy advertising PDUs with extended advertising.
+                                                 If set to TRUE then length of advertising data cannot exceed 31
+                                                 octets. */
+} appExtAdvCfg_t;
 
 /*! Configurable parameters for slave */
 typedef struct
@@ -132,17 +153,32 @@ typedef struct
   uint8_t         maxAttempts;            /*! Number of update attempts before giving up */
 } appUpdateCfg_t;
 
+/*! Configurable parameters for incoming request actions */
+typedef struct
+{
+  uint8_t         remConnParamReqAct;     /*! Action for the remote connection parameter request */
+} appReqActCfg_t;
+
 /*! Configurable parameters for service and characteristic discovery */
 typedef struct
 {
   bool_t          waitForSec;             /*! TRUE to wait for a secure connection before initiating discovery */
 } appDiscCfg_t;
 
+/*! Configurable parameters for application */
+typedef struct
+{
+  bool_t          abortDisc;              /*! TRUE to abort service discovery if service not found */
+  bool_t          disconnect;             /*! TRUE to disconnect if ATT transaction times out */
+} appCfg_t;
+
 /*! Device information data type */
 typedef struct
 {
   bdAddr_t        addr;                   /*! Peer device address */
   uint8_t         addrType;               /*! Peer address type */
+  uint8_t         directAddrType;         /*! Address directed advertisement is addressed to */
+  bdAddr_t        directAddr;             /*! Type of address directed advertisement is addressed to */
 } appDevInfo_t;
 
 /*!
@@ -164,6 +200,9 @@ typedef void (*appDiscCback_t)(dmConnId_t connId, uint8_t status);
 /*! Configuration pointer for advertising */
 extern appAdvCfg_t *pAppAdvCfg;
 
+/*! Configuration pointer for extended advertising */
+extern appExtAdvCfg_t *pAppExtAdvCfg;
+
 /*! Configuration pointer for slave */
 extern appSlaveCfg_t *pAppSlaveCfg;
 
@@ -178,6 +217,15 @@ extern appUpdateCfg_t *pAppUpdateCfg;
 
 /*! Configuration pointer for discovery */
 extern appDiscCfg_t *pAppDiscCfg;
+
+/*! Configuration for application */
+extern appCfg_t *pAppCfg;
+
+/*! Configuration pointer for incoming request actions on master */
+extern appReqActCfg_t *pAppMasterReqActCfg;
+
+/*! Configurable pointer for incoming request actions on slave */
+extern appReqActCfg_t *pAppSlaveReqActCfg;
 
 /**************************************************************************************************
   Function Declarations
@@ -271,6 +319,106 @@ bool_t AppAdvSetAdValue(uint8_t location, uint8_t adType, uint8_t len, uint8_t *
 
 /*************************************************************************************************/
 /*!
+ *  \fn     AppSlaveIsAdvertising
+ *
+ *  \brief  Check if the local device's currently advertising.
+ *
+ *  \return TRUE if device's advertising. FALSE, otherwise.
+ */
+/*************************************************************************************************/
+bool_t AppSlaveIsAdvertising(void);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppExtAdvSetData
+ *
+ *  \brief  Set extended advertising data.
+ *
+ *  \param  advHandle Advertising handle.
+ *  \param  location  Data location.
+ *  \param  len       Length of the data.  Maximum length is 31 bytes if advertising set uses
+ *                    legacy advertising PDUs with extended advertising.
+ *  \param  pData     Pointer to the data.
+ *  \param  bufLen    Length of the data buffer maintained by Application.  Minimum length is
+ *                    31 bytes.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppExtAdvSetData(uint8_t advHandle, uint8_t location, uint16_t len, uint8_t *pData, uint16_t bufLen);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppExtAdvStart
+ *
+ *  \brief  Start extended advertising using the parameters for the given mode.
+ *
+ *  \param  numSets     Number of advertising sets.
+ *  \param  pAdvHandles Advertising handles array.
+ *  \param  mode        Discoverable/connectable mode.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppExtAdvStart(uint8_t numSets, uint8_t *pAdvHandles, uint8_t mode);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppExtAdvStop
+ *
+ *  \brief  Stop extended advertising.  If the number of sets is set to 0 then all advertising
+ *          sets are disabled.
+ *
+ *  \param  numSets   Number of advertising sets.
+ *  \param  advHandle Advertising handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppExtAdvStop(uint8_t numSets, uint8_t *pAdvHandles);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppExtAdvSetAdValue
+ *
+ *  \brief  Set the value of an advertising data element in the extended advertising or scan
+ *          response data.  If the element already exists in the data then it is replaced
+ *          with the new value.  If the element does not exist in the data it is appended
+ *          to it, space permitting.
+ *
+ *          There is special handling for the device name (AD type DM_ADV_TYPE_LOCAL_NAME).
+ *          If the name can only fit in the data if it is shortened, the name is shortened
+ *          and the AD type is changed to DM_ADV_TYPE_SHORT_NAME.
+ *
+ *  \param  advHandle Advertising handle.
+ *  \param  location  Data location.
+ *  \param  adType    Advertising data element type.
+ *  \param  len       Length of the value.  Maximum length is 31 bytes if advertising set uses
+ *                    legacy advertising PDUs with extended advertising.
+ *  \param  pValue    Pointer to the value.
+ *
+ *  \return TRUE if the element was successfully added to the data, FALSE otherwise.
+ */
+/*************************************************************************************************/
+bool_t AppExtAdvSetAdValue(uint8_t advHandle, uint8_t location, uint8_t adType, uint8_t len,
+                           uint8_t *pValue);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppExtSetAdvType
+ *
+ *  \brief  Set extended advertising type.
+ *
+ *  \param  advHandle Advertising handle.
+ *  \param  advType   Advertising type.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppExtSetAdvType(uint8_t advHandle, uint8_t advType);
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppScanStart
  *        
  *  \brief  Start scanning.   A scan is performed using the given discoverability mode,
@@ -324,17 +472,18 @@ uint8_t AppScanGetNumResults(void);
 
 /*************************************************************************************************/
 /*!
- *  \fn     AppConnOpen
- *        
- *  \brief  Open a connection to a peer device with the given address.
- *
- *  \param  addrType  Address type.
- *  \param  pAddr     Peer device address.
- *
- *  \return Connection identifier.
- */
+*  \fn     AppConnOpen
+*
+*  \brief  Open a connection to a peer device with the given address.
+*
+*  \param  addrType  Address type.
+*  \param  pAddr     Peer device address.
+*  \param  dbHdl     Device database handle.
+*
+*  \return Connection identifier.
+*/
 /*************************************************************************************************/
-dmConnId_t AppConnOpen(uint8_t addrType, uint8_t *pAddr);
+dmConnId_t AppConnOpen(uint8_t addrType, uint8_t *pAddr, appDbHdl_t dbHdl);
 
 /*************************************************************************************************/
 /*!
@@ -377,6 +526,21 @@ void AppHandlePasskey(dmSecAuthReqIndEvt_t *pAuthReq);
 
 /*************************************************************************************************/
 /*!
+ *  \fn     AppHandleNumericComparison
+ *
+ *  \brief  Handle a numeric comparison indication during pairing.  The confirmation value is
+ *          displayed and the user is prompted to verify that the local and peer confirmation
+ *          values match.
+ *
+ *  \param  pCnfInd  DM confirmation indication event structure.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppHandleNumericComparison(dmSecCnfIndEvt_t *pCnfInd);
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppSetAdvType
  *        
  *  \brief  Set advertising type.
@@ -403,6 +567,35 @@ void AppSetBondable(bool_t bondable);
 
 /*************************************************************************************************/
 /*!
+ *  \fn     AppSetAdvPeerAddr
+ *
+ *  \brief  Set advertising peer address and its type.
+ *
+ *  \param  directAddrType  Peer address type.
+ *  \param  pDirectAddr     Peer address.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppSetAdvPeerAddr(uint8_t peerAddrType, uint8_t *pPeerAddr);
+
+/*************************************************************************************************/
+/*!
+ *  \fn     AppConnAccept
+ *
+ *  \brief  Accept a connection to a peer device with the given address.
+ *
+ *  \param  advType   Advertising type.
+ *  \param  addrType  Address type.
+ *  \param  pAddr     Peer device address.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppConnAccept(uint8_t advType, uint8_t addrType, uint8_t *pAddr);
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppSlaveSecurityReq
  *        
  *  \brief  Initiate a request for security as a slave device.  This function will send a 
@@ -418,6 +611,23 @@ void AppSlaveSecurityReq(dmConnId_t connId);
 
 /*************************************************************************************************/
 /*!
+ *  \fn     AppExtConnAccept
+ *
+ *  \brief  Accept a connection to a peer device with the given address using a given advertising
+ *          set.
+ *
+ *  \param  advHandle Advertising handle.
+ *  \param  advType   Advertising type.
+ *  \param  addrType  Address type.
+ *  \param  pAddr     Peer device address.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void AppExtConnAccept(uint8_t advHandle, uint8_t advType, uint8_t addrType, uint8_t *pAddr);
+
+/*************************************************************************************************/
+/*!
  *  \fn     AppMasterSecurityReq
  *        
  *  \brief  Initiate security as a master device.  If there is a stored encryption key
@@ -430,6 +640,22 @@ void AppSlaveSecurityReq(dmConnId_t connId);
  */
 /*************************************************************************************************/
 void AppMasterSecurityReq(dmConnId_t connId);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppMasterResolveAddr
+*
+*  \brief  Resolve the advertiser's RPA (AdvA) or the initiator's RPA (InitA) of a directed
+*          advertisement report. If the addresses resolved then a connection will be initiated.
+*
+*  \param  pMsg         Pointer to DM callback event message.
+*  \param  dbHdl        Database record handle.
+*  \param  resolveType  Which address in advertising report to be resolved.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppMasterResolveAddr(dmEvt_t *pMsg, appDbHdl_t dbHdl, uint8_t resolveType);
 
 /*************************************************************************************************/
 /*!
@@ -664,6 +890,20 @@ void AppHandlerInit(wsfHandlerId_t handlerId);
  */
 /*************************************************************************************************/
 void AppHandler(wsfEventMask_t event, wsfMsgHdr_t *pMsg);
+
+/*************************************************************************************************/
+/*!
+*  \fn     AppAddDevToResList
+*
+*  \brief  Add device to resolving list.
+*
+*  \param  pMsg    Pointer to DM callback event message.
+*  \param  connId  Connection identifier.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+void AppAddDevToResList(dmEvt_t *pMsg, dmConnId_t connId);
 
 #ifdef __cplusplus
 };

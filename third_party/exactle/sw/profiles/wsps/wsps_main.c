@@ -4,8 +4,8 @@
  *
  *  \brief  Weight Scale profile sensor.
  *
- *          $Date: 2014-02-06 11:36:43 -0800 (Thu, 06 Feb 2014) $
- *          $Revision: 1113 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

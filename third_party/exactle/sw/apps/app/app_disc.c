@@ -4,8 +4,8 @@
  *
  *  \brief  Application framework service discovery and configuration.
  *
- *          $Date: 2013-05-22 14:29:02 -0700 (Wed, 22 May 2013) $
- *          $Revision: 657 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

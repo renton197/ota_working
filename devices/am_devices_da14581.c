@@ -167,3 +167,215 @@ am_devices_da14581_uart_boot(const uint8_t *pui8BinData, uint32_t ui32NumBytes,
     return 0;
 }
 
+// #### INTERNAL BEGIN ####
+//*****************************************************************************
+//
+//! @brief Handles Initialization of the DA14581 after SPI HCI Download
+//!
+//! @param psDevice - pointer to device information structure for the DA14581
+//!
+//! This funciton looks for the DREADY line to be high and returns false if
+//! not. It sends 1 byte read command over the IOM to read the protocol control
+//! byte from the DA14581. If this is not 0x06 then false is returned.
+//!
+//! @return true if successful.
+//
+//*****************************************************************************
+bool
+am_devices_da14581_init(am_devices_da14581_t *psDevice)
+{
+    uint32_t ui32Buffer[1];
+    uint8_t *ui8Command  = (uint8_t *)ui32Buffer;
+    uint8_t *ui8Response = (uint8_t *)ui32Buffer;
+
+    if ( psDevice->ui32Mode )
+    { // then SPI mode
+        //
+        // check DREADY state, must be asserted here or failure
+        //
+        if ( !am_hal_gpio_input_bit_read(psDevice->ui32DREADY) )
+        {
+            return false;
+        }
+
+        //
+        //  enable the IOM
+        //
+        am_hal_iom_enable(psDevice->ui32IOMModule);
+
+        //
+        // assert chip select via GPIO
+        //
+        am_hal_gpio_out_bit_clear(psDevice->ui32IOMChipSelect);
+
+        //
+        // Use the IOM to read the one byte SPI XPORT direction control
+        //
+        ui8Command[0] = 0x08;
+        am_hal_iom_spi_write(psDevice->ui32IOMModule,
+                             0, // arbitrary chip select, we are using GPIO
+                             ui32Buffer, 1, AM_HAL_IOM_RAW | AM_HAL_IOM_CS_LOW);
+        am_hal_iom_spi_read(psDevice->ui32IOMModule,
+                            0, // arbitrary chip select, we are using GPIO
+                            ui32Buffer, 1, AM_HAL_IOM_RAW);
+
+        //
+        // remove chip select via GPIO
+        //
+        am_hal_gpio_out_bit_set(psDevice->ui32IOMChipSelect);
+
+        //
+        // We must have received a 0x6 token back from the DA14581
+        //
+        if ( ui8Response[0] != AM_DEVICES_DA14581_SPI_XPORT_CTS )
+        {
+            return false;
+        }
+
+
+    }
+    else // UART mode
+    {
+        //
+        // NOT CURRENTLY SUPPORTED HERE
+        //
+        return false;
+    }
+
+    return true;
+}
+
+
+
+//*****************************************************************************
+//
+//! @brief Sends Command Packets to the DA14581 on the SPI Xport
+//!
+//! @param psDevice - pointer to device information structure for the DA14581
+//!
+//! @param type     - transport packet type
+//!
+//! @param pData    - Pointer to data buffer. Note this is uint8_t aligned.
+//!
+//! @param len      - Length of raw transfer
+//!
+//! This function sends a buffer of bytes to the DA14581
+//!
+//! NOTE: at this time this uses polled IOM transfers
+//!
+//! @return nothing
+//
+//*****************************************************************************
+void
+am_devices_da14581_spi_send(am_devices_da14581_t *psDevice, uint32_t options,
+                            uint8_t type, uint8_t *pData, uint16_t len)
+{
+    int32_t i32I;
+    uint32_t ui32IOMBuffer[16];
+    uint8_t  *Command = (uint8_t *)ui32IOMBuffer;
+
+    //
+    //  for now we can only handle 64 byte max size xfers
+    //
+    if ( len > 63 )
+    {
+        while (1);
+    }
+
+    //
+    // Copy the values into our command buffer
+    //
+    Command[0] = type;
+    for (i32I = 1; i32I < (len + 1); i32I++)
+    {
+        Command[i32I] = *pData++;
+    }
+
+    //
+    // assert chip select via GPIO
+    //
+    am_hal_gpio_out_bit_clear(psDevice->ui32IOMChipSelect);
+
+    //
+    // Use the IOM to send the HCI command or data
+    //
+    am_hal_iom_spi_write(psDevice->ui32IOMModule,
+                             0, // arbitrary chip select, we are using GPIO
+                             ui32IOMBuffer, len + 1,
+                             options | AM_HAL_IOM_RAW );
+
+    //
+    // Keep chip select low if requested
+    //
+    if ( !(options & AM_HAL_IOM_CS_LOW) )
+    {
+       //
+       // remove chip select via GPIO
+       //
+       am_hal_gpio_out_bit_set(psDevice->ui32IOMChipSelect);
+    }
+
+}
+
+
+
+//*****************************************************************************
+//
+//! @brief Recieve Bytes from the DA14581 on the SPI Xport
+//!
+//! @param psDevice - pointer to device information structure for the DA14581
+//!
+//! @param pData    - Pointer to data buffer. Note this is uint8_t aligned.
+//!
+//! @param len      - Length of raw transfer
+//!
+//! This function receives a buffer of bytes from the DA14581
+//!
+//! NOTE: at this time this uses polled IOM transfers
+//!
+//! @return nothing
+//
+//*****************************************************************************
+void
+am_devices_da14581_spi_receive_bytes(am_devices_da14581_t *psDevice,
+                                     uint32_t options,
+                                     uint8_t *pData, uint16_t len)
+{
+    int32_t i32I;
+    uint32_t ui32IOMBuffer[16];
+    uint8_t  *Response = (uint8_t *)ui32IOMBuffer;
+
+    //
+    //  for now we can only handle 64 byte max size xfers
+    //
+    if ( len > 64 )
+    {
+        while (1);
+    }
+
+    //
+    // assert chip select via GPIO
+    //
+    am_hal_gpio_out_bit_clear(psDevice->ui32IOMChipSelect);
+
+    //
+    // Use the IOM to receive bytes from the SPI interface
+    //
+    am_hal_iom_spi_read(psDevice->ui32IOMModule,
+                        0, // arbitrary chip select, we are using GPIO
+                        ui32IOMBuffer, len, (options | AM_HAL_IOM_RAW));
+
+    //
+    // remove chip select via GPIO
+    //
+    am_hal_gpio_out_bit_set(psDevice->ui32IOMChipSelect);
+
+    //
+    // Copy the values to caller's response buffer
+    //
+    for (i32I = 0; i32I < len; i32I++)
+    {
+        *pData++ = Response[i32I];
+    }
+}
+// #### INTERNAL END ####

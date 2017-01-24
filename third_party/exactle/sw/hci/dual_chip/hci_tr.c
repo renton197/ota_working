@@ -31,11 +31,6 @@
 
 
 /**************************************************************************************************
-  State variable
-**************************************************************************************************/
-volatile bool_t g_bHCIReceivingPacket = FALSE;
-
-/**************************************************************************************************
   Macros
 **************************************************************************************************/
 
@@ -241,8 +236,6 @@ void hciTrSerialRxIncoming(uint8_t *pBuf, uint8_t len)
     /* ( Note Well!  There is no else-if construct by design. ) */
     if (stateRx == HCI_RX_STATE_COMPLETE)
     {
-      g_bHCIReceivingPacket = FALSE;
-
       /* deliver data */
       if (pPktRx != NULL)
       {

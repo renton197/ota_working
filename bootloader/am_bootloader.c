@@ -30,9 +30,26 @@
 #define DPRINTF(x)
 #endif
 
-extern void flash_load_from_image( uint32_t* pui32TargetAddress, 
-                                    uint32_t* pui32StorageAddress, 
-                                    uint32_t NumberBytes);
+//*****************************************************************************
+//
+// Forward declarations.
+//
+//*****************************************************************************
+#ifdef gcc
+void __attribute__((naked)) am_bootloader_encrypted_image_run(am_bootloader_image_t *psImage);
+void __attribute__((naked)) am_bootloader_clear_image_run(am_bootloader_image_t *psImage);
+#endif
+
+#ifdef keil
+__asm void am_bootloader_encrypted_image_run(am_bootloader_image_t *psImage);
+__asm void am_bootloader_clear_image_run(am_bootloader_image_t *psImage);
+#endif
+
+#ifdef iar
+void am_bootloader_encrypted_image_run(am_bootloader_image_t *psImage);
+void am_bootloader_clear_image_run(am_bootloader_image_t *psImage);
+#endif
+
 //*****************************************************************************
 //
 // CRC-32 table
@@ -137,11 +154,11 @@ am_bootloader_crc32(const void *pvData, uint32_t ui32NumBytes)
     ui32CRC = 0;
     pui8Data = (uint8_t *) pvData;
 
-    for(i = 0; i < ui32NumBytes; i++)
+    for ( i = 0; i < ui32NumBytes; i++ )
     {
         ui32CRC ^= pui8Data[i] << 24;
 
-        for(j = 0; j < 8; j++)
+        for ( j = 0; j < 8; j++ )
         {
             ui32CRC = (ui32CRC & 0x80000000 ?
                        ((ui32CRC << 1) ^ CRC32_POLYNOMIAL):
@@ -175,7 +192,7 @@ am_bootloader_fast_crc32(const void *pvData, uint32_t ui32NumBytes)
     ui32CRC = 0;
     pui8Data = (uint8_t *) pvData;
 
-    for(i = 0; i < ui32NumBytes; i++)
+    for (i = 0; i < ui32NumBytes; i++ )
     {
         ui32CRCIndex = pui8Data[i] ^ (ui32CRC >> 24);
         ui32CRC = (ui32CRC << 8) ^ g_pui32CRC32Table[ui32CRCIndex];
@@ -212,7 +229,7 @@ am_bootloader_partial_crc32(const void *pvData, uint32_t ui32NumBytes,
 
     pui8Data = (uint8_t *) pvData;
 
-    for(i = 0; i < ui32NumBytes; i++)
+    for ( i = 0; i < ui32NumBytes; i++ )
     {
         ui32CRCIndex = pui8Data[i] ^ (ui32TempCRC >> 24);
         ui32TempCRC = (ui32TempCRC << 8) ^ g_pui32CRC32Table[ui32CRCIndex];
@@ -244,7 +261,7 @@ am_bootloader_flash_check(am_bootloader_image_t *psImage)
     //
     // Make sure the link address is in flash.
     //
-    if(ui32LinkAddress > AM_BOOTLOADER_FLASH_ADDRESS_MAX)
+    if ( ui32LinkAddress > APOLLO_BOOTLOADER_FLASH_ADDRESS_MAX )
     {
         DPRINTF(("Link address outside of flash. 0x%08x\r\n", ui32LinkAddress));
         return false;
@@ -254,7 +271,7 @@ am_bootloader_flash_check(am_bootloader_image_t *psImage)
     // Check to see if the image was encrypted. If it was, these tests won't
     // work. We'll need to just skip them.
     //
-    if(psImage->bEncrypted == false)
+    if ( psImage->bEncrypted == false )
     {
         ui32StackPointer = psImage->pui32LinkAddress[0];
         ui32ResetVector = psImage->pui32LinkAddress[1];
@@ -268,7 +285,7 @@ am_bootloader_flash_check(am_bootloader_image_t *psImage)
     //
     // Make sure the stack is in SRAM.
     //
-    if(ui32StackPointer < 0x10000000 || ui32StackPointer > 0x1FFFFFFF)
+    if ( ui32StackPointer < 0x10000000 || ui32StackPointer > 0x1FFFFFFF )
     {
         DPRINTF(("Stack not in SRAM 0x%08x\r\n", ui32StackPointer));
         return false;
@@ -277,8 +294,8 @@ am_bootloader_flash_check(am_bootloader_image_t *psImage)
     //
     // Make sure the reset vector points somewhere in the image.
     //
-    if(ui32ResetVector < ui32LinkAddress ||
-       ui32ResetVector > ui32LinkAddress + psImage->ui32NumBytes)
+    if (ui32ResetVector < ui32LinkAddress ||
+        ui32ResetVector > ui32LinkAddress + psImage->ui32NumBytes)
     {
         DPRINTF(("Reset Vector not in image 0x%08x\r\n", ui32ResetVector));
         return false;
@@ -287,14 +304,14 @@ am_bootloader_flash_check(am_bootloader_image_t *psImage)
     //
     // If the image isn't encrypted, run a CRC32.
     //
-    if(psImage->bEncrypted == false)
+    if ( psImage->bEncrypted == false )
     {
         //
         // Run a CRC on the image to make sure it matches the stored checksum
         // value.
         //
-        if(am_bootloader_fast_crc32(psImage->pui32LinkAddress, psImage->ui32NumBytes) !=
-           psImage->ui32CRC)
+        if ( am_bootloader_fast_crc32(psImage->pui32LinkAddress, psImage->ui32NumBytes) !=
+             psImage->ui32CRC )
         {
             DPRINTF(("Bad CRC 0x%08x\r\n", psImage->ui32CRC));
             return false;
@@ -330,7 +347,7 @@ am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32Stora
     //
     // Make sure the link address is in flash.
     //
-    if(ui32LinkAddress > AM_BOOTLOADER_FLASH_ADDRESS_MAX)
+    if(ui32LinkAddress > APOLLO_BOOTLOADER_FLASH_ADDRESS_MAX)
     {
         DPRINTF(("Link address outside of flash. 0x%08x\r\n", ui32LinkAddress));
         return false;
@@ -393,6 +410,7 @@ am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32Stora
         else if(ui32StorageType == BOOT_NEW_IMAGE_EXTERNAL_FLASH)
         {
             //read data from external serial flash and perform CRC check here
+            //this is done in am_bootloader_boot_from_storage()
         }
     }
 
@@ -402,7 +420,7 @@ am_bootloader_new_image_check(am_bootloader_image_t *psImage, uint32_t ui32Stora
     return true;
 }
 
-//RMA: boot from stored new image
+// boot from stored new image
 void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
 {
     if(psImage->ui32Options == BOOT_NEW_IMAGE_INTERNAL_FLASH)
@@ -413,14 +431,13 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         if(!am_bootloader_new_image_check(psImage, BOOT_NEW_IMAGE_INTERNAL_FLASH))
         {
             // Invalid image
-            // TODO: we probably need to modify the boot option
-            // to prevent the device from trying to boot with the image forever.
-            return; //shall we reset the device?
+            return;
         }
         //
         // Load image to target link address in the internal flash
         //
         image_load_from_internal_flash(psImage->pui32LinkAddress, psImage->pui32StorageAddressNewImage, psImage->ui32NumBytes);
+        
         //
         // Verify the flash operation result with a fast CRC check before we jump 
         // into the new image and run
@@ -452,9 +469,46 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         am_devices_spiflash_init(&g_sSpiFlash);
     
         //
-        // Verify image stored in the external flash
+        // Verify image stored in the external flash by checking CRC
+        // Set up IOM1 SPI pins and turn on the IOM for this operation.
         //
-        // how?
+        am_bsp_iom_spi_pins_enable(AM_BSP_FLASH_IOM);
+        am_hal_iom_enable(AM_BSP_FLASH_IOM);
+
+        //
+        // Read from spi flash and calculate CRC32 using global buffer
+        //
+        uint32_t ui32CRC = 0;
+        for(uint16_t i = 0; i < (psImage->ui32NumBytes / AM_HAL_FLASH_PAGE_SIZE); i++)
+        {
+            am_devices_spiflash_read((uint8_t*)g_ui32FlashLoadingBuffer, 
+                ((uint32_t)(psImage->pui32StorageAddressNewImage) + i*AM_HAL_FLASH_PAGE_SIZE), 
+                AM_HAL_FLASH_PAGE_SIZE);
+
+            am_bootloader_partial_crc32((uint8_t*)g_ui32FlashLoadingBuffer, AM_HAL_FLASH_PAGE_SIZE, &ui32CRC);
+        }
+
+        uint32_t ui32Remainder = psImage->ui32NumBytes % AM_HAL_FLASH_PAGE_SIZE;
+        if(ui32Remainder)
+        {
+            am_devices_spiflash_read((uint8_t*)g_ui32FlashLoadingBuffer, 
+                ((uint32_t)(psImage->pui32StorageAddressNewImage) + psImage->ui32NumBytes - ui32Remainder), ui32Remainder);
+
+            am_bootloader_partial_crc32(g_ui32FlashLoadingBuffer, ui32Remainder, &ui32CRC);
+        }
+
+        //
+        // Disable IOM SPI pins and turn off the IOM for this operation.
+        //
+        am_bsp_iom_spi_pins_disable(AM_BSP_FLASH_IOM);
+        am_hal_iom_disable(AM_BSP_FLASH_IOM);
+
+        if(ui32CRC != psImage->ui32CRC)
+        {
+            // image stored invalid
+            DPRINTF(("Invalid image in external flash."));
+            return;
+        }
 
         //
         // Load image to target link address in the internal flash
@@ -464,7 +518,12 @@ void am_bootloader_boot_from_storage(am_bootloader_image_t *psImage)
         //
         // Verify the flash operation result
         //
-    
+        if(am_bootloader_fast_crc32(psImage->pui32LinkAddress, psImage->ui32NumBytes) !=
+               psImage->ui32CRC)
+        {
+            DPRINTF(("Bad CRC 0x%08x\r\n", psImage->ui32CRC));
+            return;
+        }
     }
 
     //
@@ -511,11 +570,11 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
     //
     // Check the override GPIO
     //
-    if(psImage->ui32OverrideGPIO != 0xFFFFFFFF)
+    if ( psImage->ui32OverrideGPIO != 0xFFFFFFFF )
     {
 #ifdef BOOTLOADER_DEBUG
-        if (psImage->ui32OverridePolarity & 0x2) {
-            
+        if ( psImage->ui32OverridePolarity & 0x2 )
+        {
             am_hal_gpio_pin_config(17, AM_HAL_PIN_OUTPUT);
             am_hal_gpio_out_bit_set(17);
             am_util_delay_us(100);
@@ -531,7 +590,7 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
         // If the override pin matches the specified polarity, force a failure.
         //
         uint32_t ui32OverridePin = am_hal_gpio_input_bit_read(psImage->ui32OverrideGPIO);
-        if( ui32OverridePin == (psImage->ui32OverridePolarity & 0x1))
+        if ( ui32OverridePin == (psImage->ui32OverridePolarity & 0x1) )
         {
             DPRINTF(("Override Pin %d matches Polarity, force failure. %d, %d\r\n", psImage->ui32OverrideGPIO,  ui32OverridePin, psImage->ui32OverridePolarity));
             //
@@ -542,8 +601,7 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
         }
 #ifdef BOOTLOADER_DEBUG
         else
-            DPRINTF(("Override Pin %d mismatches Polarity, load image. %d, %d\r\n", psImage->ui32OverrideGPIO,  ui32OverridePin, psImage->ui32OverridePolarity));
-        
+            DPRINTF(("Override Pin %d mismatches Polarity, load image. %d, %d\r\n", psImage->ui32OverrideGPIO,  ui32OverridePin, psImage->ui32OverridePolarity)); 
 #endif
 
         //
@@ -555,7 +613,7 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
     }
 
     //
-    // RMA:Check boot option to see whether there is a new image available to boot
+    // Check boot option to see whether there is a new image available to boot
     // 
     if(psImage->ui32Options != BOOT_NO_NEW_IMAGE)
     {
@@ -564,14 +622,9 @@ am_bootloader_image_check(am_bootloader_image_t *psImage)
             ||(psImage->ui32Options == BOOT_NEW_IMAGE_EXTERNAL_FLASH))
         {
             //
-            //There is a new image available to boot from
+            // There is a new image available to boot from
             //
             am_bootloader_boot_from_storage(psImage);
-
-            //
-            // Run the new image loaded
-            //
-//            am_bootloader_image_run(psImage); //-- RMA, run this in main()
         }
     }
 
@@ -637,6 +690,75 @@ am_bootloader_flag_page_update(am_bootloader_image_t *psImage,
 
 //*****************************************************************************
 //
+//! @brief Check to see if the override pin is active.
+//!
+//! @param
+//!
+//! @return true if override is asserted.
+//
+//*****************************************************************************
+bool
+am_hal_bootloader_override_check(am_bootloader_image_t *psImage)
+{
+    uint32_t ui32OverridePin;
+
+    //
+    // Temporarily configure the override pin as an input, check its state, and
+    // disable it again.
+    //
+    am_hal_gpio_pin_config(psImage->ui32OverrideGPIO, AM_HAL_PIN_INPUT);
+    ui32OverridePin = am_hal_gpio_input_bit_read(psImage->ui32OverrideGPIO);
+    am_hal_gpio_pin_config(psImage->ui32OverrideGPIO, AM_HAL_PIN_DISABLE);
+
+    //
+    // If the actual pin state matches the "asserted" state, return true.
+    //
+    return (ui32OverridePin == psImage->ui32OverridePolarity);
+}
+
+
+//*****************************************************************************
+//
+//! @brief Execute an image that has already been written to flash.
+//!
+//! @param psImage is a pointer to the image structure.
+//!
+//! This function can be used to "run" a program that has already been
+//! downloaded and written to flash. It does this by reading the initial
+//! stack-pointer and reset vector information from the image written in flash,
+//! writing that information to the relevant registers, and immediately
+//! branching to the new reset vector location.
+//!
+//! Note that this method does not include any type of reset. It is the callers
+//! responsibility to ensure that the MCU is in a valid state for the
+//! subsequent program to run. One way to guarantee this is to run this
+//! function very early after a RESET event, before clocks or peripherals are
+//! configured.
+//!
+//! @return The function does not return.
+//
+//*****************************************************************************
+void
+am_bootloader_image_run(am_bootloader_image_t *psImage)
+{
+    //
+    // The underlying boot sequence is a little different depeding on whether
+    // the image was delivered as an encrypted image or as a cleartext image.
+    // We will call the correct assembly routine based on what the image
+    // structure tells us.
+    //
+    if(psImage->bEncrypted)
+    {
+        am_bootloader_encrypted_image_run(psImage);
+    }
+    else
+    {
+        am_bootloader_clear_image_run(psImage);
+    }
+}
+
+//*****************************************************************************
+//
 //! @brief Execute an image that has already been written to flash.
 //!
 //! @param psImage is a pointer to the image structure.
@@ -658,7 +780,7 @@ am_bootloader_flag_page_update(am_bootloader_image_t *psImage,
 //*****************************************************************************
 #if defined(gcc)
 void __attribute__((naked))
-am_bootloader_image_run(am_bootloader_image_t *psImage)
+am_bootloader_encrypted_image_run(am_bootloader_image_t *psImage)
 {
     //
     // Load the new stack pointer into R1 and the new reset vector into R2.
@@ -690,7 +812,7 @@ am_bootloader_image_run(am_bootloader_image_t *psImage)
 }
 #elif defined(keil)
 __asm void
-am_bootloader_image_run(am_bootloader_image_t *psImage)
+am_bootloader_encrypted_image_run(am_bootloader_image_t *psImage)
 {
     //
     // Load the new stack pointer into R1 and the new reset vector into R2.
@@ -722,7 +844,7 @@ am_bootloader_image_run(am_bootloader_image_t *psImage)
 }
 #elif defined(iar)
 __stackless void
-am_bootloader_image_run(am_bootloader_image_t *psImage)
+am_bootloader_encrypted_image_run(am_bootloader_image_t *psImage)
 {
     //
     // Load the new stack pointer into R1 and the new reset vector into R2.
@@ -753,3 +875,123 @@ am_bootloader_image_run(am_bootloader_image_t *psImage)
     __asm("    bx      r2");
 }
 #endif
+
+//*****************************************************************************
+//
+//! @brief Execute an image that has already been written to flash.
+//!
+//! @param psImage is a pointer to the image structure.
+//!
+//! This function can be used to "run" a program that has already been
+//! downloaded and written to flash. It does this by reading the initial
+//! stack-pointer and reset vector information from the image written in flash,
+//! writing that information to the relevant registers, and immediately
+//! branching to the new reset vector location.
+//!
+//! Note that this method does not include any type of reset. It is the callers
+//! responsibility to ensure that the MCU is in a valid state for the
+//! subsequent program to run. One way to guarantee this is to run this
+//! function very early after a RESET event, before clocks or peripherals are
+//! configured.
+//!
+//! @return
+//
+//*****************************************************************************
+#if defined(gcc)
+void __attribute__((naked))
+am_bootloader_clear_image_run(am_bootloader_image_t *psImage)
+{
+    //
+    // Load the link address of the boot image into R0.
+    //
+    __asm("    ldr     r0, [r0, #0]");
+
+    //
+    // Store the vector table pointer of the new image into VTOR.
+    //
+    __asm("    movw    r3, #0xED08");
+    __asm("    movt    r3, #0xE000");
+    __asm("    str     r0, [r3, #0]");
+
+    //
+    // Load the new stack pointer into R1 and the new reset vector into R2.
+    //
+    __asm("    ldr     r1, [r0, #0]");
+    __asm("    ldr     r2, [r0, #4]");
+
+    //
+    // Set the stack pointer for the new image.
+    //
+    __asm("    mov     sp, r1");
+
+    //
+    // Jump to the new reset vector.
+    //
+    __asm("    bx      r2");
+}
+#elif defined(keil)
+__asm void
+am_bootloader_clear_image_run(am_bootloader_image_t *psImage)
+{
+    //
+    // Load the link address of the boot image into R0.
+    //
+    ldr     r0, [r0, #0]
+
+    //
+    // Store the vector table pointer of the new image into VTOR.
+    //
+    movw    r3, #0xED08
+    movt    r3, #0xE000
+    str     r0, [r3, #0]
+
+    //
+    // Load the new stack pointer into R1 and the new reset vector into R2.
+    //
+    ldr     r1, [r0, #0]
+    ldr     r2, [r0, #4]
+
+    //
+    // Set the stack pointer for the new image.
+    //
+    mov     sp, r1
+
+    //
+    // Jump to the new reset vector.
+    //
+    bx      r2
+}
+#elif defined(iar)
+__stackless void
+am_bootloader_clear_image_run(am_bootloader_image_t *psImage)
+{
+    //
+    // Load the link address into R0.
+    //
+    __asm("    ldr     r0, [r0, #0]");
+
+    //
+    // Store the vector table pointer of the new image into VTOR.
+    //
+    __asm("    movw    r3, #0xED08");
+    __asm("    movt    r3, #0xE000");
+    __asm("    str     r0, [r3, #0]");
+
+    //
+    // Load the new stack pointer into R1 and the new reset vector into R2.
+    //
+    __asm("    ldr     r1, [r0, #0]");
+    __asm("    ldr     r2, [r0, #4]");
+
+    //
+    // Set the stack pointer for the new image.
+    //
+    __asm("    mov     sp, r1");
+
+    //
+    // Jump to the new reset vector.
+    //
+    __asm("    bx      r2");
+}
+#endif
+

@@ -7,8 +7,8 @@
  *            Weight Scale profile sensor
  *            Health Thermometer profile sensor
  *
- *          $Date: 2014-10-16 07:18:36 -0700 (Thu, 16 Oct 2014) $
- *          $Revision: 1885 $
+ *          $Date: 2016-08-18 13:33:13 -0700 (Thu, 18 Aug 2016) $
+ *          $Revision: 8391 $
  *
  *  Copyright (c) 2012 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -60,10 +60,21 @@
 #define MEDS_HTP_INCLUDED TRUE
 #endif
 
+/* Pulse Oximeter profile included */
+#ifndef MEDS_PLX_INCLUDED
+#define MEDS_PLX_INCLUDED TRUE
+#endif
+
+/* Glucose profile included */
+#ifndef MEDS_GLP_INCLUDED
+#define MEDS_GLP_INCLUDED TRUE
+#endif
+
 /* Default profile to use */
 #ifndef MEDS_PROFILE
 #define MEDS_PROFILE MEDS_ID_BLP
 #endif
+
 
 /**************************************************************************************************
   Configurable Parameters
@@ -72,7 +83,7 @@
 /*! configurable parameters for advertising */
 static const appAdvCfg_t medsAdvCfg =
 {
-  {30000, 30000,     0},                  /*! Advertising durations in ms */
+  {60000, 30000,     0},                  /*! Advertising durations in ms */
   {   48,  1600,     0}                   /*! Advertising intervals in 0.625 ms units */
 };
 
@@ -122,21 +133,18 @@ static uint8_t medsAdvDataDisc[HCI_ADV_DATA_LEN];
 static const uint8_t medsScanDataDisc[] =
 {
   /*! device name */
-  14,                                     /*! length */
+  11,                                     /*! length */
   DM_ADV_TYPE_LOCAL_NAME,                 /*! AD type */
-  'w',
-  'i',
-  'c',
+  'M',
+  'e',
+  'd',
+  ' ',
+  'S',
   'e',
   'n',
-  't',
-  'r',
-  'i',
-  'c',
-  ' ',
-  'a',
-  'p',
-  'p'
+  's',
+  'o',
+  'r'
 };
 
 /**************************************************************************************************
@@ -160,10 +168,13 @@ medsCb_t medsCb;
 static void medsDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t *pMsg;
+  uint16_t  len;
 
-  if ((pMsg = WsfMsgAlloc(sizeof(dmEvt_t))) != NULL)
+  len = DmSizeOfEvt(pDmEvt);
+
+  if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(medsCb.handlerId, pMsg);
   }
 }
@@ -181,7 +192,7 @@ static void medsDmCback(dmEvt_t *pDmEvt)
 /*************************************************************************************************/
 static void medsAttCback(attEvt_t *pEvt)
 {
-  return;
+   medsCb.pIf->procMsg((wsfMsgHdr_t*) pEvt);
 }
 
 /*************************************************************************************************/
@@ -304,7 +315,6 @@ static void medsProcMsg(wsfMsgHdr_t *pMsg)
   switch(pMsg->event)
   {
     case MEDS_TIMER_IND:
-      medsCb.pIf->procMsg(pMsg);
       break;
 
     case DM_RESET_CMPL_IND:
@@ -325,7 +335,6 @@ static void medsProcMsg(wsfMsgHdr_t *pMsg)
       break;
 
     case DM_CONN_CLOSE_IND:
-      medsCb.pIf->procMsg(pMsg);
       uiEvent = APP_UI_CONN_CLOSE;
       break;
 
@@ -352,6 +361,8 @@ static void medsProcMsg(wsfMsgHdr_t *pMsg)
     default:
       break;
   }
+     
+  medsCb.pIf->procMsg(pMsg);
 
   if (uiEvent != APP_UI_NONE)
   {
@@ -494,6 +505,16 @@ void MedsSetProfile(uint8_t profile)
 #if MEDS_HTP_INCLUDED == TRUE
     case MEDS_ID_HTP:
       medsCb.pIf = &medsHtpIf;
+      break;
+#endif
+#if MEDS_PLX_INCLUDED == TRUE
+    case MEDS_ID_PLX:
+      medsCb.pIf = &medsPlxIf;
+      break;
+#endif
+#if MEDS_GLP_INCLUDED == TRUE
+    case MEDS_ID_GLP:
+      medsCb.pIf = &medsGlpIf;
       break;
 #endif
     default:

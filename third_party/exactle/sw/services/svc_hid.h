@@ -256,3 +256,4 @@ void SvcHidGenericRegister(attsWriteCback_t writeCb, attsReadCback_t readCb);
 #endif
  
 #endif /* SVC_HID_H */
+

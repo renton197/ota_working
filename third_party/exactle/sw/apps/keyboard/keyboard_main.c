@@ -4,8 +4,8 @@
  *
  *  \brief  HID Keyboard sample application.
  *
- *          $Date: 2015-09-30 13:33:59 -0700 (Wed, 30 Sep 2015) $
- *          $Revision: 4057 $
+ *          $Date: 2016-08-23 09:39:56 -0700 (Tue, 23 Aug 2016) $
+ *          $Revision: 8508 $
  *
  *  Copyright (c) 2015 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -40,8 +40,10 @@
 #include "svc_core.h"
 #include "svc_dis.h"
 #include "svc_batt.h"
+#include "svc_scpss.h"
 #include "bas_api.h"
 #include "gatt_api.h"
+#include "scpps_api.h"
 #include "hid_api.h"
 #include "keyboard_api.h"
 
@@ -50,7 +52,7 @@
 **************************************************************************************************/
 
 /*! configurable parameters for advertising */
-static const appAdvCfg_t keyboardAdvCfg =
+static appAdvCfg_t keyboardAdvCfg =
 {
   {60000,     0,     0},                  /*! Advertising durations in ms */
   {   64,  1600,     0}                   /*! Advertising intervals in 0.625 ms units */
@@ -310,11 +312,11 @@ static void keyboardDmCback(dmEvt_t *pDmEvt)
   dmEvt_t   *pMsg;
   uint16_t  len;
   
-  len = sizeof(dmEvt_t);
+  len = DmSizeOfEvt(pDmEvt);
 
   if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(keyboardCb.handlerId, pMsg);
   }
 }
@@ -614,6 +616,14 @@ static void keyboardProcMsg(dmEvt_t *pMsg)
       AppHandlePasskey(&pMsg->authReq);
       break;
 
+    case DM_SEC_COMPARE_IND:
+      AppHandleNumericComparison(&pMsg->cnfInd);
+      break;
+
+    case DM_ERROR_IND:
+      APP_TRACE_ERR1("Maximum RX PDU length exceeded, status: %d", pMsg->hdr.status);
+      break;
+
     default:
       break;
   }
@@ -777,6 +787,26 @@ static void keyboardReportInit()
 
 /*************************************************************************************************/
 /*!
+*  \fn     keyboardScanParamCback
+*
+*  \brief  Callback called when the Scan Interval Window Attribute is written by the peer.
+*
+*  \param  interval    Scan Interval.
+*  \param  window      Scan Window.
+*
+*  \return None.
+*/
+/*************************************************************************************************/
+static void keyboardScanParamCback(dmConnId_t connId, uint16_t interval, uint16_t window)
+{
+  /* TODO: Handle Scan Interval Window change from the Client */
+  
+  /* For Example: Set the advertising duration to the scan interval */
+  keyboardAdvCfg.advDuration[APP_ADV_STATE1] = interval;
+}
+
+/*************************************************************************************************/
+/*!
  *  \fn     KeyboardTest
  *        
  *  \brief  Test a keyboard button event.
@@ -820,6 +850,11 @@ void KeyboardStart(void)
   SvcDisAddGroup();
   SvcBattCbackRegister(BasReadCback, NULL);
   SvcBattAddGroup();
+
+  /* Initialize Scan Parameter Service and Profile */
+  SvcScpssAddGroup();
+  SvcScpssCbackRegister(ScppsAttsWriteCback);
+  ScppsRegisterCback(keyboardScanParamCback);
 
   /* Initialize the report attributes */
   keyboardReportInit();

@@ -4,8 +4,8 @@
  *
  *  \brief  HID Remote sample application.
  *
- *          $Date: 2015-09-30 13:33:59 -0700 (Wed, 30 Sep 2015) $
- *          $Revision: 4057 $
+ *          $Date: 2016-08-03 13:30:39 -0700 (Wed, 03 Aug 2016) $
+ *          $Revision: 8135 $
  *
  *  Copyright (c) 2015 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -277,12 +277,12 @@ static void remoteDmCback(dmEvt_t *pDmEvt)
 {
   dmEvt_t   *pMsg;
   uint16_t  len;
-  
-  len = sizeof(dmEvt_t);
+
+  len = DmSizeOfEvt(pDmEvt);
 
   if ((pMsg = WsfMsgAlloc(len)) != NULL)
   {
-    memcpy(pMsg, pDmEvt, sizeof(dmEvt_t));
+    memcpy(pMsg, pDmEvt, len);
     WsfMsgSend(remoteCb.handlerId, pMsg);
   }
 }

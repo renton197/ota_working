@@ -15,7 +15,6 @@
 //*****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
 
 #include "wsf_types.h"
 #include "wsf_msg.h"
@@ -32,6 +31,7 @@
 
 #include "hci_apollo_config.h"
 
+#include <string.h>
 
 //*****************************************************************************
 //
@@ -56,6 +56,8 @@
 #ifndef HCI_APOLLO_USE_CHIPID_FOR_MAC
 #define HCI_APOLLO_USE_CHIPID_FOR_MAC   true
 #endif
+
+am_hal_uart_config_t g_sUartConfig;
 
 static volatile uint32_t g_ui32UartModule;
 volatile uint8_t g_ui8Paused = 0;
@@ -82,6 +84,9 @@ static uint8_t g_pui8BLEMacAddress[6] = HCI_APOLLO_MAC;
 //
 //*****************************************************************************
 #if defined(__ARMCC_VERSION)
+
+void $Super$$__aeabi_memcpy4(void *dest, const void *src, size_t n);
+
 void
 $Sub$$__aeabi_memcpy4(void *dest, const void *src, size_t n)
 {
@@ -126,11 +131,33 @@ HciDrvUartEnable(void)
         return;
     }
 
+#if defined(AM_PART_APOLLO2)
+    //
+    // Make sure the UART is powered on.
+    //
+    am_hal_uart_pwrctrl_enable(g_ui32UartModule);
+    am_hal_uart_clock_enable(g_ui32UartModule);
+
+    am_hal_uart_disable(g_ui32UartModule);
+    am_hal_uart_config(g_ui32UartModule, &g_sUartConfig);
+    am_hal_uart_enable(g_ui32UartModule);
+
+    am_hal_uart_fifo_config(g_ui32UartModule,
+                            AM_HAL_UART_TX_FIFO_1_2 | AM_HAL_UART_RX_FIFO_1_2);
+
+    //
+    // Enable the UART and RX timeout interrupt.
+    //
+    AM_REGn(UART, 0, IER) |= (AM_REG_UART_IES_RTRIS_M |
+                              AM_REG_UART_IES_RXRIS_M |
+                              AM_REG_UART_IES_TXRIS_M);
+#endif
+
     //
     // Enable the UART pins.
     //
-    am_hal_gpio_pin_config(0, AM_HAL_PIN_0_UARTTX);
-    am_hal_gpio_pin_config(1, AM_HAL_PIN_1_UARTRX);
+    am_hal_gpio_pin_config(HCI_APOLLO_UART_TX_PIN, AM_BSP_GPIO_CFG_UART_TX);
+    am_hal_gpio_pin_config(HCI_APOLLO_UART_RX_PIN, AM_BSP_GPIO_CFG_UART_RX);
 
     //
     // Enable the main clock to the UART module.
@@ -169,8 +196,13 @@ HciDrvUartDisable(void)
     //
     // Disable the UART pins.
     //
-    am_hal_gpio_pin_config(0, AM_HAL_PIN_DISABLE);
-    am_hal_gpio_pin_config(1, AM_HAL_PIN_DISABLE);
+    am_hal_gpio_pin_config(HCI_APOLLO_UART_TX_PIN, AM_HAL_PIN_DISABLE);
+    am_hal_gpio_pin_config(HCI_APOLLO_UART_RX_PIN, AM_HAL_PIN_DISABLE);
+
+    //
+    // Power down the UART.
+    //
+    am_hal_uart_power_off_save(g_ui32UartModule);
 }
 
 //*****************************************************************************
@@ -331,6 +363,9 @@ HciDrvUartSafeShutdown(void)
     // first byte from coming out. This delay prevents that. Instead we'll just
     // get the byte here, and see it in our FIFO before this function ends.
     //
+    // #### INTERNAL BEGIN ####
+    // FIXME: Make this dependent on the actual UART baud rate.
+    // #### INTERNAL END ####
     am_util_delay_us(100);
 
     //
@@ -382,6 +417,9 @@ HciDrvUartSafeShutdown(void)
     // because the interrupt will still go to the NVIC, and we'll handle the
     // cleanup in the GPIO interrupt handler.
     //
+    // #### INTERNAL BEGIN ####
+    // We argued about this for hours. Don't remove it.
+    // #### INTERNAL END ####
     am_util_delay_us(100);
 
     //
@@ -481,6 +519,9 @@ hciDrvWrite(uint8_t type, uint16_t len, uint8_t *pData)
                     // We shouldn't have to do this. Also, it introduces a race
                     // condition.
                     //
+                    // #### INTERNAL BEGIN ####
+                    // TODO: Eliminate the interrupt detection gaps on the Dialog side.
+                    // #### INTERNAL END ####
                     am_hal_gpio_out_bit_clear(HCI_APOLLO_UART_RTS_PIN);
 
                     HCI_DRV_SLEEP;
@@ -593,21 +634,16 @@ HciDrvRadioBoot(uint32_t ui32UartModule)
     //
     // Configure the UART pins.
     //
-    // CAJ: Adding a pullup to the RX pin for boot-up. This works around an
-    // issue where the Apollo doesn't recognize the boot signal from the
-    // Dialog, but I'm not sure why it works.
-    //
     am_hal_gpio_pin_config(HCI_APOLLO_UART_TX_PIN, HCI_APOLLO_UART_TX_CFG);
     am_hal_gpio_pin_config(HCI_APOLLO_UART_RX_PIN, HCI_APOLLO_UART_RX_CFG);
     am_hal_gpio_pin_config(HCI_APOLLO_UART_RTS_PIN, AM_HAL_PIN_OUTPUT);
     am_hal_gpio_pin_config(HCI_APOLLO_UART_CTS_PIN, AM_HAL_PIN_INPUT);
 
-    am_hal_uart_config_t sUartConfig;
-    sUartConfig.ui32BaudRate = 112000;
-    sUartConfig.ui32DataBits = AM_HAL_UART_DATA_BITS_8;
-    sUartConfig.bTwoStopBits = false;
-    sUartConfig.ui32Parity = AM_HAL_UART_PARITY_NONE;
-    sUartConfig.ui32FlowCtrl = AM_HAL_UART_FLOW_CTRL_NONE;
+    g_sUartConfig.ui32BaudRate = 112000;
+    g_sUartConfig.ui32DataBits = AM_HAL_UART_DATA_BITS_8;
+    g_sUartConfig.bTwoStopBits = false;
+    g_sUartConfig.ui32Parity = AM_HAL_UART_PARITY_NONE;
+    g_sUartConfig.ui32FlowCtrl = AM_HAL_UART_FLOW_CTRL_NONE;
 
     //
     // Save the device instance module
@@ -617,9 +653,10 @@ HciDrvRadioBoot(uint32_t ui32UartModule)
     //
     // Enable UART FIFO operation.
     //
+    am_hal_uart_pwrctrl_enable(g_ui32UartModule);
     am_hal_uart_clock_enable(g_ui32UartModule);
     am_hal_uart_disable(g_ui32UartModule);
-    am_hal_uart_config(g_ui32UartModule, &sUartConfig);
+    am_hal_uart_config(g_ui32UartModule, &g_sUartConfig);
     am_hal_uart_enable(g_ui32UartModule);
 
     am_hal_uart_fifo_config(g_ui32UartModule,
@@ -661,20 +698,14 @@ HciDrvRadioBoot(uint32_t ui32UartModule)
     am_devices_da14581_uart_boot(g_pui8Da14581HciImage, DA14581_HCI_IMAGE_LENGTH,
                                  g_ui32UartModule);
 
-    //
-    // CAJ: Removing the pullup function from the RX pin. This is part of the
-    // bootup workaround mentioned during pin configuration.
-    //
-    am_hal_gpio_pin_config(HCI_APOLLO_UART_RX_PIN, HCI_APOLLO_UART_RX_CFG);
-
-    sUartConfig.ui32BaudRate = 250000;
-    sUartConfig.ui32DataBits = AM_HAL_UART_DATA_BITS_8;
-    sUartConfig.bTwoStopBits = false;
-    sUartConfig.ui32Parity = AM_HAL_UART_PARITY_NONE;
-    sUartConfig.ui32FlowCtrl = AM_HAL_UART_FLOW_CTRL_NONE;
+    g_sUartConfig.ui32BaudRate = 250000;
+    g_sUartConfig.ui32DataBits = AM_HAL_UART_DATA_BITS_8;
+    g_sUartConfig.bTwoStopBits = false;
+    g_sUartConfig.ui32Parity = AM_HAL_UART_PARITY_NONE;
+    g_sUartConfig.ui32FlowCtrl = AM_HAL_UART_FLOW_CTRL_NONE;
 
     am_hal_uart_disable(g_ui32UartModule);
-    am_hal_uart_config(g_ui32UartModule, &sUartConfig);
+    am_hal_uart_config(g_ui32UartModule, &g_sUartConfig);
     am_hal_uart_enable(g_ui32UartModule);
 
     //

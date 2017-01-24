@@ -62,6 +62,63 @@ extern const uint32_t am_hal_mcuctrl_sram_size[];
 
 //*****************************************************************************
 //
+//! MCUCTRL device structure
+//
+//*****************************************************************************
+typedef struct
+{
+    //
+    //! Device part number. (BCD format)
+    //
+    uint32_t ui32ChipPN;
+
+    //
+    //! Unique Chip ID 0.
+    //
+    uint32_t ui32ChipID0;
+
+    //
+    //! Unique Chip ID 1.
+    //
+    uint32_t ui32ChipID1;
+
+    //
+    //! Chip Revision.
+    //
+    uint32_t ui32ChipRev;
+
+    //
+    //! Vendor ID.
+    //
+    uint32_t ui32VendorID;
+
+    //
+    //! Qualified chip.
+    //
+    uint32_t ui32Qualified;
+
+    //
+    //! Flash Size.
+    //
+    uint32_t ui32FlashSize;
+
+    //
+    //! SRAM Size.
+    //
+    uint32_t ui32SRAMSize;
+
+    //
+    // JEDEC chip info
+    //
+    uint32_t ui32JedecPN;
+    uint32_t ui32JedecJEPID;
+    uint32_t ui32JedecCHIPREV;
+    uint32_t ui32JedecCID;
+}
+am_hal_mcuctrl_device_t;
+
+//*****************************************************************************
+//
 //! MCUCTRL fault structure
 //
 //*****************************************************************************
@@ -98,45 +155,6 @@ typedef struct
     uint32_t ui32SYS;
 }
 am_hal_mcuctrl_fault_t;
-
-//*****************************************************************************
-//
-//! MCUCTRL device structure
-//
-//*****************************************************************************
-typedef struct
-{
-    //
-    //! Device part number. (BCD format)
-    //
-    uint32_t ui32ChipPN;
-
-    //
-    //! Unique Chip ID 0.
-    //
-    uint32_t ui32ChipID0;
-
-    //
-    //! Unique Chip ID 1.
-    //
-    uint32_t ui32ChipID1;
-
-    //
-    //! Chip Revision.
-    //
-    uint32_t ui32ChipRev;
-
-    //
-    //! Flash Size.
-    //
-    uint32_t ui32FlashSize;
-
-    //
-    //! SRAM Size.
-    //
-    uint32_t ui32SRAMSize;
-}
-am_hal_mcuctrl_device_t;
 
 //*****************************************************************************
 //

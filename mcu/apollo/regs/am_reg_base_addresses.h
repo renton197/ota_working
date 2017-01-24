@@ -18,6 +18,7 @@
 
 // ARM standard register space (needed for macros)
 #define REG_ITM_BASEADDR                         0x00000000
+#define REG_JEDEC_BASEADDR                       0x00000000
 #define REG_NVIC_BASEADDR                        0x00000000
 #define REG_SYSCTRL_BASEADDR                     0x00000000
 #define REG_SYSTICK_BASEADDR                     0x00000000

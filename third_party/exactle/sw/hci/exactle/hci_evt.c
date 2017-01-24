@@ -4,8 +4,8 @@
  *
  *  \brief  HCI event module.
  *
- *          $Date: 2015-06-12 04:19:18 -0700 (Fri, 12 Jun 2015) $
- *          $Revision: 3061 $
+ *          $Date: 2016-08-29 13:51:31 -0700 (Mon, 29 Aug 2016) $
+ *          $Revision: 8639 $
  *
  *  Copyright (c) 2009 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.
@@ -32,6 +32,7 @@
 #include "hci_cmd.h"
 #include "hci_core.h"
 
+
 /**************************************************************************************************
   Local Variables
 **************************************************************************************************/
@@ -39,6 +40,8 @@
 /*! LL event to HCI callback event lookup table. */
 static const uint8_t hciEvtLookup[] =
 {
+  HCI_HW_ERROR_CBACK_EVT,                              /* LL_ERROR_IND */
+  /* --- Core Spec 4.0 --- */
   HCI_RESET_SEQ_CMPL_CBACK_EVT,                        /* LL_RESET_CNF */
   HCI_LE_ADV_REPORT_CBACK_EVT,                         /* LL_ADV_REPORT_IND */
   0,                                                   /* LL_ADV_ENABLE_CNF */
@@ -46,7 +49,6 @@ static const uint8_t hciEvtLookup[] =
   HCI_LE_CONN_CMPL_CBACK_EVT,                          /* LL_CONN_IND */
   HCI_DISCONNECT_CMPL_CBACK_EVT,                       /* LL_DISCONNECT_IND */
   HCI_LE_CONN_UPDATE_CMPL_CBACK_EVT,                   /* LL_CONN_UPDATE_IND */
-  0,                                                   /* LL_REM_CONN_PARAM_IND */
   HCI_LE_CREATE_CONN_CANCEL_CMD_CMPL_CBACK_EVT,        /* LL_CREATE_CONN_CANCEL_CNF */
   HCI_READ_REMOTE_VER_INFO_CMPL_CBACK_EVT,             /* LL_READ_REMOTE_VER_INFO_CNF */
   HCI_LE_READ_REMOTE_FEAT_CMPL_CBACK_EVT,              /* LL_READ_REMOTE_FEAT_CNF */
@@ -55,7 +57,25 @@ static const uint8_t hciEvtLookup[] =
   HCI_LE_LTK_REQ_CBACK_EVT,                            /* LL_LTK_REQ_IND */
   HCI_LE_LTK_REQ_NEG_REPL_CMD_CMPL_CBACK_EVT,          /* LL_LTK_REQ_NEG_REPLY_CNF */
   HCI_LE_LTK_REQ_REPL_CMD_CMPL_CBACK_EVT,              /* LL_LTK_REQ_REPLY_CNF */
-  HCI_HW_ERROR_CBACK_EVT                               /* LL_ERROR_IND */
+  /* --- Core Spec 4.2 --- */
+  HCI_LE_REM_CONN_PARAM_REQ_CBACK_EVT,                 /* LL_REM_CONN_PARAM_IND */
+  HCI_AUTH_PAYLOAD_TO_EXPIRED_CBACK_EVT,               /* LL_AUTH_PAYLOAD_TIMEOUT_IND */
+  HCI_LE_DATA_LEN_CHANGE_CBACK_EVT,                    /* LL_DATA_LEN_CHANGE_IND */
+  HCI_LE_READ_LOCAL_P256_PUB_KEY_CMPL_CBACK_EVT,       /* LL_READ_LOCAL_P256_PUB_KEY_CMPL_IND */
+  HCI_LE_GENERATE_DHKEY_CMPL_CBACK_EVT,                /* LL_GENERATE_DHKEY_CMPL_IND */
+  0,                                                   /* LL_SCAN_REPORT_IND */
+  /* --- Core Spec 5.0 --- */
+  HCI_LE_PHY_UPDATE_CMPL_CBACK_EVT,                    /* LL_PHY_UPDATE_IND */
+  HCI_LE_EXT_ADV_REPORT_CBACK_EVT,                     /* LL_EXT_ADV_REPORT_IND */
+  0,                                                   /* LL_EXT_SCAN_ENABLE_CNF */
+  HCI_LE_SCAN_TIMEOUT_CBACK_EVT,                       /* LL_SCAN_TIMEOUT_IND */
+  HCI_LE_SCAN_REQ_RCVD_CBACK_EVT,                      /* LL_SCAN_REQ_RCVD_IND */
+  0,                                                   /* LL_EXT_ADV_ENABLE_CNF */
+  HCI_LE_ADV_SET_TERM_CBACK_EVT,                       /* LL_ADV_SET_TERM_IND */
+  0,                                                   /* LL_PER_ADV_SYNC_EST_IND */
+  0,                                                   /* LL_PER_ADV_SYNC_LOST_IND */
+  0,                                                   /* LL_PER_ADV_REPORT_IND */
+  0                                                    /* LL_CH_SEL_ALGO_IND */
 };
 
 /*************************************************************************************************/
@@ -82,6 +102,24 @@ void hciEvtProcessMsg(uint8_t *pEvt)
       /* restore LL state */
       LlGetBdAddr(hciCoreCb.bdAddr);
 
+      /* if LE Data Packet Length Extensions is supported by Controller and included */
+      if ((HciGetLeSupFeat() & HCI_LE_SUP_FEAT_DATA_LEN_EXT) &&
+          (hciLeSupFeatCfg & HCI_LE_SUP_FEAT_DATA_LEN_EXT))
+      {
+        uint16_t maxTxOctets;
+        uint16_t maxTxTime;
+        uint16_t maxRxOctets;
+        uint16_t maxRxTime;
+
+        LlReadMaximumDataLen(&maxTxOctets, &maxTxTime, &maxRxOctets, &maxRxTime);
+
+        /* use Controller’s maximum supported payload octets and packet duration times
+         * for transmission as Host's suggested values for maximum transmission number
+         * of payload octets and maximum packet transmission time for new connections.
+         */
+        LlWriteDefaultDataLen(maxTxOctets, maxTxTime);
+      }
+
       /* reset internals */
       hciCoreCb.availBufs = hciCoreCb.numBufs;
       if (hciCb.secCback)
@@ -96,30 +134,43 @@ void hciEvtProcessMsg(uint8_t *pEvt)
       hciCb.evtCback((hciEvt_t *)pMsg);
       break;
 
-    case LL_ADV_REPORT_IND:
-      break;
-    case LL_ADV_ENABLE_CNF:
-      break;
-    case LL_SCAN_ENABLE_CNF:
+    case LL_GENERATE_DHKEY_CMPL_IND:
+    case LL_READ_LOCAL_P256_PUB_KEY_CMPL_IND:
+      if (hciCb.secCback)
+      {
+        pMsg->hdr.event = hciEvtLookup[pMsg->hdr.event];
+        hciCb.secCback((hciEvt_t *)pMsg);
+      }
       break;
 
     case LL_CONN_IND:
       hciCoreConnOpen(pMsg->connInd.handle);
       /* fall through */
-      
+
+    case LL_ERROR_IND:
+    case LL_ADV_REPORT_IND:
     case LL_DISCONNECT_IND:
     case LL_CONN_UPDATE_IND:
+    case LL_REM_CONN_PARAM_IND:
     case LL_CREATE_CONN_CANCEL_CNF:
     case LL_READ_REMOTE_VER_INFO_CNF:
     case LL_READ_REMOTE_FEAT_CNF:
     case LL_ENC_CHANGE_IND:
+    case LL_ENC_KEY_REFRESH_IND:
     case LL_LTK_REQ_IND:
     case LL_LTK_REQ_NEG_REPLY_CNF:
     case LL_LTK_REQ_REPLY_CNF:
-    case LL_ERROR_IND:
+    case LL_AUTH_PAYLOAD_TIMEOUT_IND:
+    case LL_DATA_LEN_CHANGE_IND:
+    case LL_PHY_UPDATE_IND:
+    case LL_EXT_ADV_REPORT_IND:
+    case LL_SCAN_TIMEOUT_IND:
+    case LL_SCAN_REQ_RCVD_IND:
+    case LL_ADV_SET_TERM_IND:
       /* lookup HCI event callback code */
       pMsg->hdr.event = hciEvtLookup[pMsg->hdr.event];
-      /* HCI and LL event structures identical, no translation needed */
+    
+      /* Note: HCI and LL event structures identical, no translation needed */
       hciCb.evtCback((hciEvt_t *)pMsg);
 
       if (event == LL_DISCONNECT_IND)

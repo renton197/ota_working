@@ -4,8 +4,8 @@
  *
  *  \brief  Tag sample application interface.
  *
- *          $Date: 2012-05-17 13:02:36 -0700 (Thu, 17 May 2012) $
- *          $Revision: 325 $
+ *          $Date: 2016-06-02 14:19:49 -0700 (Thu, 02 Jun 2016) $
+ *          $Revision: 7314 $
  *
  *  Copyright (c) 2011 Wicentric, Inc., all rights reserved.
  *  Wicentric confidential and proprietary.

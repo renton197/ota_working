@@ -105,6 +105,11 @@ am_hal_mcuctrl_device_info_get(am_hal_mcuctrl_device_t *psDevice)
     psDevice->ui32ChipRev = AM_REG(MCUCTRL, CHIPREV);
 
     //
+    // Qualified from Part Number.
+    //
+    psDevice->ui32Qualified = AM_BFR(MCUCTRL, CHIP_INFO, QUAL);
+
+    //
     // Flash size from Part Number.
     //
     psDevice->ui32FlashSize =
@@ -115,6 +120,40 @@ am_hal_mcuctrl_device_info_get(am_hal_mcuctrl_device_t *psDevice)
     //
     psDevice->ui32SRAMSize =
         am_hal_mcuctrl_sram_size[AM_BFR(MCUCTRL, CHIP_INFO, RAM)];
+
+    //
+    // Now, let's look at the JEDEC info.
+    // The full partnumber is 12 bits total, but is scattered across 2 registers.
+    // Bits [11:8] are 0xE.
+    // Bits [7:4] are 0xE for Apollo, 0xD for Apollo2.
+    // Bits [3:0] are defined differently for Apollo and Apollo2.
+    //   For Apollo, the low nibble is 0x0.
+    //   For Apollo2, the low nibble indicates flash and SRAM size.
+    //
+    psDevice->ui32JedecPN  = (AM_BFR(JEDEC, PID0, PNL8) << 0);
+    psDevice->ui32JedecPN |= (AM_BFR(JEDEC, PID1, PNH4) << 8);
+
+    //
+    // JEPID is the JEP-106 Manufacturer ID Code, which is assigned to Ambiq as
+    //  0x1B, with parity bit is 0x9B.  It is 8 bits located across 2 registers.
+    //
+    psDevice->ui32JedecJEPID  = (AM_BFR(JEDEC, PID1, JEPIDL) << 0);
+    psDevice->ui32JedecJEPID |= (AM_BFR(JEDEC, PID2, JEPIDH) << 4);
+
+    //
+    // CHIPREV is 8 bits located across 2 registers.
+    //
+    psDevice->ui32JedecCHIPREV  = (AM_BFR(JEDEC, PID2, CHIPREVH4) << 4);
+    psDevice->ui32JedecCHIPREV |= (AM_BFR(JEDEC, PID3, CHIPREVL4) << 0);
+
+    //
+    // Let's get the Coresight ID (32-bits across 4 registers)
+    // For Apollo and Apollo2, it's expected to be 0xB105100D.
+    //
+    psDevice->ui32JedecCID  = (AM_BFR(JEDEC, CID3, CID) << 24);
+    psDevice->ui32JedecCID |= (AM_BFR(JEDEC, CID2, CID) << 16);
+    psDevice->ui32JedecCID |= (AM_BFR(JEDEC, CID1, CID) <<  8);
+    psDevice->ui32JedecCID |= (AM_BFR(JEDEC, CID0, CID) <<  0);
 }
 
 //*****************************************************************************

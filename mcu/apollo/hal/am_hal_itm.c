@@ -89,7 +89,7 @@ am_hal_itm_delay_us(uint32_t ui32MicroSeconds)
     //
     // Call the cycle delay
     //
-    am_itm_delay_cycles(ui32Cycles);
+    am_hal_flash_delay(ui32Cycles);
 }
 
 //*****************************************************************************
